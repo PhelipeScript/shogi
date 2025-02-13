@@ -1,4 +1,11 @@
-from classes.shogi import Shogi
+from classes.game_interface import Game_interface
 
 
-shogi = Shogi()
+# CONTANTES
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 800
+GRID_SIZE = 9
+
+game_interface = Game_interface(SCREEN_WIDTH, SCREEN_HEIGHT, GRID_SIZE)
+
+game_interface.run()
