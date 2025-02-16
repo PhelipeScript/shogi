@@ -41,9 +41,20 @@ class GameInterface:
     self.board_square_size = self.board_height // self.grid_size
   
   def draw_board(self):
+    board_pieces = self.game.board.string_to_array()
     for row in range(self.grid_size):
       for col in range(self.grid_size):
-        board_square_image_resized = pygame.transform.scale(self.board_square_image, (self.board_square_size, self.board_square_size))
+        board_square_image_resized = None
+        if board_pieces[row][col] == '.':
+          board_square_image_resized = pygame.transform.scale(self.board_square_image, (self.board_square_size, self.board_square_size))
+        elif board_pieces[row][col].islower():
+          piece = self.game.players[0].get_piece(col + (row * self.grid_size))
+          board_square_image_resized = pygame.transform.scale(piece.image, (self.board_square_size, self.board_square_size))
+        else:
+          piece = self.game.players[1].get_piece(col + (row * self.grid_size))
+          board_square_image_resized = pygame.transform.scale(piece.image, (self.board_square_size, self.board_square_size))
+          board_square_image_resized = pygame.transform.rotate(board_square_image_resized, 180)
+
         x = col * self.board_square_size + 0.5 * (self.screen_width - self.grid_size * self.board_square_size)
         y = row * self.board_square_size + 0.5 * (self.screen_height - self.grid_size * self.board_square_size)
         self.screen.blit(board_square_image_resized, (x, y))
@@ -83,6 +94,7 @@ class GameInterface:
     pygame.init()
     self.running = True
     self.configure_screen()
+    self.game.distribute_pieces()
     
     while self.running:
       self.screen.fill((255, 203, 93))

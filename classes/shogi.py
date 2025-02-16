@@ -1,4 +1,5 @@
 from classes.board import Board
+from classes.piece import PIECES_CLASSES, Piece
 from classes.player import Player
 
 
@@ -10,6 +11,7 @@ class Shogi:
     self.winner = None
     self.game_over = False
     print("iniciando o jogo")
+    self.board.print_board()
     
   def start(self):
     # inicia o loop do jogo
@@ -20,8 +22,17 @@ class Shogi:
     pass
   
   def distribute_pieces(self):
-    # distribui as peças entre os jogadores
-    pass
+    for i, board_piece in enumerate(self.board.board_str):
+      if board_piece != '.':
+        player = None
+        if board_piece.islower():
+          player = self.players[0]
+        else:
+          player = self.players[1]
+
+        new_piece = PIECES_CLASSES[board_piece.lower()](player.color, i)
+        player.add_piece(new_piece)
+
   
   def next_turn(self):
     # passa a vez
