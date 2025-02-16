@@ -1,6 +1,7 @@
 import pygame
 import sys
 import tkinter as tk
+from classes.image_manager import ImageManager
 from classes.shogi import Shogi
 
 GRID_SIZE = 9
@@ -15,7 +16,8 @@ class GameInterface:
   def __init__(self):
     self.game = Shogi()
     self.fullscreen = False
-    self.board_square_image = pygame.image.load('assets/board_square.png')
+    self.image_manager = ImageManager()
+    self.board_square_image = self.image_manager.load_image('assets/board_square.png')
     
   def configure_screen(self):
     if (self.fullscreen):
