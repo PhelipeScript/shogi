@@ -161,6 +161,17 @@ class King(Piece):
     # movimento especial para rei
     pass
   
+  def possible_moves(self, board):
+    moves = []
+    row = self.position // 9
+    col = self.position % 9
+    for i in range(-1, 2):
+      for j in range(-1, 2):
+        if row + i >= 0 and row + i < 9 and col + j >= 0 and col + j < 9:
+          if board[(row + i) * 9 + (col + j)] == '.':
+            moves.append((row + i) * 9 + (col + j))
+    return moves
+  
 class Lance(Piece):
   def __init__(self, color, position):
     super().__init__('lance', color, position)
