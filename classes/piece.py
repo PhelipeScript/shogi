@@ -170,6 +170,17 @@ class Lance(Piece):
   def move(self, new_position):
     # movimento especial para lança
     pass
+  
+  def possible_moves(self, board):
+    moves = []
+    row = self.position // 9
+    col = self.position % 9
+    for i in range(row - 1, -1, -1):
+      if board[i * 9 + col] == '.':
+        moves.append(i * 9 + col)
+      else:
+        break
+    return moves
 
 
 PIECES_CLASSES = {
