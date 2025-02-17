@@ -46,6 +46,32 @@ class Rook(Piece):
   def move(self, new_position):
     # movimento especial para torre
     pass
+
+  def possible_moves(self, board):
+    moves = []
+    row = self.position // 9
+    col = self.position % 9
+    for i in range(row - 1, -1, -1):
+      if board[i * 9 + col] == '.':
+        moves.append(i * 9 + col)
+      else:
+        break
+    for i in range(row + 1, 9):
+      if board[i * 9 + col] == '.':
+        moves.append(i * 9 + col)
+      else:
+        break
+    for i in range(col - 1, -1, -1):
+      if board[row * 9 + i] == '.':
+        moves.append(row * 9 + i)
+      else:
+        break
+    for i in range(col + 1, 9):
+      if board[row * 9 + i] == '.':
+        moves.append(row * 9 + i)
+      else:
+        break
+    return moves
   
 class Knight(Piece):
   def __init__(self, color, position):
