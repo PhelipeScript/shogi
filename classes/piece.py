@@ -13,6 +13,10 @@ class Piece:
     # move a peça para a nova posição
     pass
   
+  def possible_moves(self):
+    # retorna uma lista de posições possíveis para a peça
+    pass
+  
 class Pawn(Piece):
   def __init__(self, color, position):
     super().__init__('pawn', color, position)
@@ -22,6 +26,12 @@ class Pawn(Piece):
   def move(self, new_position):
     # movimento especial para peão
     pass
+  
+  def possible_moves(self):
+    if (self.color == 'WHITE'):
+      return [self.position - 9]
+    else:
+      return [self.position + 9]
   
 class Rook(Piece): 
   def __init__(self, color, position):

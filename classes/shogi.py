@@ -6,7 +6,7 @@ from classes.player import Player
 class Shogi:
   def __init__(self):
     self.board = Board()
-    self.players = [Player("Jogador 1", "branco"), Player("Jogador 2", "preto")]
+    self.players = [Player("Jogador 1", "WHITE"), Player("Jogador 2", "BLACK")]
     self.turn = 0
     self.winner = None
     self.game_over = False
