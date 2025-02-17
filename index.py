@@ -1,4 +1,6 @@
-from classes.shogi import Shogi
+from classes.game_interface import GameInterface
 
 
-shogi = Shogi()
+game_interface = GameInterface()
+
+game_interface.run()

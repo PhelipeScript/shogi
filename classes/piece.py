@@ -1,8 +1,12 @@
+from classes.image_manager import ImageManager
+
+
 class Piece:
   def __init__(self, name, color, position):
     self.name = name
     self.color = color
     self.position = position
+    self.image_manager = ImageManager()
     pass
   
   def move(self, new_position):
@@ -12,6 +16,7 @@ class Piece:
 class Pawn(Piece):
   def __init__(self, color, position):
     super().__init__('pawn', color, position)
+    self.image = self.image_manager.load_image('assets/international_pieces/pawn.png')
     pass
   
   def move(self, new_position):
@@ -21,6 +26,7 @@ class Pawn(Piece):
 class Rook(Piece): 
   def __init__(self, color, position):
     super().__init__('rook', color, position)
+    self.image = self.image_manager.load_image('assets/international_pieces/rook.png')
     pass
   
   def move(self, new_position):
@@ -30,6 +36,7 @@ class Rook(Piece):
 class Knight(Piece):
   def __init__(self, color, position):
     super().__init__('knight', color, position)
+    self.image = self.image_manager.load_image('assets/international_pieces/knight.png')
     pass
   
   def move(self, new_position):
@@ -39,6 +46,7 @@ class Knight(Piece):
 class Bishop(Piece):
   def __init__(self, color, position):
     super().__init__('bishop', color, position)
+    self.image = self.image_manager.load_image('assets/international_pieces/bishop.png')
     pass
   
   def move(self, new_position):
@@ -48,6 +56,7 @@ class Bishop(Piece):
 class Gold_general(Piece): 
   def __init__(self, color, position):
     super().__init__('gold_general', color, position)
+    self.image = self.image_manager.load_image('assets/international_pieces/gold_general.png')
     pass
   
   def move(self, new_position):
@@ -57,6 +66,7 @@ class Gold_general(Piece):
 class Silver_general(Piece):
   def __init__(self, color, position):
     super().__init__('silver_general', color, position)
+    self.image = self.image_manager.load_image('assets/international_pieces/silver_general.png')
     pass
   
   def move(self, new_position):
@@ -66,6 +76,7 @@ class Silver_general(Piece):
 class King(Piece):
   def __init__(self, color, position):
     super().__init__('king', color, position)
+    self.image = self.image_manager.load_image('assets/international_pieces/king.png')
     pass
   
   def move(self, new_position):
@@ -75,8 +86,21 @@ class King(Piece):
 class Lance(Piece):
   def __init__(self, color, position):
     super().__init__('lance', color, position)
+    self.image = self.image_manager.load_image('assets/international_pieces/lance.png')
     pass
   
   def move(self, new_position):
     # movimento especial para lança
     pass
+
+
+PIECES_CLASSES = {
+    'k': King, 
+    'g': Gold_general, 
+    'p': Pawn, 
+    'r': Rook, 
+    'l': Lance,
+    'b': Bishop,
+    'n': Knight, 
+    's': Silver_general, 
+}
