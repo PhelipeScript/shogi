@@ -93,6 +93,44 @@ class Bishop(Piece):
     # movimento especial para bispo
     pass
   
+  def possible_moves(self, board):
+    moves = []
+    row = self.position // 9
+    col = self.position % 9
+    for i in range(1, 9):
+      if row - i >= 0 and col - i >= 0:
+        if board[(row - i) * 9 + (col - i)] == '.':
+          moves.append((row - i) * 9 + (col - i))
+        else:
+          break
+      else:
+        break
+    for i in range(1, 9):
+      if row - i >= 0 and col + i < 9:
+        if board[(row - i) * 9 + (col + i)] == '.':
+          moves.append((row - i) * 9 + (col + i))
+        else:
+          break
+      else:
+        break
+    for i in range(1, 9):
+      if row + i < 9 and col - i >= 0:
+        if board[(row + i) * 9 + (col - i)] == '.':
+          moves.append((row + i) * 9 + (col - i))
+        else:
+          break
+      else:
+        break
+    for i in range(1, 9):
+      if row + i < 9 and col + i < 9:
+        if board[(row + i) * 9 + (col + i)] == '.':
+          moves.append((row + i) * 9 + (col + i))
+        else:
+          break
+      else:
+        break
+    return moves
+  
 class Gold_general(Piece): 
   def __init__(self, color, position):
     super().__init__('gold_general', color, position)
