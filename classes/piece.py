@@ -27,11 +27,15 @@ class Pawn(Piece):
     # movimento especial para peão
     pass
   
-  def possible_moves(self):
+  def possible_moves(self, board):
+    moves = []
     if (self.color == 'WHITE'):
-      return [self.position - 9]
+      if (self.position >= 9) and board[self.position - 9] == '.':
+        moves.append(self.position - 9)
     else:
-      return [self.position + 9]
+      if (self.position <= 72) and board[self.position + 9] == '.':
+        moves.append(self.position + 9)
+    return moves
   
 class Rook(Piece): 
   def __init__(self, color, position):

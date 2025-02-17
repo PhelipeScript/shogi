@@ -33,6 +33,8 @@ class Shogi:
         new_piece = PIECES_CLASSES[board_piece.lower()](player.color, i)
         player.add_piece(new_piece)
 
+  def get_piece_moves(self, piece: Piece):
+    return piece.possible_moves(self.board.board_str)
   
   def next_turn(self):
     # passa a vez

@@ -75,7 +75,7 @@ class GameInterface:
     print(board_piece)
     print(self.possible_moves)
     if piece is not None and piece.name == 'pawn':
-      self.possible_moves = piece.possible_moves()
+      self.possible_moves = self.game.get_piece_moves(piece)
     else:
       self.possible_moves = []
     
@@ -96,7 +96,7 @@ class GameInterface:
       if event.type == pygame.QUIT:
         self.running = False
       elif event.type == pygame.VIDEORESIZE:
-        self.configure_screen(fullscreen=True)
+        self.configure_screen()
       elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
         if self.fullscreen_button.collidepoint(mouse_x, mouse_y):
           self.fullscreen = not self.fullscreen
