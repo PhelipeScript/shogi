@@ -2,6 +2,7 @@ import pygame
 import sys
 import tkinter as tk
 from classes.image_manager import ImageManager
+from classes.piece import Piece
 from classes.shogi import Shogi
 
 GRID_SIZE = 9
@@ -16,6 +17,7 @@ class GameInterface:
   def __init__(self):
     self.game = Shogi()
     self.fullscreen = False
+    self.possible_moves = []
     self.image_manager = ImageManager()
     self.board_square_image = self.image_manager.load_image('assets/board_square.png')
     
@@ -41,9 +43,11 @@ class GameInterface:
     self.board_square_size = self.board_height // self.grid_size
   
   def draw_board(self):
+    mouse_x, mouse_y = pygame.mouse.get_pos()
     board_pieces = self.game.board.string_to_array()
     for row in range(self.grid_size):
       for col in range(self.grid_size):
+        piece = None  
         board_square_image_resized = None
         if board_pieces[row][col] == '.':
           board_square_image_resized = pygame.transform.scale(self.board_square_image, (self.board_square_size, self.board_square_size))
@@ -58,7 +62,22 @@ class GameInterface:
         x = col * self.board_square_size + 0.5 * (self.screen_width - self.grid_size * self.board_square_size)
         y = row * self.board_square_size + 0.5 * (self.screen_height - self.grid_size * self.board_square_size)
         self.screen.blit(board_square_image_resized, (x, y))
-        pygame.draw.rect(self.screen, BLACK, (x, y, self.board_square_size, self.board_square_size), 2)
+        piece_rect = pygame.Rect(x, y, self.board_square_size, self.board_square_size)
+        if piece_rect.collidepoint(mouse_x, mouse_y):
+          self.handle_piece_click(piece, board_pieces[row][col])
+        
+        if (col + (row * self.grid_size) in self.possible_moves):
+          pygame.draw.rect(self.screen, (255, 0, 0), piece_rect, 3)
+        else:
+          pygame.draw.rect(self.screen, BLACK, piece_rect, 2)
+        
+  def handle_piece_click(self, piece: Piece, board_piece: str):
+    print(board_piece)
+    print(self.possible_moves)
+    if piece is not None and piece.name == 'gold_general':
+      self.possible_moves = self.game.get_piece_moves(piece)
+    else:
+      self.possible_moves = []
     
   def configure_fullscreen_button(self):
     self.fullscreen_button = pygame.Rect(10, self.screen_height-60, 100, 50)
@@ -77,7 +96,7 @@ class GameInterface:
       if event.type == pygame.QUIT:
         self.running = False
       elif event.type == pygame.VIDEORESIZE:
-        self.configure_screen(fullscreen=True)
+        self.configure_screen()
       elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
         if self.fullscreen_button.collidepoint(mouse_x, mouse_y):
           self.fullscreen = not self.fullscreen
