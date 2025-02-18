@@ -186,11 +186,18 @@ class Lance(Piece):
     moves = []
     row = self.position // 9
     col = self.position % 9
-    for i in range(row - 1, -1, -1):
-      if board[i * 9 + col] == '.':
-        moves.append(i * 9 + col)
-      else:
-        break
+    if (self.color == 'WHITE'):
+      for i in range(row - 1, -1, -1):
+        if board[i * 9 + col] == '.':
+          moves.append(i * 9 + col)
+        else:
+          break
+    else:
+      for i in range(row + 1, 9):
+        if board[i * 9 + col] == '.':
+          moves.append(i * 9 + col)
+        else:
+          break
     return moves
 
 
