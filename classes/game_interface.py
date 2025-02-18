@@ -64,17 +64,15 @@ class GameInterface:
         self.screen.blit(board_square_image_resized, (x, y))
         piece_rect = pygame.Rect(x, y, self.board_square_size, self.board_square_size)
         if piece_rect.collidepoint(mouse_x, mouse_y):
-          self.handle_piece_click(piece, board_pieces[row][col])
+          self.handle_possible_moves(piece)
         
         if (col + (row * self.grid_size) in self.possible_moves):
           pygame.draw.rect(self.screen, (255, 0, 0), piece_rect, 3)
         else:
           pygame.draw.rect(self.screen, BLACK, piece_rect, 2)
         
-  def handle_piece_click(self, piece: Piece, board_piece: str):
-    print(board_piece)
-    print(self.possible_moves)
-    if piece is not None and piece.name == 'silver_general':
+  def handle_possible_moves(self, piece: Piece):
+    if piece is not None:
       self.possible_moves = self.game.get_piece_moves(piece)
     else:
       self.possible_moves = []
