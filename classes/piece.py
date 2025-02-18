@@ -158,6 +158,20 @@ class Gold_general(Piece):
     # movimento especial para general de ouro
     pass
   
+  def possible_moves(self, board):
+    moves = []
+    row = self.position // 9
+    col = self.position % 9
+    for i in range(-1, 2):
+      for j in range(-1, 2):
+        evitar_index = 1 if self.color == 'WHITE' else -1
+        if i == evitar_index and (j == -1 or j == 1):
+          continue
+        if row + i >= 0 and row + i < 9 and col + j >= 0 and col + j < 9:
+          if board[(row + i) * 9 + (col + j)] == '.':
+            moves.append((row + i) * 9 + (col + j)) 
+    return moves
+  
 class Silver_general(Piece):
   def __init__(self, color, position):
     super().__init__('silver_general', color, position)
