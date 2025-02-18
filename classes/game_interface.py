@@ -74,7 +74,7 @@ class GameInterface:
   def handle_piece_click(self, piece: Piece, board_piece: str):
     print(board_piece)
     print(self.possible_moves)
-    if piece is not None and piece.name == 'gold_general':
+    if piece is not None and piece.name == 'silver_general':
       self.possible_moves = self.game.get_piece_moves(piece)
     else:
       self.possible_moves = []
