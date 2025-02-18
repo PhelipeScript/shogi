@@ -13,7 +13,7 @@ class Piece:
     # move a peça para a nova posição
     pass
   
-  def possible_moves(self):
+  def possible_moves(self, board):
     # retorna uma lista de posições possíveis para a peça
     pass
   
@@ -82,6 +82,23 @@ class Knight(Piece):
   def move(self, new_position):
     # movimento especial para cavalo
     pass
+  
+  def possible_moves(self, board):
+    moves = []  # pos = 65
+    row = self.position // 9 # 7
+    col = self.position % 9 # 2
+    if (self.color == 'WHITE'):
+      if (row >= 2 and col >= 1) and board[(row - 2) * 9 + (col - 1)] == '.':
+        moves.append((row - 2) * 9 + (col - 1))
+      if (row >= 2 and col <= 7) and board[(row - 2) * 9 + (col + 1)] == '.':
+        moves.append((row - 2) * 9 + (col + 1))
+    else:
+      if (row <= 6 and col >= 1) and board[(row + 2) * 9 + (col - 1)] == '.':
+        moves.append((row + 2) * 9 + (col - 1))
+      if (row <= 6 and col <= 7) and board[(row + 2) * 9 + (col + 1)] == '.':
+        moves.append((row + 2) * 9 + (col + 1))
+    return moves
+  
   
 class Bishop(Piece):
   def __init__(self, color, position):
