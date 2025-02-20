@@ -1,3 +1,5 @@
+from typing import Union
+
 from classes.board import Board
 from classes.piece import PIECES_CLASSES, Piece
 from classes.player import Player
@@ -10,6 +12,7 @@ class Shogi:
     self.turn = 0
     self.winner = None
     self.game_over = False
+    self.selected_piece = None
     print("iniciando o jogo")
     self.board.print_board()
     
@@ -35,6 +38,18 @@ class Shogi:
 
   def get_piece_moves(self, piece: Piece):
     return piece.possible_moves(self.board.board_str)
+  
+  def select_piece(self, identifier: Union[str, Piece]):
+    if isinstance(identifier, str):
+      # TODO: caso seja passado as coordenadas da peça (i.e. '00' ou '11')
+      pass
+    elif isinstance(identifier, Piece):
+      self.selected_piece = identifier
+    else:
+      print("Peça inválida")
+      
+  def deselect_piece(self):
+    self.selected_piece = None    
   
   def next_turn(self):
     # passa a vez
