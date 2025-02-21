@@ -91,6 +91,19 @@ class GameInterface:
       self.game.select_piece(piece)
     elif self.game.selected_piece is piece:
       self.game.deselect_piece()
+      
+  def handle_move_piece(self, new_position: int):
+    old_position = self.game.selected_piece.position
+    old_cell = self.board[old_position]
+    new_cell = self.board[new_position]
+    
+    new_cell["piece"] = self.game.selected_piece
+    new_cell["piece_img"] = old_cell["piece_img"]
+    old_cell["piece"] = None
+    old_cell["piece_img"] = None
+    
+    self.game.move_piece(new_position)
+    
     
   def configure_fullscreen_button(self):
     self.fullscreen_button = pygame.Rect(10, self.screen_height-60, 100, 50)
@@ -125,9 +138,12 @@ class GameInterface:
           self.fullscreen = not self.fullscreen
           self.configure_screen()
           
-        for cell in self.board:
+        for index, cell in enumerate(self.board):
           if cell["rect"].collidepoint(mouse_x, mouse_y) and cell["piece"]:
             self.handle_select_piece(cell["piece"]) 
+            
+          if cell["rect"].collidepoint(mouse_x, mouse_y) and index in self.possible_moves:
+            self.handle_move_piece(index)
 
     if self.fullscreen_button.collidepoint(mouse_x, mouse_y):
         self.fullscreen_button_color = BUTTON_HOVER_COLOR

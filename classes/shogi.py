@@ -49,7 +49,19 @@ class Shogi:
       print("Peça inválida")
       
   def deselect_piece(self):
-    self.selected_piece = None    
+    self.selected_piece = None 
+    
+  def move_piece(self, new_position: int):
+    old_position = self.selected_piece.position
+    piece_symbol = self.board.board_str[old_position]
+    
+    self.board.board_str = self.board.board_str[:old_position] + '.' + self.board.board_str[old_position+1:]
+    self.board.board_str = self.board.board_str[:new_position] + piece_symbol + self.board.board_str[new_position+1:]
+    
+    self.selected_piece.move(new_position)
+    self.deselect_piece()
+    print("Peça movida")
+    self.board.print_board()
   
   def next_turn(self):
     # passa a vez
