@@ -26,10 +26,8 @@ class Pawn(Piece):
   def possible_moves(self, board):
     moves = []
     if (self.color == 'WHITE'):
-      if (self.position >= 9) and board[self.position - 9] == '.':
         moves.append(self.position - 9)
     else:
-      if (self.position <= 72) and board[self.position + 9] == '.':
         moves.append(self.position + 9)
     return moves
   
@@ -43,25 +41,36 @@ class Rook(Piece):
     moves = []
     row = self.position // 9
     col = self.position % 9
+
+    print(self.color)
+
     for i in range(row - 1, -1, -1):
       if board[i * 9 + col] == '.':
         moves.append(i * 9 + col)
       else:
+        if (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
+          moves.append(i * 9 + col)
         break
     for i in range(row + 1, 9):
       if board[i * 9 + col] == '.':
         moves.append(i * 9 + col)
       else:
+        if (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
+          moves.append(i * 9 + col)
         break
     for i in range(col - 1, -1, -1):
       if board[row * 9 + i] == '.':
         moves.append(row * 9 + i)
       else:
+        if (board[row * 9 + i].isupper() and self.color == "WHITE") or (board[row * 9 + i].islower() and self.color == "BLACK"):
+          moves.append(row * 9 + i)
         break
     for i in range(col + 1, 9):
       if board[row * 9 + i] == '.':
         moves.append(row * 9 + i)
       else:
+        if (board[row * 9 + i].isupper() and self.color == "WHITE") or (board[row * 9 + i].islower() and self.color == "BLACK"):
+          moves.append(row * 9 + i)
         break
     return moves
   
