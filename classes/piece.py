@@ -26,9 +26,15 @@ class Pawn(Piece):
   def possible_moves(self, board):
     moves = []
     if (self.color == 'WHITE'):
-        moves.append(self.position - 9)
+        if (board[self.position - 9] == '.'):
+            moves.append(self.position - 9)
+        elif board[self.position - 9].isupper():
+            moves.append(self.position - 9)
     else:
-        moves.append(self.position + 9)
+        if (board[self.position + 9] == '.'):
+          moves.append(self.position + 9)
+        elif board[self.position + 9].islower():
+            moves.append(self.position + 9)
     return moves
   
 class Rook(Piece): 
@@ -47,31 +53,39 @@ class Rook(Piece):
     for i in range(row - 1, -1, -1):
       if board[i * 9 + col] == '.':
         moves.append(i * 9 + col)
-      else:
-        if (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
+      elif (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
           moves.append(i * 9 + col)
+          break
+      else:
         break
+
     for i in range(row + 1, 9):
       if board[i * 9 + col] == '.':
         moves.append(i * 9 + col)
-      else:
-        if (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
+      elif (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
           moves.append(i * 9 + col)
+          break
+      else:
         break
+
     for i in range(col - 1, -1, -1):
       if board[row * 9 + i] == '.':
         moves.append(row * 9 + i)
-      else:
-        if (board[row * 9 + i].isupper() and self.color == "WHITE") or (board[row * 9 + i].islower() and self.color == "BLACK"):
+      elif (board[row * 9 + i].isupper() and self.color == "WHITE") or (board[row * 9 + i].islower() and self.color == "BLACK"):
           moves.append(row * 9 + i)
+          break
+      else:
         break
+
     for i in range(col + 1, 9):
       if board[row * 9 + i] == '.':
         moves.append(row * 9 + i)
-      else:
-        if (board[row * 9 + i].isupper() and self.color == "WHITE") or (board[row * 9 + i].islower() and self.color == "BLACK"):
+      elif (board[row * 9 + i].isupper() and self.color == "WHITE") or (board[row * 9 + i].islower() and self.color == "BLACK"):
           moves.append(row * 9 + i)
+          break
+      else:
         break
+
     return moves
   
 class Knight(Piece):
@@ -81,20 +95,29 @@ class Knight(Piece):
     pass
   
   def possible_moves(self, board):
-    moves = []  # pos = 65
-    row = self.position // 9 # 7
-    col = self.position % 9 # 2
-    if (self.color == 'WHITE'):
-      if (row >= 2 and col >= 1) and board[(row - 2) * 9 + (col - 1)] == '.':
-        moves.append((row - 2) * 9 + (col - 1))
-      if (row >= 2 and col <= 7) and board[(row - 2) * 9 + (col + 1)] == '.':
-        moves.append((row - 2) * 9 + (col + 1))
-    else:
-      if (row <= 6 and col >= 1) and board[(row + 2) * 9 + (col - 1)] == '.':
-        moves.append((row + 2) * 9 + (col - 1))
-      if (row <= 6 and col <= 7) and board[(row + 2) * 9 + (col + 1)] == '.':
-        moves.append((row + 2) * 9 + (col + 1))
-    return moves
+        moves = []
+        row = self.position // 9
+        col = self.position % 9
+
+        if self.color == 'WHITE':
+            if row >= 2 and col >= 1 and board[(row - 2) * 9 + (col - 1)] == '.':
+                moves.append((row - 2) * 9 + (col - 1))
+            elif row >= 2 and col >= 1 and board[(row - 2) * 9 + (col - 1)].isupper():
+                moves.append((row - 2) * 9 + (col - 1))
+            if row >= 2 and col <= 7 and board[(row - 2) * 9 + (col + 1)] == '.':
+                moves.append((row - 2) * 9 + (col + 1))
+            elif row >= 2 and col <= 7 and board[(row - 2) * 9 + (col + 1)].isupper():
+                moves.append((row - 2) * 9 + (col + 1))
+        else:
+            if row <= 6 and col >= 1 and board[(row + 2) * 9 + (col - 1)] == '.':
+                moves.append((row + 2) * 9 + (col - 1))
+            elif row <= 6 and col >= 1 and board[(row + 2) * 9 + (col - 1)].isupper():
+                moves.append((row + 2) * 9 + (col - 1))
+            if row <= 6 and col <= 7 and board[(row + 2) * 9 + (col + 1)] == '.':
+                moves.append((row + 2) * 9 + (col + 1))
+            elif row <= 6 and col <= 7 and board[(row + 2) * 9 + (col + 1)].isupper():
+                moves.append((row + 2) * 9 + (col + 1))
+        return moves
   
   
 class Bishop(Piece):
@@ -107,38 +130,47 @@ class Bishop(Piece):
     moves = []
     row = self.position // 9
     col = self.position % 9
+
     for i in range(1, 9):
       if row - i >= 0 and col - i >= 0:
         if board[(row - i) * 9 + (col - i)] == '.':
           moves.append((row - i) * 9 + (col - i))
+        elif (board[(row - i) * 9 + (col - i)].isupper() and self.color == "WHITE") or (board[(row - i) * 9 + (col - i)].islower() and self.color == "BLACK"):
+          moves.append((row - i) * 9 + (col - i))
+          break
         else:
           break
-      else:
-        break
+
     for i in range(1, 9):
       if row - i >= 0 and col + i < 9:
         if board[(row - i) * 9 + (col + i)] == '.':
           moves.append((row - i) * 9 + (col + i))
+        elif (board[(row - i) * 9 + (col + i)].isupper() and self.color == "WHITE") or (board[(row - i) * 9 + (col + i)].islower() and self.color == "BLACK"):
+          moves.append((row - i) * 9 + (col + i))
+          break
         else:
           break
-      else:
-        break
+
     for i in range(1, 9):
       if row + i < 9 and col - i >= 0:
         if board[(row + i) * 9 + (col - i)] == '.':
           moves.append((row + i) * 9 + (col - i))
+        elif (board[(row + i) * 9 + (col - i)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col - i)].islower() and self.color == "BLACK"):
+          moves.append((row + i) * 9 + (col - i))
+          break
         else:
           break
-      else:
-        break
+
     for i in range(1, 9):
       if row + i < 9 and col + i < 9:
         if board[(row + i) * 9 + (col + i)] == '.':
           moves.append((row + i) * 9 + (col + i))
+        elif (board[(row + i) * 9 + (col + i)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + i)].islower() and self.color == "BLACK"):
+          moves.append((row + i) * 9 + (col + i))
+          break
         else:
           break
-      else:
-        break
+
     return moves
   
 class Gold_general(Piece): 
@@ -158,7 +190,9 @@ class Gold_general(Piece):
           continue
         if row + i >= 0 and row + i < 9 and col + j >= 0 and col + j < 9:
           if board[(row + i) * 9 + (col + j)] == '.':
-            moves.append((row + i) * 9 + (col + j)) 
+            moves.append((row + i) * 9 + (col + j))
+          elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
+            moves.append((row + i) * 9 + (col + j))
     return moves
   
 class Silver_general(Piece):
@@ -179,6 +213,8 @@ class Silver_general(Piece):
         if row + i >= 0 and row + i < 9 and col + j >= 0 and col + j < 9:
           if board[(row + i) * 9 + (col + j)] == '.':
             moves.append((row + i) * 9 + (col + j)) 
+          elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"): 
+            moves.append((row + i) * 9 + (col + j))
     return moves
   
 class King(Piece):
@@ -196,6 +232,8 @@ class King(Piece):
         if row + i >= 0 and row + i < 9 and col + j >= 0 and col + j < 9:
           if board[(row + i) * 9 + (col + j)] == '.':
             moves.append((row + i) * 9 + (col + j))
+          elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
+            moves.append((row + i) * 9 + (col + j))
     return moves
   
 class Lance(Piece):
@@ -212,12 +250,17 @@ class Lance(Piece):
       for i in range(row - 1, -1, -1):
         if board[i * 9 + col] == '.':
           moves.append(i * 9 + col)
+        elif (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
+          moves.append(i * 9 + col)
+          break
         else:
           break
     else:
       for i in range(row + 1, 9):
         if board[i * 9 + col] == '.':
           moves.append(i * 9 + col)
+        elif (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
+          break
         else:
           break
     return moves
