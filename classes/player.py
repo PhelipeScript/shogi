@@ -21,6 +21,7 @@ class Player:
     pass
   
   def capture_piece(self, piece):
+    piece.color = self.color
     self.captured_pieces.append(piece)
     pass  
   

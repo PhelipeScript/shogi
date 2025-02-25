@@ -29,8 +29,8 @@ class GameInterface:
       self.screen_height = self.root.winfo_screenheight()
       self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     else:
-      self.screen_width = self.root.winfo_screenwidth() // 2
-      self.screen_height = self.root.winfo_screenheight() // 2
+      self.screen_width = self.root.winfo_screenwidth() // 1.5
+      self.screen_height = self.root.winfo_screenheight() // 1.5
       self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
    
     self.font = pygame.font.SysFont('Arial', 16)
@@ -95,6 +95,13 @@ class GameInterface:
       
   def handle_move_piece(self, new_position: int):
     old_position = self.game.selected_piece.position
+
+    if self.board[new_position]["piece"] is not None:
+      if self.board[new_position]["piece"].color == "BLACK":
+        self.game.players[0].capture_piece(self.board[new_position]["piece"])
+      else:
+        self.game.players[1].capture_piece(self.board[new_position]["piece"])
+
     old_cell = self.board[old_position]
     new_cell = self.board[new_position]
 
