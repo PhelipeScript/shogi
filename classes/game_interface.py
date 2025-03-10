@@ -6,6 +6,7 @@ from classes.piece import Piece
 from classes.shogi import Shogi
 
 GRID_SIZE = 9
+ASIDE_GRID  = 3
 
 #COLORS
 BLACK = (0, 0, 0)
@@ -19,6 +20,7 @@ class GameInterface:
     self.game = Shogi()
     self.fullscreen = False
     self.board = []
+    self.capture_display = None
     self.possible_moves = []
     self.image_manager = ImageManager()
     self.board_square_image = self.image_manager.load_image('assets/board_square.png')
@@ -178,6 +180,7 @@ class GameInterface:
       self.handle_events()
       self.draw_fullscreen_button()
       self.draw_board()
+      #self.draw_aside_board()
       
       pygame.display.flip()
       
