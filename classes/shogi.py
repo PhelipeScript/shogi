@@ -9,7 +9,8 @@ class Shogi:
   def __init__(self):
     self.board = Board()
     self.players = [Player("Jogador 1", "WHITE"), Player("Jogador 2", "BLACK")]
-    self.turn = 0
+    self.whoPlaysNow = self.players[0]
+    self.round = 0
     self.winner = None
     self.game_over = False
     self.selected_piece = None
@@ -44,7 +45,8 @@ class Shogi:
       # TODO: caso seja passado as coordenadas da peça (i.e. '00' ou '11')
       pass
     elif isinstance(identifier, Piece):
-      self.selected_piece = identifier
+      if identifier.color == self.whoPlaysNow.color:
+        self.selected_piece = identifier
     else:
       print("Peça inválida")
       
@@ -61,11 +63,13 @@ class Shogi:
     
     self.selected_piece.move(new_position)
     self.deselect_piece()
-    print("Peça movida")
+    self.next_turn()
     self.board.print_board()
   
   def next_turn(self):
-    # passa a vez
+    self.round += 1
+    self.whoPlaysNow = self.players[self.round % 2]
+    self.print_turn()
     pass
   
   def check_winner(self):
@@ -85,7 +89,7 @@ class Shogi:
     pass
   
   def print_turn(self):
-    # imprime a vez do jogador
+    print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
     pass
   
   
