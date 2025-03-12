@@ -10,7 +10,7 @@ class Piece:
     pass
   
   def move(self, new_position):
-    # move a peça para a nova posição
+    self.position = new_position
     pass
   
   def possible_moves(self, board):
@@ -21,10 +21,6 @@ class Pawn(Piece):
   def __init__(self, color, position):
     super().__init__('pawn', color, position)
     self.image = self.image_manager.load_image('assets/international_pieces/pawn.png')
-    pass
-  
-  def move(self, new_position):
-    # movimento especial para peão
     pass
   
   def possible_moves(self, board):
@@ -41,10 +37,6 @@ class Rook(Piece):
   def __init__(self, color, position):
     super().__init__('rook', color, position)
     self.image = self.image_manager.load_image('assets/international_pieces/rook.png')
-    pass
-  
-  def move(self, new_position):
-    # movimento especial para torre
     pass
 
   def possible_moves(self, board):
@@ -79,10 +71,6 @@ class Knight(Piece):
     self.image = self.image_manager.load_image('assets/international_pieces/knight.png')
     pass
   
-  def move(self, new_position):
-    # movimento especial para cavalo
-    pass
-  
   def possible_moves(self, board):
     moves = []  # pos = 65
     row = self.position // 9 # 7
@@ -104,10 +92,6 @@ class Bishop(Piece):
   def __init__(self, color, position):
     super().__init__('bishop', color, position)
     self.image = self.image_manager.load_image('assets/international_pieces/bishop.png')
-    pass
-  
-  def move(self, new_position):
-    # movimento especial para bispo
     pass
   
   def possible_moves(self, board):
@@ -154,10 +138,6 @@ class Gold_general(Piece):
     self.image = self.image_manager.load_image('assets/international_pieces/gold_general.png')
     pass
   
-  def move(self, new_position):
-    # movimento especial para general de ouro
-    pass
-  
   def possible_moves(self, board):
     moves = []
     row = self.position // 9
@@ -176,10 +156,6 @@ class Silver_general(Piece):
   def __init__(self, color, position):
     super().__init__('silver_general', color, position)
     self.image = self.image_manager.load_image('assets/international_pieces/silver_general.png')
-    pass
-  
-  def move(self, new_position):
-    # movimento especial para general de prata
     pass
   
   def possible_moves(self, board):
@@ -202,10 +178,6 @@ class King(Piece):
     self.image = self.image_manager.load_image('assets/international_pieces/king.png')
     pass
   
-  def move(self, new_position):
-    # movimento especial para rei
-    pass
-  
   def possible_moves(self, board):
     moves = []
     row = self.position // 9
@@ -221,10 +193,6 @@ class Lance(Piece):
   def __init__(self, color, position):
     super().__init__('lance', color, position)
     self.image = self.image_manager.load_image('assets/international_pieces/lance.png')
-    pass
-  
-  def move(self, new_position):
-    # movimento especial para lança
     pass
   
   def possible_moves(self, board):
