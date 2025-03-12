@@ -33,7 +33,8 @@ class GameInterface:
       self.screen_height = self.root.winfo_screenheight() // 2
       self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
    
-    self.font = pygame.font.SysFont('Arial', 16)
+    self.font_16 = pygame.font.SysFont('Arial', 16)
+    self.font_64 = pygame.font.SysFont('Arial', 64)
     pygame.display.set_caption("Shogi")
     self.configure_fullscreen_button()
     self.configure_board()
@@ -81,7 +82,7 @@ class GameInterface:
       pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1 if cell["rect_color"] == BLACK else 3)
         
   def handle_possible_moves(self, piece: Piece):
-    if piece is not None and piece.color == self.game.whoPlaysNow.color:
+    if not self.game.game_over and piece is not None and piece.color == self.game.whoPlaysNow.color:
       self.possible_moves = self.game.get_piece_moves(piece)
     else:
       self.possible_moves = []
@@ -109,7 +110,7 @@ class GameInterface:
   def configure_fullscreen_button(self):
     self.fullscreen_button = pygame.Rect(10, self.screen_height-60, 100, 50)
     self.fullscreen_button_color = BUTTON_COLOR
-    self.fullscreen_button_text = self.font.render('Fullscreen', True, WHITE) 
+    self.fullscreen_button_text = self.font_16.render('Fullscreen', True, WHITE) 
     
   def draw_fullscreen_button(self): 
     pygame.draw.rect(self.screen, self.fullscreen_button_color, self.fullscreen_button, border_radius=8)  
@@ -117,8 +118,13 @@ class GameInterface:
     self.screen.blit(self.fullscreen_button_text, fullscreen_button_center)
     
   def draw_who_plays_now(self):
-    text = self.font.render(f"{self.game.whoPlaysNow.name} plays now", True, BLACK)
+    text = self.font_16.render(f"{self.game.whoPlaysNow.name} plays now", True, BLACK)
     self.screen.blit(text, (10, 10))
+    
+  def draw_winner(self):
+    text = self.font_64.render(f"{self.game.winner.name} ganhou!", True, BLACK)
+    text_in_middle_screen = text.get_rect(center=(self.screen_width // 2, self.screen_height // 2))
+    self.screen.blit(text, text_in_middle_screen)
     
   def handle_events(self):
     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -175,7 +181,12 @@ class GameInterface:
       self.handle_events()
       self.draw_fullscreen_button()
       self.draw_board()
-      self.draw_who_plays_now()
+      
+      if self.game.game_over:
+        self.draw_winner()
+      else:
+        self.draw_who_plays_now()
+        
       
       pygame.display.flip()
       

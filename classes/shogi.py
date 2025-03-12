@@ -41,6 +41,8 @@ class Shogi:
     return piece.possible_moves(self.board.board_str)
   
   def select_piece(self, identifier: Union[str, Piece]):
+    if self.game_over: return
+    
     if isinstance(identifier, str):
       # TODO: caso seja passado as coordenadas da peça (i.e. '00' ou '11')
       pass
@@ -69,20 +71,24 @@ class Shogi:
   def next_turn(self):
     self.round += 1
     self.whoPlaysNow = self.players[self.round % 2]
-    self.print_turn()
-    pass
+    self.check_winner()
+    if self.winner is None:
+      self.print_turn()
   
   def check_winner(self):
-    # verifica se há um vencedor
-    pass
+    black_king_alive = self.board.board_str.find('K')
+    white_king_alive = self.board.board_str.find('k')
+    if black_king_alive == -1 or white_king_alive == -1:
+      self.winner = self.players[0 if black_king_alive == -1 else 1]
+      self.game_over = True
+      self.print_winner()
   
   def check_game_over(self):
     # verifica se o jogo acabou
     pass
   
   def print_winner(self):
-    # imprime o vencedor
-    pass
+    print(f"O vencedor é: {self.winner.name} ({self.winner.color})")  
   
   def print_game_over(self):
     # imprime o fim do jogo
