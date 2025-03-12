@@ -90,13 +90,14 @@ class GameInterface:
     if self.game.selected_piece is None:
       self.game.select_piece(piece)
     elif self.game.selected_piece is piece:
+      print("teste")
       self.game.deselect_piece()
       
   def handle_move_piece(self, new_position: int):
     old_position = self.game.selected_piece.position
     old_cell = self.board[old_position]
     new_cell = self.board[new_position]
-    
+
     new_cell["piece"] = self.game.selected_piece
     new_cell["piece_img"] = old_cell["piece_img"]
     old_cell["piece"] = None
@@ -140,10 +141,16 @@ class GameInterface:
           
         for index, cell in enumerate(self.board):
           if cell["rect"].collidepoint(mouse_x, mouse_y) and cell["piece"]:
-            self.handle_select_piece(cell["piece"]) 
-            
+            self.handle_select_piece(cell["piece"])
+
+          if cell["rect"].collidepoint(mouse_x, mouse_y) and self.game.selected_piece is not None and index not in self.possible_moves:
+            if index is not self.game.selected_piece.position:
+              self.game.deselect_piece()
+              break
+
           if cell["rect"].collidepoint(mouse_x, mouse_y) and index in self.possible_moves:
             self.handle_move_piece(index)
+            break
 
     if self.fullscreen_button.collidepoint(mouse_x, mouse_y):
         self.fullscreen_button_color = BUTTON_HOVER_COLOR

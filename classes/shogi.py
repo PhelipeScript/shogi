@@ -52,6 +52,7 @@ class Shogi:
     self.selected_piece = None 
     
   def move_piece(self, new_position: int):
+
     old_position = self.selected_piece.position
     piece_symbol = self.board.board_str[old_position]
     
