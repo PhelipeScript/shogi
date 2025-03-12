@@ -116,12 +116,16 @@ class GameInterface:
     fullscreen_button_center = self.fullscreen_button_text.get_rect(center=self.fullscreen_button.center)
     self.screen.blit(self.fullscreen_button_text, fullscreen_button_center)
     
+  def draw_who_plays_now(self):
+    text = self.font.render(f"{self.game.whoPlaysNow.name} plays now", True, BLACK)
+    self.screen.blit(text, (10, 10))
+    
   def handle_events(self):
     mouse_x, mouse_y = pygame.mouse.get_pos()
     
     for index, cell in enumerate(self.board):
       if cell["rect"].collidepoint(mouse_x, mouse_y):
-        if self.game.selected_piece is None:
+        if self.game.selected_piece is None and cell["piece"] is not None and cell["piece"].color == self.game.whoPlaysNow.color:
           cell["rect_color"] = WHITE
           self.handle_possible_moves(cell["piece"])
       elif cell["piece"] == self.game.selected_piece and cell['piece'] is not None:
@@ -171,6 +175,7 @@ class GameInterface:
       self.handle_events()
       self.draw_fullscreen_button()
       self.draw_board()
+      self.draw_who_plays_now()
       
       pygame.display.flip()
       
