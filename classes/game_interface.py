@@ -81,7 +81,7 @@ class GameInterface:
       pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1 if cell["rect_color"] == BLACK else 3)
         
   def handle_possible_moves(self, piece: Piece):
-    if piece is not None:
+    if piece is not None and piece.color == self.game.whoPlaysNow.color:
       self.possible_moves = self.game.get_piece_moves(piece)
     else:
       self.possible_moves = []
@@ -125,7 +125,7 @@ class GameInterface:
     
     for index, cell in enumerate(self.board):
       if cell["rect"].collidepoint(mouse_x, mouse_y):
-        if self.game.selected_piece is None and cell["piece"] is not None and cell["piece"].color == self.game.whoPlaysNow.color:
+        if self.game.selected_piece is None:
           cell["rect_color"] = WHITE
           self.handle_possible_moves(cell["piece"])
       elif cell["piece"] == self.game.selected_piece and cell['piece'] is not None:
