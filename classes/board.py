@@ -9,6 +9,12 @@ class Board:
     # r = Torre 
     # p = Peão 
     # . = Casa vazia
+    # w = peao
+    # d = dragao
+    # t = dragao cavaleiro
+    # c = lança promovida
+    # h = cavaleiro promovido
+    # i = general de prata
     self.board_str = (
       "LNSGKGSNL"  # Linha 1
       ".B.....R."  # Linha 2
@@ -17,7 +23,7 @@ class Board:
       "........."  # Linha 5 (Centro do tabuleiro)
       "........."  # Linha 6
       "ppppppppp"  # Linha 7
-      ".r.....b."  # Linha 8
+      ".d.....b."  # Linha 8
       "lnsgkgsnl"  # Linha 9
     )
   
