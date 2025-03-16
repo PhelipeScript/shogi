@@ -13,6 +13,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (235,27,27)
 BUTTON_COLOR = (50, 150, 255)
+BOARD_COLOR = (224, 165, 49)
 BUTTON_HOVER_COLOR = (30, 130, 230)
 
 class GameInterface:
@@ -131,16 +132,23 @@ class GameInterface:
     for index,cell in enumerate(self.board):
       if cell["piece"] != None:
         if cell["piece"].color == "WHITE" and index < 27 and not cell["piece"].promotable:
-          print("Entrou aqui, é para ser promovido")
-          cell["piece"].promotable = True
+
+          select_box = pygame.draw.rect(self.screen, RED, pygame.Rect((cell["rect"].x - cell["rect"].width / 2) - 6, cell["rect"].y - 50, 100, 50), border_radius=8)
+          first_option_box = pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 5, select_box.y + 5, 40, 40), border_radius=8)  
+          second_option_box = pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 55, select_box.y + 5, 40, 40), border_radius=8)  
+          confirm_text = pygame.font.Font(None,16).render("Yes",True, (0,0,0))
+          cancel_text = pygame.font.Font(None,16).render("No",True, (0,0,0))
+          self.screen.blit(confirm_text, (first_option_box.centerx - confirm_text.get_width() // 2, first_option_box.centery - confirm_text.get_height() // 2))
+          self.screen.blit(cancel_text, (second_option_box.centerx - cancel_text.get_width() // 2, second_option_box.centery - cancel_text.get_height() // 2))
+
         elif cell["piece"].color == "BLACK" and index > 53 and not cell["piece"].promotable:
-          cell["piece"].promotable = True
-          print("Entrou aqui, é para ser promovido")
+
+          select_box = pygame.draw.rect(self.screen, RED, pygame.Rect((cell["rect"].x - cell["rect"].width / 2) - 6, cell["rect"].y + 50, 100, 50), border_radius=8)  
+          pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 5, select_box.y + 5, 40, 40), border_radius=8)  
+          pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 55, select_box.y + 5, 40, 40), border_radius=8)  
 
   def handle_events(self):
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    
-    self.handle_promotion()
 
     for index, cell in enumerate(self.board):
       if cell["rect"].collidepoint(mouse_x, mouse_y):
@@ -199,6 +207,7 @@ class GameInterface:
       # a atualização das peças promovidas, a mesma não ira permanecer aqui
       self.configure_board()
       #self.draw_aside_board()
+      self.handle_promotion()
       
       pygame.display.flip()
       
