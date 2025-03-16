@@ -6,6 +6,7 @@ class Piece:
     self.name = name
     self.color = color
     self.position = position
+    self.promotable = False
     self.image_manager = ImageManager()
     pass
   
@@ -47,7 +48,6 @@ class Pawn(Piece):
         players[0].add_piece(new_piece)
         board = board[:self.position] + "w" + board[self.position + 1:]
 
-        print(players[0].pieces)
         return board
     elif self.position > 53 and board[self.position] != "W":
         players[1].remove_piece(selected_piece)
@@ -55,7 +55,6 @@ class Pawn(Piece):
         new_piece = PIECES_CLASSES["w"](players[1].color, self.position)
         players[1].add_piece(new_piece)
         board = board[:self.position] + "W" + board[self.position + 1:]
-        print(players[1].pieces)
         return board
 
     return board
@@ -119,7 +118,6 @@ class Rook(Piece):
         players[0].add_piece(new_piece)
         board = board[:self.position] + "d" + board[self.position + 1:]
 
-        print(players[0].pieces)
         return board
     elif self.position > 53 and board[self.position] != "D":
         players[1].remove_piece(selected_piece)
@@ -127,7 +125,6 @@ class Rook(Piece):
         new_piece = PIECES_CLASSES["d"](players[1].color, self.position)
         players[1].add_piece(new_piece)
         board = board[:self.position] + "D" + board[self.position + 1:]
-        print(players[1].pieces)
         return board
 
     return board
@@ -173,7 +170,6 @@ class Knight(Piece):
         players[0].add_piece(new_piece)
         board = board[:self.position] + "h" + board[self.position + 1:]
 
-        print(players[0].pieces)
         return board
     elif self.position > 53 and board[self.position] != "H":
         players[1].remove_piece(selected_piece)
@@ -181,7 +177,6 @@ class Knight(Piece):
         new_piece = PIECES_CLASSES["h"](players[1].color, self.position)
         players[1].add_piece(new_piece)
         board = board[:self.position] + "H" + board[self.position + 1:]
-        print(players[1].pieces)
         return board
 
     return board
@@ -249,7 +244,6 @@ class Bishop(Piece):
         players[0].add_piece(new_piece)
         board = board[:self.position] + "t" + board[self.position + 1:]
 
-        print(players[0].pieces)
         return board
     elif self.position > 53 and board[self.position] != "T":
         players[1].remove_piece(selected_piece)
@@ -257,7 +251,6 @@ class Bishop(Piece):
         new_piece = PIECES_CLASSES["t"](players[1].color, self.position)
         players[1].add_piece(new_piece)
         board = board[:self.position] + "T" + board[self.position + 1:]
-        print(players[1].pieces)
         return board
 
     return board
@@ -319,7 +312,6 @@ class Silver_general(Piece):
         players[0].add_piece(new_piece)
         board = board[:self.position] + "i" + board[self.position + 1:]
 
-        print(players[0].pieces)
         return board
     elif self.position > 53 and board[self.position] != "I":
         players[1].remove_piece(selected_piece)
@@ -327,7 +319,6 @@ class Silver_general(Piece):
         new_piece = PIECES_CLASSES["i"](players[1].color, self.position)
         players[1].add_piece(new_piece)
         board = board[:self.position] + "I" + board[self.position + 1:]
-        print(players[1].pieces)
         return board
 
     return board
@@ -394,7 +385,6 @@ class Lance(Piece):
         players[0].add_piece(new_piece)
         board = board[:self.position] + "c" + board[self.position + 1:]
 
-        print(players[0].pieces)
         return board
     elif self.position > 53 and board[self.position] != "C":
         players[1].remove_piece(selected_piece)
@@ -402,7 +392,6 @@ class Lance(Piece):
         new_piece = PIECES_CLASSES["c"](players[1].color, self.position)
         players[1].add_piece(new_piece)
         board = board[:self.position] + "C" + board[self.position + 1:]
-        print(players[1].pieces)
         return board
 
     return board

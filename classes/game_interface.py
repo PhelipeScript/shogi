@@ -125,10 +125,23 @@ class GameInterface:
     pygame.draw.rect(self.screen, self.fullscreen_button_color, self.fullscreen_button, border_radius=8)  
     fullscreen_button_center = self.fullscreen_button_text.get_rect(center=self.fullscreen_button.center)
     self.screen.blit(self.fullscreen_button_text, fullscreen_button_center)
-    
+
+  def handle_promotion(self):
+
+    for index,cell in enumerate(self.board):
+      if cell["piece"] != None:
+        if cell["piece"].color == "WHITE" and index < 27 and not cell["piece"].promotable:
+          print("Entrou aqui, é para ser promovido")
+          cell["piece"].promotable = True
+        elif cell["piece"].color == "BLACK" and index > 53 and not cell["piece"].promotable:
+          cell["piece"].promotable = True
+          print("Entrou aqui, é para ser promovido")
+
   def handle_events(self):
     mouse_x, mouse_y = pygame.mouse.get_pos()
     
+    self.handle_promotion()
+
     for index, cell in enumerate(self.board):
       if cell["rect"].collidepoint(mouse_x, mouse_y):
         if self.game.selected_piece is None:
