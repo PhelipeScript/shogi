@@ -37,8 +37,28 @@ class Pawn(Piece):
             moves.append(self.position + 9)
     return moves
 
-  def promote():
-    pass
+  def promote(self,board,players,selected_piece):
+
+    if board[self.position].islower():
+      if self.position < 27 and board[self.position] != "w":
+        players[0].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["w"](players[0].color, self.position)
+        players[0].add_piece(new_piece)
+        board = board[:self.position] + "w" + board[self.position + 1:]
+
+        print(players[0].pieces)
+        return board
+    elif self.position > 53 and board[self.position] != "W":
+        players[1].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["w"](players[1].color, self.position)
+        players[1].add_piece(new_piece)
+        board = board[:self.position] + "W" + board[self.position + 1:]
+        print(players[1].pieces)
+        return board
+
+    return board
   
 class Rook(Piece): 
   def __init__(self, color, position):
@@ -89,8 +109,28 @@ class Rook(Piece):
 
     return moves
   
-  def promote():
-    pass
+  def promote(self,board,players,selected_piece):
+
+    if board[self.position].islower():
+      if self.position < 27 and board[self.position] != "d":
+        players[0].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["d"](players[0].color, self.position)
+        players[0].add_piece(new_piece)
+        board = board[:self.position] + "d" + board[self.position + 1:]
+
+        print(players[0].pieces)
+        return board
+    elif self.position > 53 and board[self.position] != "D":
+        players[1].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["d"](players[1].color, self.position)
+        players[1].add_piece(new_piece)
+        board = board[:self.position] + "D" + board[self.position + 1:]
+        print(players[1].pieces)
+        return board
+
+    return board
   
 class Knight(Piece):
   def __init__(self, color, position):
@@ -123,8 +163,28 @@ class Knight(Piece):
                 moves.append((row + 2) * 9 + (col + 1))
         return moves
   
-  def promote():
-    pass
+  def promote(self,board,players,selected_piece):
+
+    if board[self.position].islower():
+      if self.position < 27 and board[self.position] != "h":
+        players[0].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["h"](players[0].color, self.position)
+        players[0].add_piece(new_piece)
+        board = board[:self.position] + "h" + board[self.position + 1:]
+
+        print(players[0].pieces)
+        return board
+    elif self.position > 53 and board[self.position] != "H":
+        players[1].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["h"](players[1].color, self.position)
+        players[1].add_piece(new_piece)
+        board = board[:self.position] + "H" + board[self.position + 1:]
+        print(players[1].pieces)
+        return board
+
+    return board
   
 class Bishop(Piece):
   def __init__(self, color, position):
@@ -179,8 +239,28 @@ class Bishop(Piece):
 
     return moves
   
-  def promote():
-    pass
+  def promote(self,board,players,selected_piece):
+
+    if board[self.position].islower():
+      if self.position < 27 and board[self.position] != "t":
+        players[0].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["t"](players[0].color, self.position)
+        players[0].add_piece(new_piece)
+        board = board[:self.position] + "t" + board[self.position + 1:]
+
+        print(players[0].pieces)
+        return board
+    elif self.position > 53 and board[self.position] != "T":
+        players[1].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["t"](players[1].color, self.position)
+        players[1].add_piece(new_piece)
+        board = board[:self.position] + "T" + board[self.position + 1:]
+        print(players[1].pieces)
+        return board
+
+    return board
   
 class Gold_general(Piece): 
   def __init__(self, color, position):
@@ -204,8 +284,8 @@ class Gold_general(Piece):
             moves.append((row + i) * 9 + (col + j))
     return moves
   
-  def promote():
-    pass
+  def promote(self,board,players,selected_piece):
+    return board
   
 class Silver_general(Piece):
   def __init__(self, color, position):
@@ -229,8 +309,28 @@ class Silver_general(Piece):
             moves.append((row + i) * 9 + (col + j))
     return moves
   
-  def promote():
-    pass
+  def promote(self,board,players,selected_piece):
+
+    if board[self.position].islower():
+      if self.position < 27 and board[self.position] != "i":
+        players[0].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["i"](players[0].color, self.position)
+        players[0].add_piece(new_piece)
+        board = board[:self.position] + "i" + board[self.position + 1:]
+
+        print(players[0].pieces)
+        return board
+    elif self.position > 53 and board[self.position] != "I":
+        players[1].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["i"](players[1].color, self.position)
+        players[1].add_piece(new_piece)
+        board = board[:self.position] + "I" + board[self.position + 1:]
+        print(players[1].pieces)
+        return board
+
+    return board
   
 class King(Piece):
   def __init__(self, color, position):
@@ -250,6 +350,9 @@ class King(Piece):
           elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
             moves.append((row + i) * 9 + (col + j))
     return moves
+
+  def promote(self,board,players,selected_piece):
+    return board
   
 class Lance(Piece):
   def __init__(self, color, position):
@@ -280,8 +383,28 @@ class Lance(Piece):
           break
     return moves
   
-  def promote():
-    pass
+  def promote(self,board,players,selected_piece):
+
+    if board[self.position].islower():
+      if self.position < 27 and board[self.position] != "c":
+        players[0].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["c"](players[0].color, self.position)
+        players[0].add_piece(new_piece)
+        board = board[:self.position] + "c" + board[self.position + 1:]
+
+        print(players[0].pieces)
+        return board
+    elif self.position > 53 and board[self.position] != "C":
+        players[1].remove_piece(selected_piece)
+
+        new_piece = PIECES_CLASSES["c"](players[1].color, self.position)
+        players[1].add_piece(new_piece)
+        board = board[:self.position] + "C" + board[self.position + 1:]
+        print(players[1].pieces)
+        return board
+
+    return board
   
   
 class Dragon(Piece):
@@ -349,21 +472,76 @@ class Dragon(Piece):
       else:
         break
     return moves
+  
+  def promote(self,board,players,selected_piece):
+    return board
 
 class Dragon_knight(Piece):
   def __init__(self,color,position):
     super().__init__('Dragao Cavaleiro',color,position)
-    self.image = self.image_manager.load_image('assets/international_pieces/promoted_rook.png')
+    self.image = self.image_manager.load_image('assets/international_pieces/promoted_bishop.png')
 
-    def possible_moves(): 
-      pass
+  def possible_moves(self, board):
+    moves = []
+    row = self.position // 9
+    col = self.position % 9
+
+    for i in range(-1, 2):
+      for j in range(-1, 2):
+        if row + i >= 0 and row + i < 9 and col + j >= 0 and col + j < 9:
+          if board[(row + i) * 9 + (col + j)] == '.':
+            moves.append((row + i) * 9 + (col + j))
+          elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
+            moves.append((row + i) * 9 + (col + j))
+
+    for i in range(1, 9):
+      if row - i >= 0 and col - i >= 0:
+        if board[(row - i) * 9 + (col - i)] == '.':
+          moves.append((row - i) * 9 + (col - i))
+        elif (board[(row - i) * 9 + (col - i)].isupper() and self.color == "WHITE") or (board[(row - i) * 9 + (col - i)].islower() and self.color == "BLACK"):
+          moves.append((row - i) * 9 + (col - i))
+          break
+        else:
+          break
+
+    for i in range(1, 9):
+      if row - i >= 0 and col + i < 9:
+        if board[(row - i) * 9 + (col + i)] == '.':
+          moves.append((row - i) * 9 + (col + i))
+        elif (board[(row - i) * 9 + (col + i)].isupper() and self.color == "WHITE") or (board[(row - i) * 9 + (col + i)].islower() and self.color == "BLACK"):
+          moves.append((row - i) * 9 + (col + i))
+          break
+        else:
+          break
+
+    return moves
+  
+  def promote(self,board,players,selected_piece):
+    return board
 
 class Promoted_lance(Piece):
   def __init__(self,color,position):
     super().__init__('Lança Promovida',color,position)
     self.image = self.image_manager.load_image('assets/international_pieces/promoted_lance.png')
 
-  
+  def possible_moves(self, board):
+    moves = []
+    row = self.position // 9
+    col = self.position % 9
+    for i in range(-1, 2):
+      for j in range(-1, 2):
+        evitar_index = 1 if self.color == 'WHITE' else -1
+        if i == evitar_index and (j == -1 or j == 1):
+          continue
+        if row + i >= 0 and row + i < 9 and col + j >= 0 and col + j < 9:
+          if board[(row + i) * 9 + (col + j)] == '.':
+            moves.append((row + i) * 9 + (col + j))
+          elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
+            moves.append((row + i) * 9 + (col + j))
+    return moves
+
+  def promote(self,board,players,selected_piece):
+    return board
 
 class Promoted_knight(Piece):
   def __init__(self,color,position):
@@ -385,6 +563,9 @@ class Promoted_knight(Piece):
           elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
             moves.append((row + i) * 9 + (col + j))
     return moves
+  
+  def promote(self,board,players,selected_piece):
+    return board
 
 class Promoted_silver(Piece):
   def __init__(self,color,position):
@@ -406,6 +587,9 @@ class Promoted_silver(Piece):
           elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
             moves.append((row + i) * 9 + (col + j))
     return moves
+  
+  def promote(self,board,players,selected_piece):
+    return board
 
 class Promoted_pawn(Piece):
   def __init__(self,color,position):
@@ -428,6 +612,10 @@ class Promoted_pawn(Piece):
           elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
             moves.append((row + i) * 9 + (col + j))
     return moves
+  
+  def promote(self,board,players,selected_piece):
+    return board
+  
 
 PIECES_CLASSES = {
     'k': King, 

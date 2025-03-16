@@ -180,6 +180,7 @@ class GameInterface:
       self.handle_events()
       self.draw_fullscreen_button()
       self.draw_board()
+      self.configure_board()
       #self.draw_aside_board()
       
       pygame.display.flip()

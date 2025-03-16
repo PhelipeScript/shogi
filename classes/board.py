@@ -23,7 +23,7 @@ class Board:
       "........."  # Linha 5 (Centro do tabuleiro)
       "........."  # Linha 6
       "ppppppppp"  # Linha 7
-      ".d.....b."  # Linha 8
+      ".r.....b."  # Linha 8
       "lnsgkgsnl"  # Linha 9
     )
   

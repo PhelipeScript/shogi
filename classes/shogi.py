@@ -60,6 +60,7 @@ class Shogi:
     self.board.board_str = self.board.board_str[:new_position] + piece_symbol + self.board.board_str[new_position+1:]
     
     self.selected_piece.move(new_position)
+    self.board.board_str = self.selected_piece.promote(self.board.board_str, self.players, self.selected_piece)
     self.deselect_piece()
     print("Peça movida")
     self.board.print_board()
