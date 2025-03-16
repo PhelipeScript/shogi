@@ -62,7 +62,6 @@ class Shogi:
     self.selected_piece.move(new_position)
     self.board.board_str = self.selected_piece.promote(self.board.board_str, self.players, self.selected_piece)
     self.deselect_piece()
-    print("Peça movida")
     self.board.print_board()
   
   def next_turn(self):

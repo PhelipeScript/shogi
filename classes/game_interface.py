@@ -92,7 +92,6 @@ class GameInterface:
     if self.game.selected_piece is None:
       self.game.select_piece(piece)
     elif self.game.selected_piece is piece:
-      print("teste")
       self.game.deselect_piece()
       
   def handle_move_piece(self, new_position: int):
@@ -100,8 +99,10 @@ class GameInterface:
 
     if self.board[new_position]["piece"] is not None:
       if self.board[new_position]["piece"].color == "BLACK":
+        self.game.players[1].remove_piece(self.board[new_position]["piece"])
         self.game.players[0].capture_piece(self.board[new_position]["piece"])
       else:
+        self.game.players[0].remove_piece(self.board[new_position]["piece"])
         self.game.players[1].capture_piece(self.board[new_position]["piece"])
 
     old_cell = self.board[old_position]
@@ -180,6 +181,9 @@ class GameInterface:
       self.handle_events()
       self.draw_fullscreen_button()
       self.draw_board()
+
+      # esta função esta sendo utilizada de maneira provisória para
+      # a atualização das peças promovidas, a mesma não ira permanecer aqui
       self.configure_board()
       #self.draw_aside_board()
       

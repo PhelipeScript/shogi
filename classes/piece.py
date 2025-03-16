@@ -155,11 +155,11 @@ class Knight(Piece):
         else:
             if row <= 6 and col >= 1 and board[(row + 2) * 9 + (col - 1)] == '.':
                 moves.append((row + 2) * 9 + (col - 1))
-            elif row <= 6 and col >= 1 and board[(row + 2) * 9 + (col - 1)].isupper():
+            elif row <= 6 and col >= 1 and board[(row + 2) * 9 + (col - 1)].islower():
                 moves.append((row + 2) * 9 + (col - 1))
             if row <= 6 and col <= 7 and board[(row + 2) * 9 + (col + 1)] == '.':
                 moves.append((row + 2) * 9 + (col + 1))
-            elif row <= 6 and col <= 7 and board[(row + 2) * 9 + (col + 1)].isupper():
+            elif row <= 6 and col <= 7 and board[(row + 2) * 9 + (col + 1)].islower():
                 moves.append((row + 2) * 9 + (col + 1))
         return moves
   
@@ -378,6 +378,7 @@ class Lance(Piece):
         if board[i * 9 + col] == '.':
           moves.append(i * 9 + col)
         elif (board[i * 9 + col].isupper() and self.color == "WHITE") or (board[i * 9 + col].islower() and self.color == "BLACK"):
+          moves.append(i * 9 + col)
           break
         else:
           break
