@@ -82,6 +82,7 @@ class GameInterface:
         self.screen.blit(cell["piece_img"], piece_rect.topleft)
 
       pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1 if cell["rect_color"] == BLACK else 3)
+    # self.handle_promotion()
         
   def handle_possible_moves(self, piece: Piece):
     if piece is not None:
@@ -129,6 +130,8 @@ class GameInterface:
 
   def handle_promotion(self):
 
+    mouse_x,mouse_y = pygame.mouse.get_pos()
+
     for index,cell in enumerate(self.board):
       if cell["piece"] != None:
         if cell["piece"].color == "WHITE" and index < 27 and not cell["piece"].promotable:
@@ -141,11 +144,29 @@ class GameInterface:
           self.screen.blit(confirm_text, (first_option_box.centerx - confirm_text.get_width() // 2, first_option_box.centery - confirm_text.get_height() // 2))
           self.screen.blit(cancel_text, (second_option_box.centerx - cancel_text.get_width() // 2, second_option_box.centery - cancel_text.get_height() // 2))
 
+          for event in pygame.event.get():
+            if event.type ==  pygame.MOUSEBUTTONDOWN:
+              if first_option_box.collidepoint(mouse_x,mouse_y) and first_option_box.collidepoint(mouse_x,mouse_y):
+                print("selecionou o primeiro elemento")
+              elif second_option_box.collidepoint(mouse_x,mouse_y) and second_option_box.collidepoint(mouse_x,mouse_y):
+                print("selecionou o segundo elemento")
+
         elif cell["piece"].color == "BLACK" and index > 53 and not cell["piece"].promotable:
 
           select_box = pygame.draw.rect(self.screen, RED, pygame.Rect((cell["rect"].x - cell["rect"].width / 2) - 6, cell["rect"].y + 50, 100, 50), border_radius=8)  
-          pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 5, select_box.y + 5, 40, 40), border_radius=8)  
-          pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 55, select_box.y + 5, 40, 40), border_radius=8)  
+          first_option_box = pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 5, select_box.y + 5, 40, 40), border_radius=8)  
+          second_option_box = pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 55, select_box.y + 5, 40, 40), border_radius=8)  
+          confirm_text = pygame.font.Font(None,16).render("Yes",True,(0,0,0))
+          cancel_text = pygame.font.Font(None,16).render("No",True,(0,0,0))
+          self.screen.blit(confirm_text,(first_option_box.centerx - confirm_text.get_width() // 2,first_option_box.centery - confirm_text.get_height() // 2))
+          self.screen.blit(cancel_text,(second_option_box.centerx - cancel_text.get_width() // 2,second_option_box.centery - cancel_text.get_height() // 2))
+
+          for event in pygame.event.get():
+            if event.type ==  pygame.MOUSEBUTTONDOWN:
+              if first_option_box.collidepoint(mouse_x,mouse_y) and first_option_box.collidepoint(mouse_x,mouse_y):
+                print("selecionou o primeiro elemento")
+              elif second_option_box.collidepoint(mouse_x,mouse_y) and second_option_box.collidepoint(mouse_x,mouse_y):
+                print("selecionou o segundo elemento")
 
   def handle_events(self):
     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -207,7 +228,6 @@ class GameInterface:
       # a atualização das peças promovidas, a mesma não ira permanecer aqui
       self.configure_board()
       #self.draw_aside_board()
-      self.handle_promotion()
       
       pygame.display.flip()
       
