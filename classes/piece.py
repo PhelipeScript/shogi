@@ -7,6 +7,7 @@ class Piece:
     self.color = color
     self.position = position
     self.promotable = False
+    self.promotion_offer = False
     self.image_manager = ImageManager()
     pass
   
@@ -259,7 +260,7 @@ class Gold_general(Piece):
   def __init__(self, color, position):
     super().__init__('gold_general', color, position)
     self.image = self.image_manager.load_image('assets/international_pieces/gold_general.png')
-    pass
+    self.promotion_offer = True
   
   def possible_moves(self, board):
     moves = []
@@ -349,6 +350,7 @@ class Lance(Piece):
   def __init__(self, color, position):
     super().__init__('lance', color, position)
     self.image = self.image_manager.load_image('assets/international_pieces/lance.png')
+    self.promotion_offer = True
     pass
   
   def possible_moves(self, board):
@@ -401,7 +403,7 @@ class Dragon(Piece):
   def __init__(self,color,position):
     super().__init__('dragon',color,position)
     self.image = self.image_manager.load_image('assets/international_pieces/promoted_rook.png')
-    pass
+    self.promotion_offer = True
 
   def possible_moves(self, board):
     moves = []
@@ -420,11 +422,6 @@ class Dragon(Piece):
     if (board[self.position + 10].isupper() and self.color == "WHITE") or (board[self.position + 10].islower() and self.color == "BLACK") or (board[self.position + 10] == '.'):
       if col != 8 :
         moves.append(self.position + 10)
-
-    if "γ".islower():
-      print("upper")
-    else:
-      print("lower")
 
     for i in range(row - 1, -1, -1):
       if board[i * 9 + col] == '.':
@@ -470,6 +467,7 @@ class Dragon_knight(Piece):
   def __init__(self,color,position):
     super().__init__('Dragao Cavaleiro',color,position)
     self.image = self.image_manager.load_image('assets/international_pieces/promoted_bishop.png')
+    self.promotion_offer = True
 
   def possible_moves(self, board):
     moves = []
@@ -513,6 +511,7 @@ class Promoted_lance(Piece):
   def __init__(self,color,position):
     super().__init__('Lança Promovida',color,position)
     self.image = self.image_manager.load_image('assets/international_pieces/promoted_lance.png')
+    self.promotion_offer = True
 
   def possible_moves(self, board):
     moves = []
@@ -537,6 +536,7 @@ class Promoted_knight(Piece):
   def __init__(self,color,position):
     super().__init__('Cavaleiro Promovido',color,position)
     self.image = self.image_manager.load_image('assets/international_pieces/promoted_knight.png')
+    self.promotion_offer = True
 
   def possible_moves(self, board):
     moves = []
@@ -561,6 +561,7 @@ class Promoted_silver(Piece):
   def __init__(self,color,position):
     super().__init__('',color,position)
     self.image = self.image_manager.load_image('assets/international_pieces/promoted_silver_general.png')
+    self.promotion_offer = True
 
   def possible_moves(self, board):
     moves = []
@@ -585,6 +586,7 @@ class Promoted_pawn(Piece):
   def __init__(self,color,position):
     super().__init__('promoted_pawn',color,position)
     self.image = self.image_manager.load_image('assets/international_pieces/promoted_pawn.png')
+    self.promotion_offer = True
   pass
 
   def possible_moves(self, board):

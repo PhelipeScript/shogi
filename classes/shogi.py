@@ -13,7 +13,7 @@ class Shogi:
     self.winner = None
     self.game_over = False
     self.selected_piece = None
-    print("iniciando o jogo")
+    self.promotion_cadidate = None
     self.board.print_board()
     
   def start(self):
@@ -45,8 +45,6 @@ class Shogi:
       pass
     elif isinstance(identifier, Piece):
       self.selected_piece = identifier
-    else:
-      print("Peça inválida")
       
   def deselect_piece(self):
     self.selected_piece = None 
@@ -60,7 +58,6 @@ class Shogi:
     self.board.board_str = self.board.board_str[:new_position] + piece_symbol + self.board.board_str[new_position+1:]
     
     self.selected_piece.move(new_position)
-    self.board.board_str = self.selected_piece.promote(self.board.board_str, self.players, self.selected_piece)
     self.deselect_piece()
     self.board.print_board()
   

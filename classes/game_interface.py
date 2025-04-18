@@ -25,6 +25,8 @@ class GameInterface:
     self.possible_moves = []
     self.image_manager = ImageManager()
     self.board_square_image = self.image_manager.load_image('assets/board_square.png')
+    self.promotion_menu_active = False
+
     
   def configure_screen(self):
     if (self.fullscreen):
@@ -116,6 +118,12 @@ class GameInterface:
     old_cell["piece_img"] = None
     
     self.game.move_piece(new_position)
+
+    piece = self.board[new_position]["piece"]
+    if piece and not piece.promotable and not piece.promotion_offer:
+      if ((piece.color == "WHITE" and new_position < 27) or (piece.color == "BLACK" and new_position > 53)):
+        self.promotion_candidate = piece
+        self.promotion_menu_active = True
     
     
   def configure_fullscreen_button(self):
@@ -129,47 +137,51 @@ class GameInterface:
     self.screen.blit(self.fullscreen_button_text, fullscreen_button_center)
 
   def handle_promotion(self):
+    if not self.promotion_menu_active or self.promotion_candidate is None:
+        return
 
-    mouse_x,mouse_y = pygame.mouse.get_pos()
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    piece = self.promotion_candidate
 
-    for index,cell in enumerate(self.board):
-      if cell["piece"] != None:
-        if cell["piece"].color == "WHITE" and index < 27 and not cell["piece"].promotable:
+    index = piece.position
+    cell = self.board[index]
 
-          select_box = pygame.draw.rect(self.screen, RED, pygame.Rect((cell["rect"].x - cell["rect"].width / 2) - 6, cell["rect"].y - 50, 100, 50), border_radius=8)
-          first_option_box = pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 5, select_box.y + 5, 40, 40), border_radius=8)  
-          second_option_box = pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 55, select_box.y + 5, 40, 40), border_radius=8)  
-          confirm_text = pygame.font.Font(None,16).render("Yes",True, (0,0,0))
-          cancel_text = pygame.font.Font(None,16).render("No",True, (0,0,0))
-          self.screen.blit(confirm_text, (first_option_box.centerx - confirm_text.get_width() // 2, first_option_box.centery - confirm_text.get_height() // 2))
-          self.screen.blit(cancel_text, (second_option_box.centerx - cancel_text.get_width() // 2, second_option_box.centery - cancel_text.get_height() // 2))
+    offset_y = -50 if piece.color == "WHITE" else 50
+    select_box = pygame.Rect((cell["rect"].x - cell["rect"].width / 2) - 6, cell["rect"].y + offset_y, 100, 50)
+    first_option_box = pygame.Rect(select_box.x + 5, select_box.y + 5, 40, 40)
+    second_option_box = pygame.Rect(select_box.x + 55, select_box.y + 5, 40, 40)
 
-          for event in pygame.event.get():
-            if event.type ==  pygame.MOUSEBUTTONDOWN:
-              if first_option_box.collidepoint(mouse_x,mouse_y) and first_option_box.collidepoint(mouse_x,mouse_y):
-                print("selecionou o primeiro elemento")
-              elif second_option_box.collidepoint(mouse_x,mouse_y) and second_option_box.collidepoint(mouse_x,mouse_y):
-                print("selecionou o segundo elemento")
+    pygame.draw.rect(self.screen, RED, select_box, border_radius=8)
+    pygame.draw.rect(self.screen, WHITE, first_option_box, border_radius=8)
+    pygame.draw.rect(self.screen, WHITE, second_option_box, border_radius=8)
 
-        elif cell["piece"].color == "BLACK" and index > 53 and not cell["piece"].promotable:
+    font = pygame.font.Font(None, 16)
+    confirm_text = font.render("Yes", True, BLACK)
+    cancel_text = font.render("No", True, BLACK)
+    self.screen.blit(confirm_text, confirm_text.get_rect(center=first_option_box.center))
+    self.screen.blit(cancel_text, cancel_text.get_rect(center=second_option_box.center))
 
-          select_box = pygame.draw.rect(self.screen, RED, pygame.Rect((cell["rect"].x - cell["rect"].width / 2) - 6, cell["rect"].y + 50, 100, 50), border_radius=8)  
-          first_option_box = pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 5, select_box.y + 5, 40, 40), border_radius=8)  
-          second_option_box = pygame.draw.rect(self.screen, WHITE, pygame.Rect(select_box.x + 55, select_box.y + 5, 40, 40), border_radius=8)  
-          confirm_text = pygame.font.Font(None,16).render("Yes",True,(0,0,0))
-          cancel_text = pygame.font.Font(None,16).render("No",True,(0,0,0))
-          self.screen.blit(confirm_text,(first_option_box.centerx - confirm_text.get_width() // 2,first_option_box.centery - confirm_text.get_height() // 2))
-          self.screen.blit(cancel_text,(second_option_box.centerx - cancel_text.get_width() // 2,second_option_box.centery - cancel_text.get_height() // 2))
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if first_option_box.collidepoint(mouse_x, mouse_y):
+                self.game.board.board_str = piece.promote(self.game.board.board_str, self.game.players, piece)
+                piece.promotion_offer = True
+                piece.promotable = True
+                self.promotion_candidate = None
+                self.promotion_menu_active = False
+                return
+            elif second_option_box.collidepoint(mouse_x, mouse_y):
+                piece.promotion_offer = True
+                self.promotion_candidate = None
+                self.promotion_menu_active = False
+                return
 
-          for event in pygame.event.get():
-            if event.type ==  pygame.MOUSEBUTTONDOWN:
-              if first_option_box.collidepoint(mouse_x,mouse_y) and first_option_box.collidepoint(mouse_x,mouse_y):
-                print("selecionou o primeiro elemento")
-              elif second_option_box.collidepoint(mouse_x,mouse_y) and second_option_box.collidepoint(mouse_x,mouse_y):
-                print("selecionou o segundo elemento")
 
   def handle_events(self):
     mouse_x, mouse_y = pygame.mouse.get_pos()
+
+    if self.promotion_menu_active:
+      return
 
     for index, cell in enumerate(self.board):
       if cell["rect"].collidepoint(mouse_x, mouse_y):
@@ -223,11 +235,8 @@ class GameInterface:
       self.handle_events()
       self.draw_fullscreen_button()
       self.draw_board()
-
-      # esta função esta sendo utilizada de maneira provisória para
-      # a atualização das peças promovidas, a mesma não ira permanecer aqui
+      self.handle_promotion()
       self.configure_board()
-      #self.draw_aside_board()
       
       pygame.display.flip()
       
