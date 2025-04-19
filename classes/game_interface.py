@@ -5,23 +5,27 @@ from classes.image_manager import ImageManager
 from classes.piece import Piece
 from classes.shogi import Shogi
 
-GRID_SIZE = 9
 
 #COLORS
+BACKGROUND = (26, 26, 34)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-RED = (235,27,27)
+HOVER = (240, 227, 204)
+SELECTED = (213, 179, 106)
+POSSIBLE_MOVE = (77, 123, 196)
+POSSIBLE_CAPTURE = (191, 64, 64)
 BUTTON_COLOR = (50, 150, 255)
 BUTTON_HOVER_COLOR = (30, 130, 230)
 
 class GameInterface:
   def __init__(self):
     self.game = Shogi()
+    self.image_manager = ImageManager()
+    self.board_tile = self.image_manager.load_image('assets/board_tile.png')
     self.fullscreen = False
     self.board = []
     self.possible_moves = []
-    self.image_manager = ImageManager()
-    self.board_square_image = self.image_manager.load_image('assets/board_square.png')
+    self.GRID_SIZE = 9
     
   def configure_screen(self):
     if (self.fullscreen):
@@ -29,46 +33,48 @@ class GameInterface:
       self.screen_height = self.root.winfo_screenheight()
       self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     else:
-      self.screen_width = self.root.winfo_screenwidth() // 2
-      self.screen_height = self.root.winfo_screenheight() // 2
+      self.screen_width = max(1200, self.root.winfo_screenwidth() // 2)
+      self.screen_height = max(800, self.root.winfo_screenheight() // 2)
       self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
    
-    self.font_16 = pygame.font.SysFont('Arial', 16)
-    self.font_64 = pygame.font.SysFont('Arial', 64)
-    pygame.display.set_caption("Shogi")
+    self.FONT_12 = pygame.font.SysFont('Arial', 12)
+    self.FONT_16 = pygame.font.SysFont('Arial', 16)
+    self.FONT_18 = pygame.font.SysFont('Arial', 18)
+    self.FONT_36 = pygame.font.SysFont('Arial', 36)
+    pygame.display.set_caption("将棋 (Shogi)")
     self.configure_fullscreen_button()
     self.configure_board()
     
   def configure_board(self):
-    self.board_width = 0.95 * self.screen_width
-    self.board_height = 0.75 * self.screen_height
-    self.grid_size = GRID_SIZE
-    self.board_square_size = self.board_height // self.grid_size
+    self.board_width = 0.50 * self.screen_width
+    self.board_height = 0.82 * self.screen_height
+    self.board_tile_height = self.board_height // self.GRID_SIZE
+    self.board_tile_width = min(self.board_width // self.GRID_SIZE, self.board_tile_height-6)
+    
     self.board = []
     board_pieces = self.game.board.string_to_array()
-    board_square_image_resized = pygame.transform.scale(self.board_square_image, (self.board_square_size, self.board_square_size))
-    for row in range(self.grid_size):
-      for col in range(self.grid_size):
-        x = col * self.board_square_size + 0.5 * (self.screen_width - self.grid_size * self.board_square_size)
-        y = row * self.board_square_size + 0.5 * (self.screen_height - self.grid_size * self.board_square_size)
+    board_tile_resized = pygame.transform.smoothscale(self.board_tile, (self.board_tile_width, self.board_tile_height))
+    for row in range(self.GRID_SIZE):
+      for col in range(self.GRID_SIZE):
+        x = col * self.board_tile_width + 0.5 * (self.screen_width - self.GRID_SIZE * self.board_tile_width)
+        y = row * self.board_tile_height + 0.5 * (self.screen_height - self.GRID_SIZE * self.board_tile_height)
         
         piece = None
         piece_img_resized = None
         if board_pieces[row][col] != '.' and board_pieces[row][col].islower():
-          piece = self.game.players[0].get_piece(col + (row * self.grid_size))
-          piece_img_resized = pygame.transform.scale(piece.image, (self.board_square_size, self.board_square_size))
+          piece = self.game.players[0].get_piece(col + (row * self.GRID_SIZE))
+          piece_img_resized = pygame.transform.smoothscale(piece.image, (self.board_tile_width-16, self.board_tile_height-12))
         elif board_pieces[row][col] != '.':
-          piece = self.game.players[1].get_piece(col + (row * self.grid_size))
-          piece_img_resized = pygame.transform.scale(piece.image, (self.board_square_size, self.board_square_size))
-          piece_img_resized = pygame.transform.rotate(piece_img_resized, 180)
+          piece = self.game.players[1].get_piece(col + (row * self.GRID_SIZE))
+          piece_img_resized = pygame.transform.smoothscale(piece.image, (self.board_tile_width-16, self.board_tile_height-12))
         
-        rect = pygame.Rect(x, y, self.board_square_size, self.board_square_size)
+        rect = pygame.Rect(x, y, self.board_tile_width, self.board_tile_height)
         self.board.append({
           "rect": rect, 
           "rect_color": BLACK,
           "piece": piece, 
           "piece_img": piece_img_resized, 
-          "tile_img": board_square_image_resized,
+          "tile_img": board_tile_resized,
         })
   
   def draw_board(self):
@@ -110,7 +116,7 @@ class GameInterface:
   def configure_fullscreen_button(self):
     self.fullscreen_button = pygame.Rect(10, self.screen_height-60, 100, 50)
     self.fullscreen_button_color = BUTTON_COLOR
-    self.fullscreen_button_text = self.font_16.render('Fullscreen', True, WHITE) 
+    self.fullscreen_button_text = self.FONT_16.render('Fullscreen', True, WHITE) 
     
   def draw_fullscreen_button(self): 
     pygame.draw.rect(self.screen, self.fullscreen_button_color, self.fullscreen_button, border_radius=8)  
@@ -118,11 +124,11 @@ class GameInterface:
     self.screen.blit(self.fullscreen_button_text, fullscreen_button_center)
     
   def draw_who_plays_now(self):
-    text = self.font_16.render(f"{self.game.whoPlaysNow.name} plays now", True, BLACK)
+    text = self.FONT_16.render(f"{self.game.whoPlaysNow.name} plays now", True, BLACK)
     self.screen.blit(text, (10, 10))
     
   def draw_winner(self):
-    text = self.font_64.render(f"{self.game.winner.name} ganhou!", True, BLACK)
+    text = self.FONT_64.render(f"{self.game.winner.name} ganhou!", True, BLACK)
     text_in_middle_screen = text.get_rect(center=(self.screen_width // 2, self.screen_height // 2))
     self.screen.blit(text, text_in_middle_screen)
     
@@ -132,12 +138,15 @@ class GameInterface:
     for index, cell in enumerate(self.board):
       if cell["rect"].collidepoint(mouse_x, mouse_y):
         if self.game.selected_piece is None:
-          cell["rect_color"] = WHITE
+          cell["rect_color"] = HOVER
           self.handle_possible_moves(cell["piece"])
       elif cell["piece"] == self.game.selected_piece and cell['piece'] is not None:
         cell["rect_color"] = WHITE
       elif index in self.possible_moves:
-        cell["rect_color"] = RED
+        if cell["piece"] is not None:
+          cell["rect_color"] = POSSIBLE_CAPTURE
+        else:
+          cell["rect_color"] = POSSIBLE_MOVE
       else:
         cell["rect_color"] = BLACK
     
@@ -176,16 +185,16 @@ class GameInterface:
     self.configure_screen()
     
     while self.running:
-      self.screen.fill((255, 203, 93))
+      self.screen.fill(BACKGROUND)
       
       self.handle_events()
       self.draw_fullscreen_button()
       self.draw_board()
       
-      if self.game.game_over:
-        self.draw_winner()
-      else:
-        self.draw_who_plays_now()
+      # if self.game.game_over:
+      #   self.draw_winner()
+      # else:
+      #   self.draw_who_plays_now()
         
       
       pygame.display.flip()
