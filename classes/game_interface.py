@@ -10,6 +10,7 @@ from classes.shogi import Shogi
 BACKGROUND = (26, 26, 34)
 BOARD_COLOR = (44, 72, 117)
 GAME_INFO_COLOR = (197, 184, 209)
+TITLE_COLOR = (148, 148, 162)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 HOVER = (240, 227, 204)
@@ -224,12 +225,11 @@ class GameInterface:
     
     
   def configure_fullscreen_button(self):
-    self.fullscreen_button = pygame.Rect(10, self.screen_height-60, 100, 50)
-    self.fullscreen_button_color = BUTTON_COLOR
-    self.fullscreen_button_text = self.FONT_16.render('Fullscreen', True, WHITE) 
+    self.fullscreen_button = pygame.Rect(self.screen_width-166, 16, 150, 16)
+    self.fullscreen_button_text = self.FONT_16.render(f"FULLSCREEN: {'ON' if self.fullscreen else 'OFF'}", True, TITLE_COLOR) 
     
   def draw_fullscreen_button(self): 
-    pygame.draw.rect(self.screen, self.fullscreen_button_color, self.fullscreen_button, border_radius=8)  
+    pygame.draw.rect(self.screen, BACKGROUND, self.fullscreen_button, border_radius=8)  
     fullscreen_button_center = self.fullscreen_button_text.get_rect(center=self.fullscreen_button.center)
     self.screen.blit(self.fullscreen_button_text, fullscreen_button_center)
     
@@ -243,10 +243,11 @@ class GameInterface:
     self.screen.blit(text, text_in_middle_screen)
     
   def handle_events(self):
-    mouse_x, mouse_y = pygame.mouse.get_pos()
+    self.CURRENT_CURSOR = pygame.mouse.get_cursor()
+    self.MOUSE_X, self.MOUSE_Y = pygame.mouse.get_pos()
     
     for index, cell in enumerate(self.board):
-      if cell["rect"].collidepoint(mouse_x, mouse_y):
+      if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
         if self.game.selected_piece is None:
           cell["rect_color"] = HOVER
           self.handle_possible_moves(cell["piece"])
@@ -264,27 +265,30 @@ class GameInterface:
       if event.type == pygame.QUIT:
         self.running = False
       elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-        if self.fullscreen_button.collidepoint(mouse_x, mouse_y):
+        if self.fullscreen_button.collidepoint(self.MOUSE_X, self.MOUSE_Y):
           self.fullscreen = not self.fullscreen
           self.configure_screen()
           
         for index, cell in enumerate(self.board):
-          if cell["rect"].collidepoint(mouse_x, mouse_y) and cell["piece"]:
+          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y) and cell["piece"]:
             self.handle_select_piece(cell["piece"])
 
-          if cell["rect"].collidepoint(mouse_x, mouse_y) and self.game.selected_piece is not None and index not in self.possible_moves:
+          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y) and self.game.selected_piece is not None and index not in self.possible_moves:
             if index is not self.game.selected_piece.position:
               self.game.deselect_piece()
               break
 
-          if cell["rect"].collidepoint(mouse_x, mouse_y) and index in self.possible_moves:
+          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y) and index in self.possible_moves:
             self.handle_move_piece(index)
             break
 
-    if self.fullscreen_button.collidepoint(mouse_x, mouse_y):
-        self.fullscreen_button_color = BUTTON_HOVER_COLOR
+    if self.fullscreen_button.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+      if self.CURRENT_CURSOR != pygame.SYSTEM_CURSOR_HAND:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:
-        self.fullscreen_button_color = BUTTON_COLOR
+      if self.CURRENT_CURSOR != pygame.SYSTEM_CURSOR_ARROW:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+   
 
   def run(self):
     self.root = tk.Tk()
