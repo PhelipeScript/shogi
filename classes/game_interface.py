@@ -292,12 +292,8 @@ class GameInterface:
     fullscreen_button_center = self.fullscreen_button_text.get_rect(center=self.fullscreen_button.center)
     self.screen.blit(self.fullscreen_button_text, fullscreen_button_center)
     
-  def draw_who_plays_now(self):
-    text = self.FONT_16.render(f"{self.game.whoPlaysNow.name} plays now", True, BLACK)
-    self.screen.blit(text, (10, 10))
-    
   def draw_winner(self):
-    text = self.FONT_64.render(f"{self.game.winner.name} ganhou!", True, BLACK)
+    text = self.FONT_36.render(f"{self.game.winner.name} ganhou!", True, TITLE_COLOR)
     text_in_middle_screen = text.get_rect(center=(self.screen_width // 2, self.screen_height // 2))
     self.screen.blit(text, text_in_middle_screen)
     
@@ -367,11 +363,8 @@ class GameInterface:
       self.draw_game_info()
       self.draw_move_history()
       
-      # if self.game.game_over:
-      #   self.draw_winner()
-      # else:
-      #   self.draw_who_plays_now()
-        
+      if self.game.game_over:
+        self.draw_winner()
       
       pygame.display.flip()
       
