@@ -22,6 +22,7 @@ class GameInterface:
     self.game = Shogi()
     self.image_manager = ImageManager()
     self.board_tile = self.image_manager.load_image('assets/board_tile.png')
+    self.captured_tile = self.image_manager.load_image('assets/captured_tile.png')
     self.fullscreen = False
     self.board = []
     self.possible_moves = []
@@ -44,6 +45,7 @@ class GameInterface:
     pygame.display.set_caption("将棋 (Shogi)")
     self.configure_fullscreen_button()
     self.configure_board()
+    self.configure_captured_pieces()
     
   def configure_board(self):
     self.board_width = 0.50 * self.screen_width
@@ -71,7 +73,7 @@ class GameInterface:
         rect = pygame.Rect(x, y, self.board_tile_width, self.board_tile_height)
         self.board.append({
           "rect": rect, 
-          "rect_color": BLACK,
+          "rect_color": BACKGROUND,
           "piece": piece, 
           "piece_img": piece_img_resized, 
           "tile_img": board_tile_resized,
@@ -86,6 +88,59 @@ class GameInterface:
         self.screen.blit(cell["piece_img"], piece_rect.topleft)
 
       pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1 if cell["rect_color"] == BLACK else 3)
+
+  def configure_captured_pieces(self):
+    captured_grid_size = 5
+    self.captured_width = 0.20 * self.screen_width
+    self.captured_height = 0.35 * self.screen_height
+    self.captured_tile_height = self.captured_height // captured_grid_size
+    self.captured_tile_width = min(self.captured_width // captured_grid_size, self.captured_tile_height-6)
+    
+    self.b_captured_pieces = []
+    self.w_captured_pieces = []
+    captured_tile_resized = pygame.transform.smoothscale(self.captured_tile, (self.captured_tile_width, self.captured_tile_height))
+      
+    for i in range(len(self.game.players)):
+      for row in range(captured_grid_size):
+        for col in range(captured_grid_size):
+          if i == 0:
+            x = col * self.captured_tile_width + self.screen_width - self.captured_width - captured_grid_size
+            y = row * self.captured_tile_height + self.screen_height - self.captured_height - captured_grid_size
+            rect = pygame.Rect(x, y, self.captured_tile_width, self.captured_tile_height)
+            self.w_captured_pieces.append({
+              "rect": rect, 
+              "rect_color": BACKGROUND,
+              "piece": None, 
+              "piece_img": None, 
+              "tile_img": captured_tile_resized,
+            })
+          else:
+            x = col * self.captured_tile_width + captured_grid_size
+            y = row * self.captured_tile_height + captured_grid_size
+            rect = pygame.Rect(x, y, self.captured_tile_width, self.captured_tile_height)
+            self.b_captured_pieces.append({
+              "rect": rect, 
+              "rect_color": BACKGROUND,
+              "piece": None, 
+              "piece_img": None, 
+              "tile_img": captured_tile_resized,
+            })
+          
+        
+  def draw_captured_pieces(self):
+    for player in self.game.players:
+      for i, cell in enumerate(self.w_captured_pieces if player.color == 'WHITE' else self.b_captured_pieces):
+        self.screen.blit(cell["tile_img"], cell["rect"].topleft)
+
+        if len(player.captured_pieces) >= i+1:
+          piece = player.captured_pieces[i]
+          cell["piece"] = piece
+          cell["piece_img"] = pygame.transform.smoothscale(piece.image, (self.captured_tile_width-16, self.captured_tile_height-12))
+          piece_rect = cell["piece_img"].get_rect(center=cell["rect"].center)
+          self.screen.blit(cell["piece_img"], piece_rect.topleft)
+
+        pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1 if cell["rect_color"] == BACKGROUND else 3)
+        
         
   def handle_possible_moves(self, piece: Piece):
     if not self.game.game_over and piece is not None and piece.color == self.game.whoPlaysNow.color:
@@ -97,13 +152,16 @@ class GameInterface:
     if self.game.selected_piece is None:
       self.game.select_piece(piece)
     elif self.game.selected_piece is piece:
-      print("teste")
       self.game.deselect_piece()
       
   def handle_move_piece(self, new_position: int):
     old_position = self.game.selected_piece.position
     old_cell = self.board[old_position]
     new_cell = self.board[new_position]
+
+    if new_cell["piece"] is not None:
+      if new_cell["piece"].color != self.game.selected_piece.color:
+        self.game.players[0 if self.game.selected_piece.color == 'WHITE' else 1].capture_piece(new_cell["piece"])
 
     new_cell["piece"] = self.game.selected_piece
     new_cell["piece_img"] = old_cell["piece_img"]
@@ -190,6 +248,7 @@ class GameInterface:
       self.handle_events()
       self.draw_fullscreen_button()
       self.draw_board()
+      self.draw_captured_pieces()
       
       # if self.game.game_over:
       #   self.draw_winner()
