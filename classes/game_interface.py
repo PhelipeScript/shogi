@@ -10,6 +10,7 @@ from classes.shogi import Shogi
 BACKGROUND = (26, 26, 34)
 BOARD_COLOR = (44, 72, 117)
 GAME_INFO_COLOR = (197, 184, 209)
+MOVE_HISTORY_COLOR = (179, 209, 188)
 TITLE_COLOR = (148, 148, 162)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -27,6 +28,7 @@ class GameInterface:
     self.board_tile = self.image_manager.load_image('assets/board_tile.png')
     self.captured_tile = self.image_manager.load_image('assets/captured_tile.png')
     self.game_info_tile = self.image_manager.load_image('assets/info_tile.png')
+    self.move_history_tile = self.image_manager.load_image('assets/history_tile.png')
     self.fullscreen = False
     self.board = []
     self.possible_moves = []
@@ -51,6 +53,7 @@ class GameInterface:
     self.configure_board()
     self.configure_captured_pieces()
     self.configure_game_info()
+    self.configure_move_history()
     
   def configure_board(self):
     self.board_width = 0.50 * self.screen_width
@@ -194,6 +197,42 @@ class GameInterface:
         text_rect = text.get_rect(midleft=(self.game_info[(j+1)*5]["rect"].centerx - self.game_info[(j+1)*5]['rect'].width/3, self.game_info[(j+1)*5]["rect"].centery))
         self.screen.blit(text, text_rect.topleft)
         
+  def configure_move_history(self):
+    move_history_grid_size = 5
+    self.move_history_width = 0.20 * self.screen_width
+    self.move_history_height = 0.35 * self.screen_height
+    self.move_history_tile_height = self.move_history_height // move_history_grid_size
+    self.move_history_tile_width = min(self.move_history_width // move_history_grid_size, self.move_history_tile_height-6)
+    
+    self.move_history = []
+    move_history_tile_resized = pygame.transform.smoothscale(self.move_history_tile, (self.move_history_tile_width, self.move_history_tile_height))
+      
+    for row in range(move_history_grid_size+3):
+      for col in range(move_history_grid_size):
+        x = col * self.move_history_tile_width + move_history_grid_size
+        y = (row-3) * self.move_history_tile_height + self.screen_height - self.move_history_height - move_history_grid_size
+        rect = pygame.Rect(x, y, self.move_history_tile_width, self.move_history_tile_height)
+     
+        self.move_history.append({
+                "rect": rect, 
+                "rect_color": BACKGROUND,
+                "tile_img": move_history_tile_resized,
+              })
+  
+  def draw_move_history(self):
+    for cell in self.move_history:
+      self.screen.blit(cell["tile_img"], cell["rect"].topleft)
+      pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1)
+    
+    texts = [
+      {"round": 1, "player": self.game.players[0].name, "move": "P de 7g para 7f"},
+      {"round": 2, "player": self.game.players[1].name, "move": "N de 2b para 3d promove"},
+      {"round": 3, "player": self.game.players[0].name, "move": "B de 8h para 3c captura S"},
+      {"round": 4, "player": self.game.players[1].name, "move": "P de 5d para 5c promove e captura G"},
+    ]
+    
+    # TODO: fazer um loop para desenhar os textos e se possível fazer um scroll
+    
   
   def handle_possible_moves(self, piece: Piece):
     if not self.game.game_over and piece is not None and piece.color == self.game.whoPlaysNow.color:
@@ -306,6 +345,7 @@ class GameInterface:
       self.draw_board()
       self.draw_captured_pieces()
       self.draw_game_info()
+      self.draw_move_history()
       
       # if self.game.game_over:
       #   self.draw_winner()
