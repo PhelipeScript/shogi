@@ -8,6 +8,8 @@ from classes.shogi import Shogi
 
 #COLORS
 BACKGROUND = (26, 26, 34)
+BOARD_COLOR = (44, 72, 117)
+GAME_INFO_COLOR = (197, 184, 209)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 HOVER = (240, 227, 204)
@@ -23,6 +25,7 @@ class GameInterface:
     self.image_manager = ImageManager()
     self.board_tile = self.image_manager.load_image('assets/board_tile.png')
     self.captured_tile = self.image_manager.load_image('assets/captured_tile.png')
+    self.game_info_tile = self.image_manager.load_image('assets/info_tile.png')
     self.fullscreen = False
     self.board = []
     self.possible_moves = []
@@ -46,6 +49,7 @@ class GameInterface:
     self.configure_fullscreen_button()
     self.configure_board()
     self.configure_captured_pieces()
+    self.configure_game_info()
     
   def configure_board(self):
     self.board_width = 0.50 * self.screen_width
@@ -141,7 +145,55 @@ class GameInterface:
 
         pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1 if cell["rect_color"] == BACKGROUND else 3)
         
+  def configure_game_info(self):
+    game_info_grid_size = 5
+    self.game_info_width = 0.20 * self.screen_width
+    self.game_info_height = 0.35 * self.screen_height
+    self.game_info_tile_height = self.game_info_height // game_info_grid_size
+    self.game_info_tile_width = min(self.game_info_width // game_info_grid_size, self.game_info_tile_height-6)
+    
+    self.game_info = []
+    game_info_tile_resized = pygame.transform.smoothscale(self.game_info_tile, (self.game_info_tile_width, self.game_info_tile_height))
+      
+    for row in range(game_info_grid_size):
+      for col in range(game_info_grid_size):
+        x = col * self.game_info_tile_width + self.screen_width - self.game_info_width - game_info_grid_size
+        y = row * self.game_info_tile_height + self.screen_height - 2.2*self.game_info_height - game_info_grid_size
+        rect = pygame.Rect(x, y, self.game_info_tile_width, self.game_info_tile_height)
+     
+        self.game_info.append({
+                "rect": rect, 
+                "rect_color": BACKGROUND,
+                "tile_img": game_info_tile_resized,
+              })
         
+  def draw_game_info(self):
+    for cell in self.game_info:
+      self.screen.blit(cell["tile_img"], cell["rect"].topleft)
+      pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1)
+    
+    texts = [
+      {"label": "Jogador 1:", "value": self.game.players[0].name},
+      {"label": "Jogador 2:", "value": self.game.players[1].name},
+      {"label": "Tempo jogador 1:", "value": "5:32"},
+      {"label": "Tempo jogador 2:", "value": "10:00"},
+      {"label": "Tempo total:", "value": "15:32"},
+      {"label": "Rodada atual:", "value": self.game.round+1},
+      {"label": "Jogador da vez:", "value": self.game.whoPlaysNow.name},
+    ]
+    
+    for i in range(0, len(texts), 2):
+      j = i // 2
+      text = self.FONT_16.render(f"{texts[i]['label']} {texts[i]['value']}", True, GAME_INFO_COLOR)
+      text_rect = text.get_rect(midleft=(self.game_info[(j+1)*5]["rect"].centerx - self.game_info[(j+1)*5]['rect'].width/3, self.game_info[(j+1)*5]["rect"].top))
+      self.screen.blit(text, text_rect.topleft)
+      
+      if len(texts) > i+1:
+        text = self.FONT_16.render(f"{texts[i+1]['label']} {texts[i+1]['value']}", True, GAME_INFO_COLOR)
+        text_rect = text.get_rect(midleft=(self.game_info[(j+1)*5]["rect"].centerx - self.game_info[(j+1)*5]['rect'].width/3, self.game_info[(j+1)*5]["rect"].centery))
+        self.screen.blit(text, text_rect.topleft)
+        
+  
   def handle_possible_moves(self, piece: Piece):
     if not self.game.game_over and piece is not None and piece.color == self.game.whoPlaysNow.color:
       self.possible_moves = self.game.get_piece_moves(piece)
@@ -249,6 +301,7 @@ class GameInterface:
       self.draw_fullscreen_button()
       self.draw_board()
       self.draw_captured_pieces()
+      self.draw_game_info()
       
       # if self.game.game_over:
       #   self.draw_winner()
