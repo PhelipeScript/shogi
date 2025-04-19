@@ -9,7 +9,8 @@ class Shogi:
   def __init__(self):
     self.board = Board()
     self.players = [Player("Jogador 1", "WHITE"), Player("Jogador 2", "BLACK")]
-    self.turn = 0
+    self.whoPlaysNow = self.players[0]
+    self.round = 0
     self.winner = None
     self.game_over = False
     self.selected_piece = None
@@ -40,11 +41,16 @@ class Shogi:
     return piece.possible_moves(self.board.board_str)
   
   def select_piece(self, identifier: Union[str, Piece]):
+    if self.game_over: return
+    
     if isinstance(identifier, str):
       # TODO: caso seja passado as coordenadas da peça (i.e. '00' ou '11')
       pass
     elif isinstance(identifier, Piece):
-      self.selected_piece = identifier
+      if identifier.color == self.whoPlaysNow.color:
+        self.selected_piece = identifier
+    else:
+      print("Peça inválida")
       
   def deselect_piece(self):
     self.selected_piece = None 
@@ -59,30 +65,37 @@ class Shogi:
     
     self.selected_piece.move(new_position)
     self.deselect_piece()
+    self.next_turn()
     self.board.print_board()
   
   def next_turn(self):
-    # passa a vez
-    pass
+    self.round += 1
+    self.whoPlaysNow = self.players[self.round % 2]
+    self.check_winner()
+    if self.winner is None:
+      self.print_turn()
   
   def check_winner(self):
-    # verifica se há um vencedor
-    pass
+    black_king_alive = self.board.board_str.find('K')
+    white_king_alive = self.board.board_str.find('k')
+    if black_king_alive == -1 or white_king_alive == -1:
+      self.winner = self.players[0 if black_king_alive == -1 else 1]
+      self.game_over = True
+      self.print_winner()
   
   def check_game_over(self):
     # verifica se o jogo acabou
     pass
   
   def print_winner(self):
-    # imprime o vencedor
-    pass
+    print(f"O vencedor é: {self.winner.name} ({self.winner.color})")  
   
   def print_game_over(self):
     # imprime o fim do jogo
     pass
   
   def print_turn(self):
-    # imprime a vez do jogador
+    print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
     pass
   
   

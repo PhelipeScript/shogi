@@ -22,8 +22,10 @@ class Piece:
 class Pawn(Piece):
   def __init__(self, color, position):
     super().__init__('pawn', color, position)
-    self.image = self.image_manager.load_image('assets/international_pieces/pawn.png')
-    pass
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_pawn.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_pawn.png')
   
   def possible_moves(self, board):
     moves = []
@@ -63,8 +65,10 @@ class Pawn(Piece):
 class Rook(Piece): 
   def __init__(self, color, position):
     super().__init__('rook', color, position)
-    self.image = self.image_manager.load_image('assets/international_pieces/rook.png')
-    pass
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_rook.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_rook.png')
 
   def possible_moves(self, board):
     moves = []
@@ -133,8 +137,10 @@ class Rook(Piece):
 class Knight(Piece):
   def __init__(self, color, position):
     super().__init__('knight', color, position)
-    self.image = self.image_manager.load_image('assets/international_pieces/knight.png')
-    pass
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_knight.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_knight.png')
   
   def possible_moves(self, board):
         moves = []
@@ -185,8 +191,10 @@ class Knight(Piece):
 class Bishop(Piece):
   def __init__(self, color, position):
     super().__init__('bishop', color, position)
-    self.image = self.image_manager.load_image('assets/international_pieces/bishop.png')
-    pass
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_bishop.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_bishop.png')
   
   def possible_moves(self, board):
     moves = []
@@ -259,8 +267,11 @@ class Bishop(Piece):
 class Gold_general(Piece): 
   def __init__(self, color, position):
     super().__init__('gold_general', color, position)
-    self.image = self.image_manager.load_image('assets/international_pieces/gold_general.png')
     self.promotion_offer = True
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_gold_general.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_gold_general.png')
   
   def possible_moves(self, board):
     moves = []
@@ -284,8 +295,10 @@ class Gold_general(Piece):
 class Silver_general(Piece):
   def __init__(self, color, position):
     super().__init__('silver_general', color, position)
-    self.image = self.image_manager.load_image('assets/international_pieces/silver_general.png')
-    pass
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_silver_general.png')
+    else: 
+      self.image = self.image_manager.load_image('assets/international_pieces/b_silver_general.png')
   
   def possible_moves(self, board):
     moves = []
@@ -327,8 +340,10 @@ class Silver_general(Piece):
 class King(Piece):
   def __init__(self, color, position):
     super().__init__('king', color, position)
-    self.image = self.image_manager.load_image('assets/international_pieces/king.png')
-    pass
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_king.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_king.png')
   
   def possible_moves(self, board):
     moves = []
@@ -349,9 +364,11 @@ class King(Piece):
 class Lance(Piece):
   def __init__(self, color, position):
     super().__init__('lance', color, position)
-    self.image = self.image_manager.load_image('assets/international_pieces/lance.png')
     self.promotion_offer = True
-    pass
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_lance.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_lance.png')
   
   def possible_moves(self, board):
     moves = []
@@ -402,8 +419,11 @@ class Lance(Piece):
 class Dragon(Piece):
   def __init__(self,color,position):
     super().__init__('dragon',color,position)
-    self.image = self.image_manager.load_image('assets/international_pieces/promoted_rook.png')
     self.promotion_offer = True
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_rook.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_rook.png')
 
   def possible_moves(self, board):
     moves = []
@@ -466,8 +486,11 @@ class Dragon(Piece):
 class Dragon_knight(Piece):
   def __init__(self,color,position):
     super().__init__('Dragao Cavaleiro',color,position)
-    self.image = self.image_manager.load_image('assets/international_pieces/promoted_bishop.png')
     self.promotion_offer = True
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_bishop.png')
+    else: 
+      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_bishop.png')
 
   def possible_moves(self, board):
     moves = []
@@ -510,8 +533,11 @@ class Dragon_knight(Piece):
 class Promoted_lance(Piece):
   def __init__(self,color,position):
     super().__init__('Lança Promovida',color,position)
-    self.image = self.image_manager.load_image('assets/international_pieces/promoted_lance.png')
     self.promotion_offer = True
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_lance.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_lance.png')
 
   def possible_moves(self, board):
     moves = []
@@ -535,8 +561,11 @@ class Promoted_lance(Piece):
 class Promoted_knight(Piece):
   def __init__(self,color,position):
     super().__init__('Cavaleiro Promovido',color,position)
-    self.image = self.image_manager.load_image('assets/international_pieces/promoted_knight.png')
     self.promotion_offer = True
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_knight.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_knight.png')
 
   def possible_moves(self, board):
     moves = []
@@ -560,8 +589,11 @@ class Promoted_knight(Piece):
 class Promoted_silver(Piece):
   def __init__(self,color,position):
     super().__init__('',color,position)
-    self.image = self.image_manager.load_image('assets/international_pieces/promoted_silver_general.png')
     self.promotion_offer = True
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_silver_general.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_silver_general.png')
 
   def possible_moves(self, board):
     moves = []
@@ -585,9 +617,11 @@ class Promoted_silver(Piece):
 class Promoted_pawn(Piece):
   def __init__(self,color,position):
     super().__init__('promoted_pawn',color,position)
-    self.image = self.image_manager.load_image('assets/international_pieces/promoted_pawn.png')
     self.promotion_offer = True
-  pass
+    if color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_pawn.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_pawn.png')
 
   def possible_moves(self, board):
     moves = []
