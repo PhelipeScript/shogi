@@ -9,6 +9,7 @@ from classes.shogi import Shogi
 #COLORS
 BACKGROUND = (26, 26, 34)
 BOARD_COLOR = (44, 72, 117)
+CAPTURED_PIECES_COLOR = (209, 179, 196)
 GAME_INFO_COLOR = (197, 184, 209)
 MOVE_HISTORY_COLOR = (179, 209, 188)
 TITLE_COLOR = (148, 148, 162)
@@ -98,6 +99,7 @@ class GameInterface:
       pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1 if cell["rect_color"] == BLACK else 3)
 
   def configure_captured_pieces(self):
+    self.captured_pieces_title = self.FONT_18.render("PEÇAS CAPTURADAS", True, CAPTURED_PIECES_COLOR)
     captured_grid_size = 5
     self.captured_width = 0.20 * self.screen_width
     self.captured_height = 0.35 * self.screen_height
@@ -140,16 +142,25 @@ class GameInterface:
       for i, cell in enumerate(self.w_captured_pieces if player.color == 'WHITE' else self.b_captured_pieces):
         self.screen.blit(cell["tile_img"], cell["rect"].topleft)
 
-        if len(player.captured_pieces) >= i+1:
-          piece = player.captured_pieces[i]
+        if i > 4 and len(player.captured_pieces) >= i-5+1:
+          piece = player.captured_pieces[i-5]
           cell["piece"] = piece
           cell["piece_img"] = pygame.transform.smoothscale(piece.image, (self.captured_tile_width-16, self.captured_tile_height-12))
           piece_rect = cell["piece_img"].get_rect(center=cell["rect"].center)
           self.screen.blit(cell["piece_img"], piece_rect.topleft)
 
         pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1 if cell["rect_color"] == BACKGROUND else 3)
+
+    # Draw the title for captured black pieces
+    title_rect = self.captured_pieces_title.get_rect(center=(self.w_captured_pieces[2]["rect"].centerx, self.w_captured_pieces[2]["rect"].centery))
+    self.screen.blit(self.captured_pieces_title, title_rect.topleft)
+    
+    # Draw the title for captured white pieces
+    title_rect = self.captured_pieces_title.get_rect(center=(self.b_captured_pieces[2]["rect"].centerx, self.b_captured_pieces[2]["rect"].centery))
+    self.screen.blit(self.captured_pieces_title, title_rect.topleft)
         
   def configure_game_info(self):
+    self.game_info_title = self.FONT_18.render("INFORMAÇÕES", True, GAME_INFO_COLOR)
     game_info_grid_size = 5
     self.game_info_width = 0.20 * self.screen_width
     self.game_info_height = 0.35 * self.screen_height
@@ -197,7 +208,12 @@ class GameInterface:
         text_rect = text.get_rect(midleft=(self.game_info[(j+1)*5]["rect"].centerx - self.game_info[(j+1)*5]['rect'].width/3, self.game_info[(j+1)*5]["rect"].centery))
         self.screen.blit(text, text_rect.topleft)
         
+    # Draw the title for game info
+    title_rect = self.game_info_title.get_rect(center=(self.game_info[2]["rect"].centerx, self.game_info[2]["rect"].centery))
+    self.screen.blit(self.game_info_title, title_rect.topleft)
+        
   def configure_move_history(self):
+    self.move_history_title = self.FONT_18.render("HISTÓRICO", True, MOVE_HISTORY_COLOR)
     move_history_grid_size = 5
     self.move_history_width = 0.20 * self.screen_width
     self.move_history_height = 0.35 * self.screen_height
@@ -232,6 +248,10 @@ class GameInterface:
     ]
     
     # TODO: fazer um loop para desenhar os textos e se possível fazer um scroll
+    
+    # Draw the title for move history
+    title_rect = self.move_history_title.get_rect(center=(self.move_history[2]["rect"].centerx, self.move_history[2]["rect"].centery))
+    self.screen.blit(self.move_history_title, title_rect.topleft)
     
   
   def handle_possible_moves(self, piece: Piece):
