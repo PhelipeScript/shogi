@@ -18,11 +18,13 @@ class Player:
       self.pieces.remove(piece)
   
   def capture_piece(self, piece):
-    piece.color = self.color
-    self.captured_pieces.append(piece)
+    if piece.color == "WHITE":
+      piece.color = "BLACK"
+    else:
+      piece.color = "WHITE"
+    self.captured_pieces.apspend(piece)
     
   def copy(self):
     new_player = Player(self.name, self.color)
     new_player.captured_pieces = [piece for piece in self.captured_pieces]
-    return new_player  
-  
+    return new_player

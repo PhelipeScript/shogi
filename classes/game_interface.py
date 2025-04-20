@@ -271,14 +271,7 @@ class GameInterface:
       
   def handle_move_piece(self, new_position: int):
     old_position = self.game.selected_piece.position
-
-    if self.board[new_position]["piece"] is not None:
-      if self.board[new_position]["piece"].color == "BLACK":
-        self.game.players[1].remove_piece(self.board[new_position]["piece"])
-        self.game.players[0].capture_piece(self.board[new_position]["piece"])
-      else:
-        self.game.players[0].remove_piece(self.board[new_position]["piece"])
-        self.game.players[1].capture_piece(self.board[new_position]["piece"])
+    self.game.capture_piece(self.board,new_position)
 
     old_cell = self.board[old_position]
     new_cell = self.board[new_position]

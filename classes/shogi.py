@@ -6,7 +6,7 @@ from classes.player import Player
 
 
 class Shogi:
-  def __init__(self, board: Board = None, player1: Player = None, player2: Player = None, round: int = 0):
+  def __init__(self, board: Board = None, player1: Player = None, player2: Player = None, round: int = 0, autostart = True):
     if player1 is None and player2 is None:
       player1 = Player("Jogador 1", "WHITE")
       player2 = Player("Jogador 2", "BLACK")
@@ -17,7 +17,9 @@ class Shogi:
     self.players = [player1, player2]
     self.board = Board() if board is None else board
     self.round = round
-    self.start()
+
+    if autostart:
+      self.start()
     
     
   def start(self):
@@ -130,7 +132,9 @@ class Shogi:
     moves = []
     player_pieces = self.whoPlaysNow.pieces
     for i in range(len(player_pieces)):
-      moves.append((player_pieces[i] , player_pieces[i].possible_moves(self.board.board_str)))
+      player_moves = player_pieces[i].possible_moves(self.board.board_str)
+      if player_moves != []:
+        moves.append((player_pieces[i] , player_moves))
     return moves
   
   def utility_function(self):
@@ -145,10 +149,41 @@ class Shogi:
     
   def possible_states(self,moves):
     all_possible_states = []
-    for i in range(len(moves)):
-      for j in range(len(moves[i][1])):
-        #TODO: implementar a geração de estados seguintes
-        pass
+    for piece, positions in moves:
+      for position in positions:
+        new_board = self.board.copy()
+        new_players = [self.players[0].copy(),self.players[1].copy()]
+        new_shogi = Shogi(new_board,new_players[0],new_players[1],self.round, False)
+        new_shogi.whoPlaysNow = self.players[0] if self.players[0].color == "WHITE" and self.round % 2 == 0 else self.players[1]
+        new_shogi.winner = None
+        new_shogi.game_over = False
+        new_shogi.selected_piece = None
+        new_shogi.promotion_cadidate = None
+
+        copied_piece = None
+        for p in new_shogi.whoPlaysNow.pieces:
+          if p.position == piece.position and p.symbol == piece.symbol:
+            copied_piece = p
+            break
+        
+        if copied_piece is None:
+          break
+        
+        new_shogi.select_piece(copied_piece)
+        new_shogi.move_piece(position)
+        all_possible_states.append(new_shogi.board)
+
+    return all_possible_states
+
+    
+  def capture_piece(self,board,new_position):
+    if board[new_position]["piece"] is not None:
+      if board[new_position]["piece"].color == "BLACK":
+        self.players[1].remove_piece(board[new_position]["piece"])
+        self.players[0].capture_piece(board[new_position]["piece"])
+      else:
+        self.players[0].remove_piece(board[new_position]["piece"])
+        self.players[1].capture_piece(board[new_position]["piece"])
 
   def check_game_over(self):
     # verifica se o jogo acabou
@@ -162,7 +197,6 @@ class Shogi:
     pass
   
   def print_turn(self):
-    print(self.possible_states(self.all_possible_moves()))
     print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
   
   def copy(self):
