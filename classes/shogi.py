@@ -5,6 +5,7 @@ from classes.piece import PIECES_CLASSES, Piece
 from classes.player import Player
 
 
+
 class Shogi:
   def __init__(self):
     self.board = Board()
@@ -15,6 +16,7 @@ class Shogi:
     self.game_over = False
     self.selected_piece = None
     self.promotion_cadidate = None
+    self.player_times = {"WHITE": 0.0, "BLACK": 0.0}
     self.board.print_board()
     
   def start(self):
@@ -103,6 +105,20 @@ class Shogi:
       player.add_piece(promoted_piece)
     return promoted_piece
   
+
+
+  def get_time_info(self):
+      total = self.player_times["WHITE"] + self.player_times["BLACK"]
+      return {
+          "Tempo jogador 1": self.format_time(self.player_times["WHITE"]),
+          "Tempo jogador 2": self.format_time(self.player_times["BLACK"]),
+          "Tempo total": self.format_time(total)
+      }
+
+  def format_time(self, seconds):
+      m, s = divmod(int(seconds), 60)
+      return f"{m}:{s:02d}"
+
   def next_turn(self):
     self.round += 1
     self.whoPlaysNow = self.players[self.round % 2]
