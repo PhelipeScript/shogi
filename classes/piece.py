@@ -364,7 +364,6 @@ class King(Piece):
 class Lance(Piece):
   def __init__(self, color, position):
     super().__init__('lance', color, position)
-    self.promotion_offer = True
     if color == 'WHITE':
       self.image = self.image_manager.load_image('assets/international_pieces/w_lance.png')
     else:
@@ -396,10 +395,11 @@ class Lance(Piece):
   
   def promote(self,board,players,selected_piece):
 
+    print("entrou aqui")
     if board[self.position].islower():
       if self.position < 27 and board[self.position] != "c":
+        print("Entrou e foi promovido")
         players[0].remove_piece(selected_piece)
-
         new_piece = PIECES_CLASSES["c"](players[0].color, self.position)
         players[0].add_piece(new_piece)
         board = board[:self.position] + "c" + board[self.position + 1:]
@@ -407,7 +407,6 @@ class Lance(Piece):
         return board
     elif self.position > 53 and board[self.position] != "C":
         players[1].remove_piece(selected_piece)
-
         new_piece = PIECES_CLASSES["c"](players[1].color, self.position)
         players[1].add_piece(new_piece)
         board = board[:self.position] + "C" + board[self.position + 1:]
