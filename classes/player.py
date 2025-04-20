@@ -22,7 +22,7 @@ class Player:
       piece.color = "BLACK"
     else:
       piece.color = "WHITE"
-    self.captured_pieces.apspend(piece)
+    self.captured_pieces.append(piece)
     
   def copy(self):
     new_player = Player(self.name, self.color)

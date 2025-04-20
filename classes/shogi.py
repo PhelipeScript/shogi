@@ -171,7 +171,7 @@ class Shogi:
         
         new_shogi.select_piece(copied_piece)
         new_shogi.move_piece(position)
-        all_possible_states.append(new_shogi.board)
+        all_possible_states.append(new_shogi)
 
     return all_possible_states
 
