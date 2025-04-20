@@ -135,6 +135,13 @@ class Shogi:
       return white_total_weight - black_total_weight
     else:
       return black_total_weight - white_total_weight
+    
+  def possible_states(self,moves):
+    all_possible_states = []
+    for i in range(len(moves)):
+      for j in range(len(moves[i][1])):
+        #TODO: implementar a geração de estados seguintes
+        pass
 
   def check_game_over(self):
     # verifica se o jogo acabou
@@ -148,7 +155,7 @@ class Shogi:
     pass
   
   def print_turn(self):
-    print(self.utility_function())
+    print(self.possible_states(self.all_possible_moves()))
     print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
     pass
   
