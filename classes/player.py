@@ -17,7 +17,8 @@ class Player:
     pass
   
   def remove_piece(self, piece):
-    self.pieces.remove(piece)
+    if piece in self.pieces:
+      self.pieces.remove(piece)
     pass
   
   def capture_piece(self, piece):
