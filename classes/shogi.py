@@ -25,6 +25,7 @@ class Shogi:
     self.winner = None
     self.game_over = False
     self.selected_piece = None
+    self.selected_piece_to_drop = None
     self.promotion_cadidate = None
     self.distribute_pieces()
 
@@ -56,11 +57,21 @@ class Shogi:
     elif isinstance(identifier, Piece):
       if identifier.color == self.whoPlaysNow.color:
         self.selected_piece = identifier
+        self.selected_piece_to_drop = None
     else:
       print("Peça inválida")
       
   def deselect_piece(self):
     self.selected_piece = None 
+    
+  def select_piece_to_drop(self, piece: Piece):
+    if self.game_over: return
+    
+    self.selected_piece_to_drop = piece
+    self.selected_piece = None
+  
+  def deselect_piece_to_drop(self):
+    self.selected_piece_to_drop = None
     
   # se for obrigatório a promoção, retorna a peça promovida
   # se não for obrigatório a promoção, retorna None
@@ -85,6 +96,9 @@ class Shogi:
     self.next_turn()
     self.board.print_board()
     return promoted_piece
+  
+  def get_possible_drops(self, piece: Piece) -> list[int]:
+    return piece.possible_drops(self.board.board_str)
     
   def is_mandatory_promotion(self, piece: Piece):
     if piece.color == "WHITE":

@@ -20,6 +20,10 @@ class Piece:
   def possible_moves(self, board):
     # retorna uma lista de posições possíveis para a peça
     pass
+  
+  def possible_drops(self, board):
+    # retorna uma lista de posições possíveis para a peça
+    pass
 
   def promote(self) -> Union['Piece', None]:
     # retorna a nova peça promovida
@@ -49,7 +53,7 @@ class Pawn(Piece):
         elif board[self.position + 9].islower():
             moves.append(self.position + 9)
     return moves
-
+  
   def promote(self):
     return Promoted_pawn(self.color, self.position)
   
