@@ -1,5 +1,5 @@
 class Board:
-  def __init__(self):
+  def __init__(self, board_str: str = None):
     # l = Lance
     # n = Cavalo 
     # s = Prata General
@@ -25,7 +25,7 @@ class Board:
       "ppppppppp"  # Linha 7
       ".r.....b."  # Linha 8
       "lnsgkgsnl"  # Linha 9
-    )
+    ) if board_str is None else board_str
   
   def string_to_array(self):
     return [list(self.board_str[i * 9:(i + 1) * 9]) for i in range(9)]
@@ -35,3 +35,6 @@ class Board:
     for row in board_array:
       print(" ".join(row))
     pass
+
+  def copy(self):
+    return Board(self.board_str)

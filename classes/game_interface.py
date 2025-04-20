@@ -404,7 +404,6 @@ class GameInterface:
     self.root.withdraw()
     pygame.init()
     self.running = True
-    self.game.distribute_pieces()
     self.configure_screen()
     
     while self.running:
