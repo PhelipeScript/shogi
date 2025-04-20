@@ -55,8 +55,10 @@ class Shogi:
   def deselect_piece(self):
     self.selected_piece = None 
     
-  def move_piece(self, new_position: int):
-
+  # se for obrigatório a promoção, retorna a peça promovida
+  # se não for obrigatório a promoção, retorna None
+  def move_piece(self, new_position: int) -> Piece | None:
+    promoted_piece = None
     old_position = self.selected_piece.position
     piece_symbol = self.board.board_str[old_position]
     
@@ -64,9 +66,42 @@ class Shogi:
     self.board.board_str = self.board.board_str[:new_position] + piece_symbol + self.board.board_str[new_position+1:]
     
     self.selected_piece.move(new_position)
+
+    if self.is_mandatory_promotion(self.selected_piece):
+      promoted_piece = self.promote_piece(self.selected_piece)
+    elif self.is_promotion_candidate(self.selected_piece):
+      self.promotion_cadidate = self.selected_piece
+    else: 
+      self.promotion_cadidate = None
+
     self.deselect_piece()
     self.next_turn()
     self.board.print_board()
+    return promoted_piece
+    
+  def is_mandatory_promotion(self, piece: Piece):
+    if piece.color == "WHITE":
+      return piece.position < 9 and (piece.name == 'pawn' or piece.name == 'lance' or piece.name == 'knight') 
+    elif piece.color == "BLACK":
+      return piece.position > 71 and (piece.name == 'pawn' or piece.name == 'lance' or piece.name == 'knight')
+    return False  
+  
+  def is_promotion_candidate(self, piece: Piece):
+    if piece and not piece.promotable and not piece.promotion_offer:
+      if piece.color == "WHITE" and piece.position < 27:
+        return True
+      elif piece.color == "BLACK" and piece.position > 53:
+        return True
+    return False
+  
+  def promote_piece(self, piece: Piece) -> Piece | None:
+    promoted_piece = piece.promote()
+    if promoted_piece:
+      self.board.board_str = self.board.board_str[:piece.position] + promoted_piece.symbol + self.board.board_str[piece.position+1:]
+      player = self.players[0] if piece.color == "WHITE" else self.players[1]
+      player.remove_piece(piece)
+      player.add_piece(promoted_piece)
+    return promoted_piece
   
   def next_turn(self):
     self.round += 1

@@ -292,14 +292,12 @@ class GameInterface:
     old_cell["piece"] = None
     old_cell["piece_img"] = None
     
-    self.game.move_piece(new_position)
-
-    piece = self.board[new_position]["piece"]
-    if piece and not piece.promotable and not piece.promotion_offer:
-      if ((piece.color == "WHITE" and new_position < 27) or (piece.color == "BLACK" and new_position > 53)):
-        self.promotion_candidate = piece
-        self.promotion_menu_active = True
-    
+    promoted_piece = self.game.move_piece(new_position)
+    if promoted_piece:
+      new_cell["piece"] = promoted_piece
+      new_cell["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
+    else:
+      self.promotion_menu_active = self.game.is_promotion_candidate(self.game.promotion_cadidate)
     
   def configure_fullscreen_button(self):
     self.fullscreen_button = pygame.Rect(self.screen_width-166, 16, 150, 16)
@@ -311,11 +309,10 @@ class GameInterface:
     self.screen.blit(self.fullscreen_button_text, fullscreen_button_center)
 
   def handle_promotion(self):
-    if not self.promotion_menu_active or self.promotion_candidate is None:
+    if not self.promotion_menu_active:
         return
 
-    mouse_x, mouse_y = pygame.mouse.get_pos()
-    piece = self.promotion_candidate
+    piece = self.game.promotion_cadidate
 
     index = piece.position
     cell = self.board[index]
@@ -329,24 +326,20 @@ class GameInterface:
     pygame.draw.rect(self.screen, WHITE, first_option_box, border_radius=8)
     pygame.draw.rect(self.screen, WHITE, second_option_box, border_radius=8)
 
-    font = pygame.font.Font(None, 16)
-    confirm_text = font.render("Yes", True, BLACK)
-    cancel_text = font.render("No", True, BLACK)
+    confirm_text = self.FONT_16.render("Yes", True, BLACK)
+    cancel_text = self.FONT_16.render("No", True, BLACK)
     self.screen.blit(confirm_text, confirm_text.get_rect(center=first_option_box.center))
     self.screen.blit(cancel_text, cancel_text.get_rect(center=second_option_box.center))
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if first_option_box.collidepoint(mouse_x, mouse_y):
-                self.game.board.board_str = piece.promote(self.game.board.board_str, self.game.players, piece)
-                piece.promotion_offer = True
-                piece.promotable = True
-                self.promotion_candidate = None
+            if first_option_box.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+                promoted_piece = self.game.promote_piece(piece)
+                self.board[index]["piece"] = promoted_piece
+                self.board[index]["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
                 self.promotion_menu_active = False
                 return
-            elif second_option_box.collidepoint(mouse_x, mouse_y):
-                piece.promotion_offer = True
-                self.promotion_candidate = None
+            elif second_option_box.collidepoint(self.MOUSE_X, self.MOUSE_Y):
                 self.promotion_menu_active = False
                 return
 
@@ -424,7 +417,6 @@ class GameInterface:
       self.draw_game_info()
       self.draw_move_history()
       self.handle_promotion()
-      self.configure_board()
       
       if self.game.game_over:
         self.draw_winner()
