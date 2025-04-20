@@ -280,7 +280,7 @@ class King(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_king.png')
       self.symbol = 'K'
-    self.weight = float("-inf")
+    self.weight = 100
   
   def possible_moves(self, board):
     moves = []
@@ -523,13 +523,13 @@ class Promoted_silver(Piece):
   def __init__(self,color,position):
     super().__init__('',color,position)
     self.promotion_offer = True
+    self.weight = 10
     if color == 'WHITE':
       self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_silver_general.png')
       self.symbol = 'i'
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_silver_general.png')
       self.symbol = 'I'
-    self.weight = 10
 
   def possible_moves(self, board):
     moves = []

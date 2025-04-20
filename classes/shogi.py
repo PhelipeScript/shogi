@@ -117,24 +117,38 @@ class Shogi:
       self.winner = self.players[0 if black_king_alive == -1 else 1]
       self.game_over = True
       self.print_winner()
+      return True
 
-  def possible_moves(self):
-    
-    pass
+  def all_possible_moves(self):
+    moves = []
+    player_pieces = self.whoPlaysNow.pieces
+    for i in range(len(player_pieces)):
+      moves.append((player_pieces[i] , player_pieces[i].possible_moves(self.board.board_str)))
+    return moves
+  
+  def utility_function(self):
+    white_player_pieces = self.players[0].pieces
+    black_player_pieces = self.players[1].pieces
+    white_total_weight = sum(piece.weight for piece in white_player_pieces)
+    black_total_weight = sum(piece.weight for piece in black_player_pieces)
+    if self.whoPlaysNow.color == "WHITE":
+      return white_total_weight - black_total_weight
+    else:
+      return black_total_weight - white_total_weight
 
   def check_game_over(self):
     # verifica se o jogo acabou
     pass
   
   def print_winner(self):
-    print(f"O vencedor é: {self.winner.name} ({self.winner.color})")  
+    print(f"O vencedor é: {self.winner.name} ({self.winner.color})")
   
   def print_game_over(self):
     # imprime o fim do jogo
     pass
   
   def print_turn(self):
-    print(self.whoPlaysNow.pieces[0].symbol)
+    print(self.utility_function())
     print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
     pass
   
