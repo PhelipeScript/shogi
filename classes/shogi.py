@@ -117,7 +117,11 @@ class Shogi:
       self.winner = self.players[0 if black_king_alive == -1 else 1]
       self.game_over = True
       self.print_winner()
-  
+
+  def possible_moves(self):
+    
+    pass
+
   def check_game_over(self):
     # verifica se o jogo acabou
     pass
@@ -130,6 +134,7 @@ class Shogi:
     pass
   
   def print_turn(self):
+    print(self.whoPlaysNow.pieces[0].symbol)
     print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
     pass
   

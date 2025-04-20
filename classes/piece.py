@@ -10,6 +10,7 @@ class Piece:
     self.promotable = False
     self.promotion_offer = False
     self.image_manager = ImageManager()
+    self.weight = 0
     pass
   
   def move(self, new_position):
@@ -33,6 +34,7 @@ class Pawn(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_pawn.png')
       self.symbol = 'P'
+    self.weight = 1
   
   def possible_moves(self, board):
     moves = []
@@ -60,6 +62,7 @@ class Rook(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_rook.png')
       self.symbol = 'R'
+    self.weight = 9
 
   def possible_moves(self, board):
     moves = []
@@ -116,6 +119,7 @@ class Knight(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_knight.png')
       self.symbol = 'N'
+    self.weight = 3
   
   def possible_moves(self, board):
         moves = []
@@ -154,6 +158,7 @@ class Bishop(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_bishop.png')
       self.symbol = 'B'
+    self.weight = 7
   
   def possible_moves(self, board):
     moves = []
@@ -215,6 +220,7 @@ class Gold_general(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_gold_general.png')
       self.symbol = 'G'
+    self.weight = 10
   
   def possible_moves(self, board):
     moves = []
@@ -244,6 +250,7 @@ class Silver_general(Piece):
     else: 
       self.image = self.image_manager.load_image('assets/international_pieces/b_silver_general.png')
       self.symbol = 'S'
+    self.weight = 5
   
   def possible_moves(self, board):
     moves = []
@@ -273,6 +280,7 @@ class King(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_king.png')
       self.symbol = 'K'
+    self.weight = float("-inf")
   
   def possible_moves(self, board):
     moves = []
@@ -299,6 +307,7 @@ class Lance(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_lance.png')
       self.symbol = 'L'
+    self.weight = 2
   
   def possible_moves(self, board):
     moves = []
@@ -338,6 +347,7 @@ class Dragon(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_rook.png')
       self.symbol = 'D'
+    self.weight = 15
 
   def possible_moves(self, board):
     moves = []
@@ -407,6 +417,7 @@ class Dragon_knight(Piece):
     else: 
       self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_bishop.png')
       self.symbol = 'T'
+    self.weight = 15
 
   def possible_moves(self, board):
     moves = []
@@ -456,6 +467,7 @@ class Promoted_lance(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_lance.png')
       self.symbol = 'C'
+    self.weight = 10
 
   def possible_moves(self, board):
     moves = []
@@ -486,6 +498,7 @@ class Promoted_knight(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_knight.png')
       self.symbol = 'H'
+    self.weight = 10
 
   def possible_moves(self, board):
     moves = []
@@ -516,6 +529,7 @@ class Promoted_silver(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_silver_general.png')
       self.symbol = 'I'
+    self.weight = 10
 
   def possible_moves(self, board):
     moves = []
@@ -546,6 +560,7 @@ class Promoted_pawn(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_pawn.png')
       self.symbol = 'W'
+    self.weight = 10
 
   def possible_moves(self, board):
     moves = []
