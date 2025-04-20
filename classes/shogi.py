@@ -6,20 +6,27 @@ from classes.player import Player
 
 
 class Shogi:
-  def __init__(self):
-    self.board = Board()
-    self.players = [Player("Jogador 1", "WHITE"), Player("Jogador 2", "BLACK")]
-    self.whoPlaysNow = self.players[0]
-    self.round = 0
+  def __init__(self, board: Board = None, player1: Player = None, player2: Player = None, round: int = 0):
+    if player1 is None and player2 is None:
+      player1 = Player("Jogador 1", "WHITE")
+      player2 = Player("Jogador 2", "BLACK")
+    elif player1 is None:
+      player1 = Player("Jogador 1", "WHITE") if player2.color == "BLACK" else Player("Jogador 1", "BLACK")
+    else: 
+      player2 = Player("Jogador 2", "BLACK") if player1.color == "WHITE" else Player("Jogador 2", "WHITE")
+    self.players = [player1, player2]
+    self.board = Board() if board is None else board
+    self.round = round
+    self.start()
+    
+    
+  def start(self):
+    self.whoPlaysNow = self.players[0] if self.players[0].color == "WHITE" and self.round % 2 == 0 else self.players[1]
     self.winner = None
     self.game_over = False
     self.selected_piece = None
     self.promotion_cadidate = None
-    self.board.print_board()
-    
-  def start(self):
-    # inicia o loop do jogo
-    pass
+    self.distribute_pieces()
 
   def end(self):
     # finaliza o jogo
@@ -150,6 +157,6 @@ class Shogi:
   def print_turn(self):
     print(self.utility_function())
     print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
-    pass
   
-  
+  def copy(self):
+    return Shogi(self.board.copy(), self.players[0].copy(), self.players[1].copy(), self.round)
