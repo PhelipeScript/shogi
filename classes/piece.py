@@ -25,6 +25,9 @@ class Piece:
     # retorna a nova peça promovida
     pass
   
+  def copy(self):
+    return PIECES_CLASSES[self.symbol](self.color, self.position)
+  
 class Pawn(Piece):
   def __init__(self, color, position):
     super().__init__('pawn', color, position)
