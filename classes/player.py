@@ -22,6 +22,10 @@ class Player:
     piece.color = self.color
     self.captured_pieces.append(piece)
     
+  def remove_captured_piece(self, piece):
+    if piece in self.captured_pieces:
+      self.captured_pieces.remove(piece)
+    
   def copy(self):
     new_player = Player(self.name, self.color)
     new_player.captured_pieces = [piece for piece in self.captured_pieces]

@@ -73,6 +73,18 @@ class Shogi:
   def deselect_piece_to_drop(self):
     self.selected_piece_to_drop = None
     
+  def drop_piece(self, new_position: int):
+    if self.game_over: return
+    
+    if self.selected_piece_to_drop:
+      piece_symbol = self.selected_piece_to_drop.symbol
+      self.board.board_str = self.board.board_str[:new_position] + piece_symbol + self.board.board_str[new_position+1:]
+      self.selected_piece_to_drop.position = new_position
+      player = self.players[0] if self.selected_piece_to_drop.color == "WHITE" else self.players[1]
+      player.remove_captured_piece(self.selected_piece_to_drop)
+      self.deselect_piece_to_drop()
+      self.next_turn()
+    
   # se for obrigatório a promoção, retorna a peça promovida
   # se não for obrigatório a promoção, retorna None
   def move_piece(self, new_position: int) -> Piece | None:

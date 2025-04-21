@@ -269,6 +269,12 @@ class GameInterface:
       self.game.select_piece_to_drop(piece)
     elif self.game.selected_piece_to_drop is piece:
       self.game.deselect_piece_to_drop()
+      
+  def handle_drop_piece(self, new_position: int):
+    self.board[new_position]["piece"] = self.game.selected_piece_to_drop
+    self.board[new_position]["piece_img"] = pygame.transform.smoothscale(self.game.selected_piece_to_drop.image, (self.board_tile_width-16, self.board_tile_height-12))
+    self.possible_drops = []
+    self.game.drop_piece(new_position)
   
   def handle_possible_moves(self, piece: Piece):
     if not self.game.game_over and piece is not None and piece.color == self.game.whoPlaysNow.color:
@@ -423,6 +429,9 @@ class GameInterface:
             if index in self.possible_moves:
               self.handle_move_piece(index)
               break
+            
+            if index in self.possible_drops:
+              self.handle_drop_piece(index)
             
             if self.game.selected_piece_to_drop and index not in self.possible_drops:
               self.game.deselect_piece_to_drop()
