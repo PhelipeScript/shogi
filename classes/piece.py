@@ -356,6 +356,9 @@ class King(Piece):
             moves.append((row + i) * 9 + (col + j))
     return moves
 
+  def possible_drops(self, board):  
+    return []
+
   def promote(self):
     return None
   
@@ -393,6 +396,14 @@ class Lance(Piece):
         else:
           break
     return moves
+
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(0 if self.color == 'BLACK' else 1, 9 if self.color == 'WHITE' else 8):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
   
   def promote(self):
     return Promoted_lance(self.color, self.position)
