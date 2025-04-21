@@ -292,6 +292,42 @@ class GameInterface:
     else:
       self.promotion_menu_active = self.game.is_promotion_candidate(self.game.promotion_cadidate)
     
+  def handle_ai_move(self):
+
+    if hasattr(self.game, 'ai_move_pending') and self.game.ai_move_pending and not self.promotion_menu_active:
+        if self.game.game_over:
+          return
+        
+        old_position = self.game.ai_selected_piece.position
+        new_position = self.game.ai_target_position
+
+        old_cell = self.board[old_position]
+        new_cell = self.board[new_position]
+
+        if new_cell["piece"] is not None:
+          if new_cell["piece"].color != self.game.ai_selected_piece.color:
+            if self.game.ai_selected_piece.color == "WHITE":
+              self.game.players[0].capture_piece(new_cell["piece"])
+            else:
+              self.game.players[1].capture_piece(new_cell["piece"])
+
+        new_cell["piece"] = self.game.ai_selected_piece
+        new_cell["piece_img"] = old_cell["piece_img"]
+        old_cell["piece"] = None
+        old_cell["piece_img"] = None
+
+        self.game.select_piece(self.game.ai_selected_piece)
+        promoted_piece = self.game.move_piece(new_position)
+
+        if promoted_piece:
+          new_cell["piece"] = promoted_piece
+          new_cell["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
+
+        self.game.ai_move_pending = False
+        delattr(self.game, 'ai_selected_piece')
+        delattr(self.game, 'ai_target_position')
+        delattr(self.game, 'ai_move_pending')
+
   def configure_fullscreen_button(self):
     self.fullscreen_button = pygame.Rect(self.screen_width-166, 16, 150, 16)
     self.fullscreen_button_text = self.FONT_16.render(f"FULLSCREEN: {'ON' if self.fullscreen else 'OFF'}", True, TITLE_COLOR) 
@@ -409,6 +445,7 @@ class GameInterface:
       self.draw_game_info()
       self.draw_move_history()
       self.handle_promotion()
+      self.handle_ai_move()
       
       if self.game.game_over:
         self.draw_winner()

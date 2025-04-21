@@ -36,7 +36,7 @@ class Minmax:
         if not next_moves:
             return game.utility_function()
 
-        if player.color == "BLACK": #O jogador preto neste caso é o maximizador
+        if game.whoPlaysNow.color == "BLACK": #O jogador preto neste caso é o maximizador
             value = float("-inf")
             for _ , _,next_move in next_moves:
                 utility = self.evaluate_tree_alfabeta(next_move,player,max_height - 1,alfa,beta)
@@ -48,15 +48,15 @@ class Minmax:
         else:
             value = float("inf")
             for next_move in next_moves:
-                utility = self.evaluate_tree_alfabeta(next_move,False,player,max_height - 1,alfa,beta)
+                utility = self.evaluate_tree_alfabeta(next_move,player,max_height - 1,alfa,beta)
                 value = min(value,utility)
                 beta = min(beta,value)
                 if alfa >= beta:
                     break
             return value
             
-    def best_agent_move(self, game, player, max_height=8):
-        best_value = float("-inf") if player.color == "BLACK" else float("inf")
+    def best_agent_move(self, game, player, max_height=3):
+        best_value = float("-inf")
         best_move = None
         copy_game = game.copy()
         all_moves = copy_game.all_possible_moves()
@@ -66,7 +66,6 @@ class Minmax:
             return None
         
         piece_map = {id(copy_piece): original_piece for copy_piece, original_piece in zip(copy_game.players[1].pieces, game.players[1].pieces)}
-
         for piece,position,next_game in next_moves:
             utility = self.evaluate_tree_alfabeta(next_game, player, max_height)
 

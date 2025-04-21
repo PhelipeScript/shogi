@@ -6,7 +6,12 @@ from classes.player import Player
 
 
 class Shogi:
-  def __init__(self, board: Board = None, player1: Player = None, player2: Player = None, round: int = 0, autostart = True):
+
+  def __init__(
+      self, board: Board = None, player1: Player = None, player2: Player = None,
+      round: int = 0, autostart: bool = True
+    ):
+
     if player1 is None and player2 is None:
       player1 = Player("Jogador 1", "WHITE")
       player2 = Player("Jogador 2", "BLACK")
@@ -117,13 +122,13 @@ class Shogi:
   def next_turn(self):
     self.round += 1
     self.whoPlaysNow = self.players[self.round % 2]
-
-    if self.whoPlaysNow == self.players[1]:
-      self.ai_movement()
       
     self.check_winner()
     if self.winner is None:
       self.print_turn()
+    
+    if self.whoPlaysNow == self.players[1] and not hasattr(self,'ai_move_pending'):
+      self.ai_movement()
   
   def check_winner(self):
     black_king_alive = self.board.board_str.find('K')
@@ -140,8 +145,9 @@ class Shogi:
     for i in range(len(player_pieces)):
       player_moves = player_pieces[i].possible_moves(self.board.board_str)
       if player_moves != []:
-        piece_copy = player_pieces[i].copy()
-        moves.append((piece_copy , player_moves))
+        if player_pieces[i].position not in player_moves:
+          piece_copy = player_pieces[i].copy()
+          moves.append((piece_copy , player_moves))
     return moves
   
   def utility_function(self):
@@ -157,7 +163,12 @@ class Shogi:
   def possible_states(self,moves):
     all_possible_states = []
     for piece, positions in moves:
+      valid_moves = piece.possible_moves(self.board.board_str)
       for position in positions:
+
+        if position not in valid_moves:
+          continue
+
         new_board = self.board.copy()
         new_players = [self.players[0].copy(),self.players[1].copy()]
         new_shogi = Shogi(new_board,new_players[0],new_players[1],self.round, False)
@@ -172,12 +183,12 @@ class Shogi:
           if p.position == piece.position and p.symbol == piece.symbol:
             copied_piece = p
             break
-        
+
         if copied_piece is None:
-          break
-        
+          continue
+
         new_shogi.select_piece(copied_piece)
-        new_shogi.move_piece(position)
+        new_shogi.move_piece(position)  
         all_possible_states.append( (copied_piece, position, new_shogi) )
 
     return all_possible_states
@@ -197,8 +208,10 @@ class Shogi:
       piece,move = self.minmax.best_agent_move(self,self.players[1])
       print(f"Peça movimentada: {piece}")
       print(f"Peça movimento realizado: {move}")
-      self.select_piece(piece)
-      self.move_piece(move)
+
+      self.ai_selected_piece = piece
+      self.ai_target_position = move
+      self.ai_move_pending = True
 
 
   def check_game_over(self):
