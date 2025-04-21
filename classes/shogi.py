@@ -1,5 +1,5 @@
 from typing import Union
-
+from classes.minmax import Minmax
 from classes.board import Board
 from classes.piece import PIECES_CLASSES, Piece
 from classes.player import Player
@@ -17,6 +17,8 @@ class Shogi:
     self.players = [player1, player2]
     self.board = Board() if board is None else board
     self.round = round
+    self.minmax = Minmax()
+    self.autostart = autostart
 
     if autostart:
       self.start()
@@ -115,6 +117,10 @@ class Shogi:
   def next_turn(self):
     self.round += 1
     self.whoPlaysNow = self.players[self.round % 2]
+
+    if self.whoPlaysNow == self.players[1]:
+      self.ai_movement()
+      
     self.check_winner()
     if self.winner is None:
       self.print_turn()
@@ -171,7 +177,7 @@ class Shogi:
         
         new_shogi.select_piece(copied_piece)
         new_shogi.move_piece(position)
-        all_possible_states.append(new_shogi)
+        all_possible_states.append( (copied_piece, position, new_shogi) )
 
     return all_possible_states
 
@@ -185,6 +191,12 @@ class Shogi:
         self.players[0].remove_piece(board[new_position]["piece"])
         self.players[1].capture_piece(board[new_position]["piece"])
 
+  def ai_movement(self):
+    if self.autostart:
+      best_move = self.minmax.best_agent_move(self,self.players[1])
+      print(best_move)
+    pass
+
   def check_game_over(self):
     # verifica se o jogo acabou
     pass
@@ -197,7 +209,8 @@ class Shogi:
     pass
   
   def print_turn(self):
-    print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
+    #print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
+    pass
   
   def copy(self):
     return Shogi(self.board.copy(), self.players[0].copy(), self.players[1].copy(), self.round)
