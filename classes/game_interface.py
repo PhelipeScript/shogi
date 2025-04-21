@@ -265,6 +265,7 @@ class GameInterface:
 
   def handle_select_piece_to_drop(self, piece: Piece):
     if self.game.selected_piece_to_drop is None:
+      self.possible_moves = []
       self.game.select_piece_to_drop(piece)
     elif self.game.selected_piece_to_drop is piece:
       self.game.deselect_piece_to_drop()
@@ -277,6 +278,7 @@ class GameInterface:
       
   def handle_select_piece(self, piece: Piece):
     if self.game.selected_piece is None:
+      self.possible_drops = []
       self.game.select_piece(piece)
     elif self.game.selected_piece is piece:
       self.game.deselect_piece()
@@ -394,7 +396,11 @@ class GameInterface:
         
     for cell in self.b_captured_pieces:
       if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
-        cell["rect_color"] = HOVER
+        if self.game.selected_piece_to_drop is None:
+          cell["rect_color"] = HOVER
+          self.handle_possible_drops(cell["piece"])
+      elif cell["piece"] and cell["piece"] == self.game.selected_piece_to_drop:
+        cell["rect_color"] = WHITE
       else:
         cell["rect_color"] = BACKGROUND
     
@@ -427,12 +433,22 @@ class GameInterface:
           if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
             if self.game.selected_piece_to_drop:
               self.game.deselect_piece_to_drop()
-            elif cell["piece"]:
+            elif cell["piece"] and cell["piece"].color == self.game.whoPlaysNow.color:
               self.handle_select_piece_to_drop(cell["piece"])
               
             if self.game.selected_piece:
               self.game.deselect_piece()
-              self.possible_moves = []
+              break
+          
+        for cell in self.b_captured_pieces:
+          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
+            if self.game.selected_piece_to_drop:
+              self.game.deselect_piece_to_drop()
+            elif cell["piece"] and cell["piece"].color == self.game.whoPlaysNow.color:
+              self.handle_select_piece_to_drop(cell["piece"])
+              
+            if self.game.selected_piece:
+              self.game.deselect_piece()
               break
           
           
