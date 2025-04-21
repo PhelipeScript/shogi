@@ -258,7 +258,10 @@ class GameInterface:
     self.screen.blit(self.move_history_title, title_rect.topleft)
     
   def handle_possible_drops(self, piece: Piece):
-    pass
+    if not self.game.game_over and piece and piece.color == self.game.whoPlaysNow.color:
+      self.possible_drops = self.game.get_possible_drops(piece)
+    else: 
+      self.possible_drops = []
 
   def handle_select_piece_to_drop(self, piece: Piece):
     if self.game.selected_piece_to_drop is None:
@@ -371,7 +374,7 @@ class GameInterface:
           self.handle_possible_moves(cell["piece"])
       elif cell["piece"] == self.game.selected_piece and cell['piece'] is not None:
         cell["rect_color"] = WHITE
-      elif index in self.possible_moves:
+      elif index in self.possible_moves or index in self.possible_drops:
         if cell["piece"] is not None:
           cell["rect_color"] = POSSIBLE_CAPTURE
         else:

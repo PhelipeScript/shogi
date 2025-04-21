@@ -54,6 +54,23 @@ class Pawn(Piece):
             moves.append(self.position + 9)
     return moves
   
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      has_pawn_in_col = False
+      for row in range(9):
+        if board[row*9+col] == self.symbol:
+          has_pawn_in_col = True
+          break
+      if has_pawn_in_col:
+        continue
+      
+      for row in range(0 if self.color == "BLACK" else 1, 9 if self.color == "WHITE" else 8):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
+        
+  
   def promote(self):
     return Promoted_pawn(self.color, self.position)
   

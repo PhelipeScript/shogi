@@ -18,6 +18,7 @@ class Player:
       self.pieces.remove(piece)
   
   def capture_piece(self, piece):
+    piece.symbol = piece.symbol.lower() if piece.symbol.isupper() else piece.symbol.upper()
     piece.color = self.color
     self.captured_pieces.append(piece)
     
