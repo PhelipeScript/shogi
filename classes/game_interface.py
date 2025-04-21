@@ -35,6 +35,7 @@ class GameInterface:
     self.board = []
     self.capture_display = None
     self.possible_moves = []
+    self.possible_drops = []
     self.GRID_SIZE = 9
     self.promotion_menu_active = False
     
@@ -256,6 +257,24 @@ class GameInterface:
     title_rect = self.move_history_title.get_rect(center=(self.move_history[2]["rect"].centerx, self.move_history[2]["rect"].centery))
     self.screen.blit(self.move_history_title, title_rect.topleft)
     
+  def handle_possible_drops(self, piece: Piece):
+    if not self.game.game_over and piece and piece.color == self.game.whoPlaysNow.color:
+      self.possible_drops = self.game.get_possible_drops(piece)
+    else: 
+      self.possible_drops = []
+
+  def handle_select_piece_to_drop(self, piece: Piece):
+    if self.game.selected_piece_to_drop is None:
+      self.possible_moves = []
+      self.game.select_piece_to_drop(piece)
+    elif self.game.selected_piece_to_drop is piece:
+      self.game.deselect_piece_to_drop()
+      
+  def handle_drop_piece(self, new_position: int):
+    self.board[new_position]["piece"] = self.game.selected_piece_to_drop
+    self.board[new_position]["piece_img"] = pygame.transform.smoothscale(self.game.selected_piece_to_drop.image, (self.board_tile_width-16, self.board_tile_height-12))
+    self.possible_drops = []
+    self.game.drop_piece(new_position)
   
   def handle_possible_moves(self, piece: Piece):
     if not self.game.game_over and piece is not None and piece.color == self.game.whoPlaysNow.color:
@@ -265,6 +284,7 @@ class GameInterface:
       
   def handle_select_piece(self, piece: Piece):
     if self.game.selected_piece is None:
+      self.possible_drops = []
       self.game.select_piece(piece)
     elif self.game.selected_piece is piece:
       self.game.deselect_piece()
@@ -362,13 +382,33 @@ class GameInterface:
           self.handle_possible_moves(cell["piece"])
       elif cell["piece"] == self.game.selected_piece and cell['piece'] is not None:
         cell["rect_color"] = WHITE
-      elif index in self.possible_moves:
+      elif index in self.possible_moves or index in self.possible_drops:
         if cell["piece"] is not None:
           cell["rect_color"] = POSSIBLE_CAPTURE
         else:
           cell["rect_color"] = POSSIBLE_MOVE
       else:
-        cell["rect_color"] = BLACK
+        cell["rect_color"] = BACKGROUND
+    
+    for cell in self.w_captured_pieces:
+      if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
+        if self.game.selected_piece_to_drop is None:
+          cell["rect_color"] = HOVER
+          self.handle_possible_drops(cell["piece"])
+      elif cell["piece"] and cell["piece"] == self.game.selected_piece_to_drop:
+        cell["rect_color"] = WHITE
+      else:
+        cell["rect_color"] = BACKGROUND
+        
+    for cell in self.b_captured_pieces:
+      if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
+        if self.game.selected_piece_to_drop is None:
+          cell["rect_color"] = HOVER
+          self.handle_possible_drops(cell["piece"])
+      elif cell["piece"] and cell["piece"] == self.game.selected_piece_to_drop:
+        cell["rect_color"] = WHITE
+      else:
+        cell["rect_color"] = BACKGROUND
     
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
@@ -379,17 +419,48 @@ class GameInterface:
           self.configure_screen()
           
         for index, cell in enumerate(self.board):
-          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y) and cell["piece"]:
-            self.handle_select_piece(cell["piece"])
-
-          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y) and self.game.selected_piece is not None and index not in self.possible_moves:
-            if index is not self.game.selected_piece.position:
+          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
+            if self.game.selected_piece and index not in self.possible_moves:
               self.game.deselect_piece()
               break
+            elif cell["piece"]:
+              self.handle_select_piece(cell["piece"])
 
-          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y) and index in self.possible_moves:
-            self.handle_move_piece(index)
-            break
+            if index in self.possible_moves:
+              self.handle_move_piece(index)
+              break
+            
+            if index in self.possible_drops:
+              self.handle_drop_piece(index)
+            
+            if self.game.selected_piece_to_drop and index not in self.possible_drops:
+              self.game.deselect_piece_to_drop()
+              break
+              
+          
+        for cell in self.w_captured_pieces:
+          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
+            if self.game.selected_piece_to_drop:
+              self.game.deselect_piece_to_drop()
+            elif cell["piece"] and cell["piece"].color == self.game.whoPlaysNow.color:
+              self.handle_select_piece_to_drop(cell["piece"])
+              
+            if self.game.selected_piece:
+              self.game.deselect_piece()
+              break
+          
+        for cell in self.b_captured_pieces:
+          if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
+            if self.game.selected_piece_to_drop:
+              self.game.deselect_piece_to_drop()
+            elif cell["piece"] and cell["piece"].color == self.game.whoPlaysNow.color:
+              self.handle_select_piece_to_drop(cell["piece"])
+              
+            if self.game.selected_piece:
+              self.game.deselect_piece()
+              break
+          
+          
 
     if self.fullscreen_button.collidepoint(self.MOUSE_X, self.MOUSE_Y):
       if self.CURRENT_CURSOR != pygame.SYSTEM_CURSOR_HAND:
@@ -404,7 +475,6 @@ class GameInterface:
     self.root.withdraw()
     pygame.init()
     self.running = True
-    self.game.distribute_pieces()
     self.configure_screen()
     
     while self.running:
