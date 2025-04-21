@@ -29,6 +29,12 @@ class Piece:
     # retorna a nova peça promovida
     pass
   
+  def toggle_image(self, new_color):
+    if new_color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_' + self.name + '.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_' + self.name + '.png')
+  
 class Pawn(Piece):
   def __init__(self, color, position):
     super().__init__('pawn', color, position)
@@ -414,10 +420,10 @@ class Dragon(Piece):
     super().__init__('dragon',color,position)
     self.promotion_offer = True
     if color == 'WHITE':
-      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_rook.png')
+      self.image = self.image_manager.load_image('assets/international_pieces/w_dragon.png')
       self.symbol = 'd'
     else:
-      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_rook.png')
+      self.image = self.image_manager.load_image('assets/international_pieces/b_dragon.png')
       self.symbol = 'D'
     self.weight = 15
 
@@ -484,13 +490,13 @@ class Dragon(Piece):
 
 class Dragon_knight(Piece):
   def __init__(self,color,position):
-    super().__init__('Dragao Cavaleiro',color,position)
+    super().__init__('dragon_knight',color,position)
     self.promotion_offer = True
     if color == 'WHITE':
-      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_bishop.png')
+      self.image = self.image_manager.load_image('assets/international_pieces/w_dragon_knight.png')
       self.symbol = 't'
     else: 
-      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_bishop.png')
+      self.image = self.image_manager.load_image('assets/international_pieces/b_dragon_knight.png')
       self.symbol = 'T'
     self.weight = 15
 
@@ -537,7 +543,7 @@ class Dragon_knight(Piece):
 
 class Promoted_lance(Piece):
   def __init__(self,color,position):
-    super().__init__('Lança Promovida',color,position)
+    super().__init__('promoted_lance',color,position)
     self.promotion_offer = True
     if color == 'WHITE':
       self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_lance.png')
@@ -571,7 +577,7 @@ class Promoted_lance(Piece):
 
 class Promoted_knight(Piece):
   def __init__(self,color,position):
-    super().__init__('Cavaleiro Promovido',color,position)
+    super().__init__('promoted_knight',color,position)
     self.promotion_offer = True
     if color == 'WHITE':
       self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_knight.png')
@@ -605,7 +611,7 @@ class Promoted_knight(Piece):
 
 class Promoted_silver(Piece):
   def __init__(self,color,position):
-    super().__init__('',color,position)
+    super().__init__('promoted_silver_general',color,position)
     self.promotion_offer = True
     self.weight = 10
     if color == 'WHITE':
