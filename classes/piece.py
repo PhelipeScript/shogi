@@ -128,6 +128,14 @@ class Rook(Piece):
 
     return moves
   
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(9):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
+  
   def promote(self):
     return Dragon(self.color, self.position)
   
