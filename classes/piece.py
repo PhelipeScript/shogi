@@ -174,6 +174,14 @@ class Knight(Piece):
             elif row <= 6 and col <= 7 and board[(row + 2) * 9 + (col + 1)].islower():
                 moves.append((row + 2) * 9 + (col + 1))
         return moves
+      
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(0 if self.color == "BLACK" else 2, 9 if self.color == "WHITE" else 7):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
   
   def promote(self):
     return Promoted_knight(self.color, self.position)

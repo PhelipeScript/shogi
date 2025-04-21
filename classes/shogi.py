@@ -102,9 +102,9 @@ class Shogi:
     
   def is_mandatory_promotion(self, piece: Piece):
     if piece.color == "WHITE":
-      return piece.position < 9 and (piece.name == 'pawn' or piece.name == 'lance' or piece.name == 'knight') 
+      return piece.position < 9 and (piece.name == 'pawn' or piece.name == 'lance') or piece.position < 18 and piece.name == 'knight' 
     elif piece.color == "BLACK":
-      return piece.position > 71 and (piece.name == 'pawn' or piece.name == 'lance' or piece.name == 'knight')
+      return piece.position > 71 and (piece.name == 'pawn' or piece.name == 'lance') or piece.position > 62 and piece.name == 'knight'
     return False  
   
   def is_promotion_candidate(self, piece: Piece):
