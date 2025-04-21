@@ -26,7 +26,7 @@ class Piece:
     pass
   
   def copy(self):
-    return PIECES_CLASSES[self.symbol](self.color, self.position)
+    return PIECES_CLASSES[self.symbol.lower()](self.color, self.position)
   
 class Pawn(Piece):
   def __init__(self, color, position):

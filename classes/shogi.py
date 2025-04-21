@@ -140,7 +140,8 @@ class Shogi:
     for i in range(len(player_pieces)):
       player_moves = player_pieces[i].possible_moves(self.board.board_str)
       if player_moves != []:
-        moves.append((player_pieces[i] , player_moves))
+        piece_copy = player_pieces[i].copy()
+        moves.append((piece_copy , player_moves))
     return moves
   
   def utility_function(self):
@@ -193,9 +194,12 @@ class Shogi:
 
   def ai_movement(self):
     if self.autostart:
-      best_move = self.minmax.best_agent_move(self,self.players[1])
-      print(best_move)
-    pass
+      piece,move = self.minmax.best_agent_move(self,self.players[1])
+      print(f"Peça movimentada: {piece}")
+      print(f"Peça movimento realizado: {move}")
+      self.select_piece(piece)
+      self.move_piece(move)
+
 
   def check_game_over(self):
     # verifica se o jogo acabou

@@ -9,7 +9,10 @@ class Minmax:
         all_moves = game.all_possible_moves()
         next_moves = game.possible_states(all_moves)
 
-        if player.color == "BLACK":
+        if not next_moves:
+            return game.utility_function()
+
+        if game.whoPlaysNow.color == "BLACK":
             higher_value = float("-inf")
             for next_move in next_moves:
                 utility = self.evaluate_tree(next_move, player, max_height - 1)
@@ -30,10 +33,13 @@ class Minmax:
         all_moves = game.all_possible_moves()
         next_moves = game.possible_states(all_moves)
 
+        if not next_moves:
+            return game.utility_function()
+
         if player.color == "BLACK": #O jogador preto neste caso é o maximizador
             value = float("-inf")
-            for next_move in next_moves:
-                utility = self.evaluate_tree_alfabeta(next_move[2],player,max_height - 1,alfa,beta)
+            for _ , _,next_move in next_moves:
+                utility = self.evaluate_tree_alfabeta(next_move,player,max_height - 1,alfa,beta)
                 value = max(value,utility)
                 alfa = max(alfa,value)
                 if beta <= alfa:
@@ -42,26 +48,39 @@ class Minmax:
         else:
             value = float("inf")
             for next_move in next_moves:
-                utility = self.evaluate_tree_alfabeta(next_move[2],False,player,max_height - 1,alfa,beta)
+                utility = self.evaluate_tree_alfabeta(next_move,False,player,max_height - 1,alfa,beta)
                 value = min(value,utility)
                 beta = min(beta,value)
-                if beta <= alfa:
+                if alfa >= beta:
                     break
             return value
             
     def best_agent_move(self, game, player, max_height=8):
         best_value = float("-inf") if player.color == "BLACK" else float("inf")
         best_move = None
-        all_moves = game.all_possible_moves()
-        next_moves = game.possible_states(all_moves)
+        copy_game = game.copy()
+        all_moves = copy_game.all_possible_moves()
+        next_moves = copy_game.possible_states(all_moves)
 
-        for next_move in next_moves:
-            utility = self.evaluate_tree_alfabeta(next_move[2], player, max_height)
+        if not next_moves:
+            return None
+        
+        piece_map = {id(copy_piece): original_piece for copy_piece, original_piece in zip(copy_game.players[1].pieces, game.players[1].pieces)}
+
+        for piece,position,next_game in next_moves:
+            utility = self.evaluate_tree_alfabeta(next_game, player, max_height)
+
+            original_piece = piece_map.get(id(piece))
             if player.color == "BLACK":
                 if utility > best_value:
                     best_value = utility
-                    best_move = next_move
+                    best_move = (original_piece,position)
             else:
                 if utility < best_value:
                     best_value = utility
-                    best_move = next_move
+                    best_move = (original_piece,position)
+
+        if best_move is None:
+            print("Não foi possivel determinar o melhor movimento")
+
+        return best_move
