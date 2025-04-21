@@ -23,6 +23,6 @@ class Player:
     
   def copy(self):
     new_player = Player(self.name, self.color)
-    new_player.captured_pieces = [piece for piece in self.captured_pieces]
+    new_player.captured_pieces = [piece.copy() for piece in self.captured_pieces]
     return new_player  
   
