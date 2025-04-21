@@ -105,19 +105,17 @@ class Shogi:
       player.add_piece(promoted_piece)
     return promoted_piece
   
-
-
   def get_time_info(self):
-      total = self.player_times["WHITE"] + self.player_times["BLACK"]
-      return {
-          "Tempo jogador 1": self.format_time(self.player_times["WHITE"]),
-          "Tempo jogador 2": self.format_time(self.player_times["BLACK"]),
-          "Tempo total": self.format_time(total)
-      }
+    total = self.player_times["WHITE"] + self.player_times["BLACK"]
+    return {
+        "Tempo jogador 1": self.format_time(self.player_times["WHITE"]),
+        "Tempo jogador 2": self.format_time(self.player_times["BLACK"]),
+        "Tempo total": self.format_time(total)
+    }
 
   def format_time(self, seconds):
-      m, s = divmod(int(seconds), 60)
-      return f"{m}:{s:02d}"
+    m, s = divmod(int(seconds), 60)
+    return f"{m}:{s:02d}"
 
   def next_turn(self):
     self.round += 1
