@@ -38,6 +38,7 @@ class GameInterface:
     self.possible_drops = []
     self.GRID_SIZE = 9
     self.promotion_menu_active = False
+    self.clock = pygame.time.Clock()
     
   def configure_screen(self):
     if (self.fullscreen):
@@ -190,13 +191,15 @@ class GameInterface:
     for cell in self.game_info:
       self.screen.blit(cell["tile_img"], cell["rect"].topleft)
       pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1)
+
+    time_info = self.game.get_time_info()
     
     texts = [
       {"label": "Jogador 1:", "value": self.game.players[0].name},
       {"label": "Jogador 2:", "value": self.game.players[1].name},
-      {"label": "Tempo jogador 1:", "value": "5:32"},
-      {"label": "Tempo jogador 2:", "value": "10:00"},
-      {"label": "Tempo total:", "value": "15:32"},
+      {"label": "Tempo jogador 1:", "value": time_info["Tempo jogador 1"]},
+      {"label": "Tempo jogador 2:", "value": time_info["Tempo jogador 2"]},
+      {"label": "Tempo total:", "value": time_info["Tempo total"]},
       {"label": "Rodada atual:", "value": self.game.round+1},
       {"label": "Jogador da vez:", "value": self.game.whoPlaysNow.name},
     ]
@@ -478,6 +481,8 @@ class GameInterface:
     self.configure_screen()
     
     while self.running:
+      dt = self.clock.tick(60) / 1000.0  
+      self.game.player_times[self.game.whoPlaysNow.color] += dt
       self.screen.fill(BACKGROUND)
       
       self.handle_events()
