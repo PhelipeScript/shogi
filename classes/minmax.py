@@ -61,10 +61,10 @@ class Minmax:
         
         piece_map = {id(copy_piece): original_piece for copy_piece, original_piece in zip(copy_game.agent.pieces, game.agent.pieces)}
         for piece,position,next_game in next_moves:
-            utility = self.evaluate_tree_alfabeta(next_game,True,copy_game.players[1], max_height)
+            utility = self.evaluate_tree_alfabeta(next_game,True,copy_game.agent, max_height)
             original_piece = piece_map.get(id(piece))
 
-            if copy_game.players[1].color == "BLACK":
+            if copy_game.agent.color == "BLACK":
                 if utility >= best_value:
                     best_value = utility
                     best_move = (original_piece,position)
