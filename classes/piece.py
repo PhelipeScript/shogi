@@ -20,6 +20,10 @@ class Piece:
   def possible_moves(self, board):
     # retorna uma lista de posições possíveis para a peça
     pass
+  
+  def possible_drops(self, board):
+    # retorna uma lista de posições possíveis para a peça
+    pass
 
   def promote(self) -> Union['Piece', None]:
     # retorna a nova peça promovida
@@ -29,6 +33,12 @@ class Piece:
     # retorna uma cópia da peça
     pass
 
+  def toggle_image(self, new_color):
+    if new_color == 'WHITE':
+      self.image = self.image_manager.load_image('assets/international_pieces/w_' + self.name + '.png')
+    else:
+      self.image = self.image_manager.load_image('assets/international_pieces/b_' + self.name + '.png')
+  
 class Pawn(Piece):
   def __init__(self, color, position):
     super().__init__('pawn', color, position)
@@ -53,7 +63,24 @@ class Pawn(Piece):
         elif board[self.position + 9].islower():
             moves.append(self.position + 9)
     return moves
-
+  
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      has_pawn_in_col = False
+      for row in range(9):
+        if board[row*9+col] == self.symbol:
+          has_pawn_in_col = True
+          break
+      if has_pawn_in_col:
+        continue
+      
+      for row in range(0 if self.color == "BLACK" else 1, 9 if self.color == "WHITE" else 8):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
+        
+  
   def promote(self):
     return Promoted_pawn(self.color, self.position)
   
@@ -114,6 +141,14 @@ class Rook(Piece):
 
     return moves
   
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(9):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
+  
   def promote(self):
     return Dragon(self.color, self.position)
   
@@ -155,6 +190,14 @@ class Knight(Piece):
             elif row <= 6 and col <= 7 and board[(row + 2) * 9 + (col + 1)].islower():
                 moves.append((row + 2) * 9 + (col + 1))
         return moves
+      
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(0 if self.color == "BLACK" else 2, 9 if self.color == "WHITE" else 7):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
   
   def promote(self):
     return Promoted_knight(self.color, self.position)
@@ -220,6 +263,14 @@ class Bishop(Piece):
 
     return moves
   
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(9):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
+  
   def promote(self):
     return Dragon_knight(self.color, self.position)
   
@@ -254,6 +305,14 @@ class Gold_general(Piece):
             moves.append((row + i) * 9 + (col + j))
     return moves
   
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(9):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
+  
   def promote(self):
     return None
   
@@ -287,6 +346,14 @@ class Silver_general(Piece):
             moves.append((row + i) * 9 + (col + j))
     return moves
   
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(9):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
+  
   def promote(self):
     return Promoted_silver(self.color, self.position)
   
@@ -316,6 +383,9 @@ class King(Piece):
           elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
             moves.append((row + i) * 9 + (col + j))
     return moves
+
+  def possible_drops(self, board):  
+    return []
 
   def promote(self):
     return None
@@ -357,6 +427,14 @@ class Lance(Piece):
         else:
           break
     return moves
+
+  def possible_drops(self, board):
+    drops = []
+    for col in range(9):
+      for row in range(0 if self.color == 'BLACK' else 1, 9 if self.color == 'WHITE' else 8):
+        if board[row*9+col] == '.':
+          drops.append(row*9+col)
+    return drops
   
   def promote(self):
     return Promoted_lance(self.color, self.position)
@@ -370,10 +448,10 @@ class Dragon(Piece):
     super().__init__('dragon',color,position)
     self.promotion_offer = True
     if color == 'WHITE':
-      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_rook.png')
+      self.image = self.image_manager.load_image('assets/international_pieces/w_dragon.png')
       self.symbol = 'd'
     else:
-      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_rook.png')
+      self.image = self.image_manager.load_image('assets/international_pieces/b_dragon.png')
       self.symbol = 'D'
     self.weight = 15
 
@@ -432,6 +510,9 @@ class Dragon(Piece):
         break
     return moves
   
+  def possible_drops(self, board):
+    return []
+  
   def promote(self):
     return None
   
@@ -440,13 +521,13 @@ class Dragon(Piece):
 
 class Dragon_knight(Piece):
   def __init__(self,color,position):
-    super().__init__('Dragao Cavaleiro',color,position)
+    super().__init__('dragon_knight',color,position)
     self.promotion_offer = True
     if color == 'WHITE':
-      self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_bishop.png')
+      self.image = self.image_manager.load_image('assets/international_pieces/w_dragon_knight.png')
       self.symbol = 't'
     else: 
-      self.image = self.image_manager.load_image('assets/international_pieces/b_promoted_bishop.png')
+      self.image = self.image_manager.load_image('assets/international_pieces/b_dragon_knight.png')
       self.symbol = 'T'
     self.weight = 15
 
@@ -485,6 +566,9 @@ class Dragon_knight(Piece):
 
     return moves
   
+  def possible_drops(self, board):
+    return []
+  
   def promote(self):
     return None
   
@@ -493,7 +577,7 @@ class Dragon_knight(Piece):
 
 class Promoted_lance(Piece):
   def __init__(self,color,position):
-    super().__init__('Lança Promovida',color,position)
+    super().__init__('promoted_lance',color,position)
     self.promotion_offer = True
     if color == 'WHITE':
       self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_lance.png')
@@ -518,6 +602,9 @@ class Promoted_lance(Piece):
           elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
             moves.append((row + i) * 9 + (col + j))
     return moves
+  
+  def possible_drops(self, board):
+    return []
 
   def promote(self):
     return None
@@ -527,7 +614,7 @@ class Promoted_lance(Piece):
 
 class Promoted_knight(Piece):
   def __init__(self,color,position):
-    super().__init__('Cavaleiro Promovido',color,position)
+    super().__init__('promoted_knight',color,position)
     self.promotion_offer = True
     if color == 'WHITE':
       self.image = self.image_manager.load_image('assets/international_pieces/w_promoted_knight.png')
@@ -553,6 +640,9 @@ class Promoted_knight(Piece):
             moves.append((row + i) * 9 + (col + j))
     return moves
   
+  def possible_drops(self, board):
+    return []
+  
   def promote(self):
     return None
   
@@ -561,7 +651,7 @@ class Promoted_knight(Piece):
 
 class Promoted_silver(Piece):
   def __init__(self,color,position):
-    super().__init__('',color,position)
+    super().__init__('promoted_silver_general',color,position)
     self.promotion_offer = True
     self.weight = 10
     if color == 'WHITE':
@@ -586,6 +676,9 @@ class Promoted_silver(Piece):
           elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
             moves.append((row + i) * 9 + (col + j))
     return moves
+
+  def possible_drops(self, board):
+    return []
   
   def promote(self):
     return None
@@ -620,6 +713,9 @@ class Promoted_pawn(Piece):
           elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
             moves.append((row + i) * 9 + (col + j))
     return moves
+  
+  def possible_drops(self, board):
+    return []
   
   def promote(self):
     return None

@@ -22,7 +22,9 @@ class Shogi:
     self.winner = None
     self.game_over = False
     self.selected_piece = None
+    self.selected_piece_to_drop = None
     self.promotion_cadidate = None
+    self.player_times = {"WHITE": 0.0, "BLACK": 0.0}
     self.distribute_pieces()
 
   def end(self):
@@ -53,6 +55,7 @@ class Shogi:
     elif isinstance(identifier, Piece):
       if identifier.color == self.whoPlaysNow.color:
         self.selected_piece = identifier
+        self.selected_piece_to_drop = None
     else:
       print("Peça inválida")
       
@@ -70,6 +73,28 @@ class Shogi:
         piece = self.agent.get_piece(new_position)
         self.player.capture_piece(piece)
         self.agent.remove_piece(piece)
+    
+  def select_piece_to_drop(self, piece: Piece):
+    if self.game_over: return
+    
+    self.selected_piece_to_drop = piece
+    self.selected_piece = None
+  
+  def deselect_piece_to_drop(self):
+    self.selected_piece_to_drop = None
+    
+  def drop_piece(self, new_position: int):
+    if self.game_over: return
+    
+    if self.selected_piece_to_drop:
+      piece_symbol = self.selected_piece_to_drop.symbol
+      self.board.board_str = self.board.board_str[:new_position] + piece_symbol + self.board.board_str[new_position+1:]
+      self.selected_piece_to_drop.position = new_position
+      player = self.player if self.selected_piece_to_drop.color == "WHITE" else self.agent
+      player.remove_captured_piece(self.selected_piece_to_drop)
+      player.add_piece(self.selected_piece_to_drop)
+      self.deselect_piece_to_drop()
+      self.next_turn()
     
   # se for obrigatório a promoção, retorna a peça promovida
   # se não for obrigatório a promoção, retorna None
@@ -97,12 +122,15 @@ class Shogi:
     if self.autostart:
       self.board.print_board()
     return promoted_piece
+  
+  def get_possible_drops(self, piece: Piece) -> list[int]:
+    return piece.possible_drops(self.board.board_str)
     
   def is_mandatory_promotion(self, piece: Piece):
     if piece.color == "WHITE":
-      return piece.position < 9 and (piece.name == 'pawn' or piece.name == 'lance' or piece.name == 'knight') 
+      return piece.position < 9 and (piece.name == 'pawn' or piece.name == 'lance') or piece.position < 18 and piece.name == 'knight' 
     elif piece.color == "BLACK":
-      return piece.position > 71 and (piece.name == 'pawn' or piece.name == 'lance' or piece.name == 'knight')
+      return piece.position > 71 and (piece.name == 'pawn' or piece.name == 'lance') or piece.position > 62 and piece.name == 'knight'
     return False  
   
   def is_promotion_candidate(self, piece: Piece):
@@ -122,6 +150,18 @@ class Shogi:
       player.add_piece(promoted_piece)
     return promoted_piece
   
+  def get_time_info(self):
+    total = self.player_times["WHITE"] + self.player_times["BLACK"]
+    return {
+        "Tempo jogador 1": self.format_time(self.player_times["WHITE"]),
+        "Tempo jogador 2": self.format_time(self.player_times["BLACK"]),
+        "Tempo total": self.format_time(total)
+    }
+
+  def format_time(self, seconds):
+    m, s = divmod(int(seconds), 60)
+    return f"{m}:{s:02d}"
+
   def next_turn(self):
     self.round += 1
     self.whoPlaysNow = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
