@@ -302,7 +302,7 @@ class King(Piece):
     else:
       self.image = self.image_manager.load_image('assets/international_pieces/b_king.png')
       self.symbol = 'K'
-    self.weight = 100
+    self.weight = 99999
   
   def possible_moves(self, board):
     moves = []

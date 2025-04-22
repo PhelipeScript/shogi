@@ -142,9 +142,9 @@ class Shogi:
       self.print_winner()
       return True
 
-  def all_possible_moves(self):
+  def all_possible_moves(self, player = None):
     moves = []
-    player_pieces = self.whoPlaysNow.pieces
+    player_pieces = self.whoPlaysNow.pieces if player is None else player.pieces
     for piece in player_pieces:
       possible_moves = piece.possible_moves(self.board.board_str)
       if possible_moves != [] and piece.position not in possible_moves:
@@ -154,10 +154,23 @@ class Shogi:
   def utility_function(self):
     white_player_pieces = self.player.pieces
     black_player_pieces = self.agent.pieces
-    white_total_weight = sum(piece.weight for piece in white_player_pieces)
+
+    is_agent_on_check = self.is_on_check(self.agent, self.player)
+    is_player_on_check = self.is_on_check(self.player, self.agent)
+
     black_total_weight = sum(piece.weight for piece in black_player_pieces)
-    return black_total_weight - white_total_weight
-    
+    white_total_weight = sum(piece.weight for piece in white_player_pieces)
+
+    if is_player_on_check:
+      print((black_total_weight - white_total_weight) + 1000)
+      return (black_total_weight - white_total_weight) + 1000
+    elif is_agent_on_check:
+      print((black_total_weight - white_total_weight) - 1000)
+      return (black_total_weight - white_total_weight) - 1000
+    else:
+      print(black_total_weight - white_total_weight)
+      return black_total_weight - white_total_weight
+
   def possible_states(self):
     all_possible_states = []
     for piece, positions in self.all_possible_moves():
@@ -187,6 +200,23 @@ class Shogi:
       self.ai_target_position = move
       self.ai_move_pending = True
 
+
+  def is_on_check(self,player,oponent):
+    # verifica se o jogador está em xeque
+    # se sim, retorna True
+    # se não, retorna False
+    king_pos = self.board.board_str.find('K') if player.color == "BLACK" else self.board.board_str.find('k')
+    if king_pos == -1:
+      return False
+    
+    moves = self.all_possible_moves(oponent)
+
+    for _, positions in moves:
+      for position in positions:
+        if position == king_pos:
+          return True
+    return False
+    
 
   def check_game_over(self):
     # verifica se o jogo acabou

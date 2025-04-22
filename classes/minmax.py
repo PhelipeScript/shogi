@@ -49,7 +49,7 @@ class Minmax:
                     continue
                 return beta
             
-    def best_move(self, game, max_height=30):
+    def best_move(self, game, max_height=7):
         best_value = float("-inf")
         best_move = None
         copy_game = game.copy()
