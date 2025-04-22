@@ -1,3 +1,6 @@
+from classes.minmax import Minmax
+from classes.piece import Piece
+
 class Player:
   def __init__(self, name, color):
     self.name = name
@@ -29,3 +32,15 @@ class Player:
     new_player.captured_pieces = [piece.copy() for piece in self.captured_pieces]
     return new_player  
   
+class Agent(Player):
+  def __init__(self, name, color, strategy = Minmax()):
+    super().__init__(name, color)
+    self.strategy = strategy
+  
+  def best_move(self, game) -> tuple[Piece, int]:
+    return self.strategy.best_agent_move(game, self)
+  
+  def copy(self):
+    new_agent = Agent(self.name, self.color, self.strategy)
+    new_agent.captured_pieces = [piece.copy() for piece in self.captured_pieces]
+    return new_agent

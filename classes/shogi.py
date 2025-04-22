@@ -2,24 +2,17 @@ from typing import Union
 from classes.minmax import Minmax
 from classes.board import Board
 from classes.piece import PIECES_CLASSES, Piece
-from classes.player import Player
+from classes.player import Agent, Player
 
 
 class Shogi:
 
   def __init__(
-      self, board: Board = None, player1: Player = None, player2: Player = None,
+      self, board: Board = None, player: Player = None, agent: Agent = None,
       round: int = 0, autostart: bool = True
     ):
-
-    if player1 is None and player2 is None:
-      player1 = Player("Jogador 1", "WHITE")
-      player2 = Player("Jogador 2", "BLACK")
-    elif player1 is None:
-      player1 = Player("Jogador 1", "WHITE") if player2.color == "BLACK" else Player("Jogador 1", "BLACK")
-    else: 
-      player2 = Player("Jogador 2", "BLACK") if player1.color == "WHITE" else Player("Jogador 2", "WHITE")
-    self.players = [player1, player2]
+    self.player = player if player else Player("Jogador", "WHITE")
+    self.agent = agent if agent else Agent("Agente", "BLACK") if self.player.color == "WHITE" else Agent("Agente", "WHITE")
     self.board = Board() if board is None else board
     self.round = round
     self.minmax = Minmax()
@@ -30,7 +23,7 @@ class Shogi:
     
     
   def start(self):
-    self.whoPlaysNow = self.players[0] if self.players[0].color == "WHITE" and self.round % 2 == 0 else self.players[1]
+    self.whoPlaysNow = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
     self.winner = None
     self.game_over = False
     self.selected_piece = None
@@ -46,9 +39,9 @@ class Shogi:
       if board_piece != '.':
         player = None
         if board_piece.islower():
-          player = self.players[0]
+          player = self.player
         else:
-          player = self.players[1]
+          player = self.agent
 
         new_piece = PIECES_CLASSES[board_piece.lower()](player.color, i)
         player.add_piece(new_piece)
@@ -114,27 +107,27 @@ class Shogi:
     promoted_piece = piece.promote()
     if promoted_piece:
       self.board.board_str = self.board.board_str[:piece.position] + promoted_piece.symbol + self.board.board_str[piece.position+1:]
-      player = self.players[0] if piece.color == "WHITE" else self.players[1]
+      player = self.player if piece.color == "WHITE" else self.agent
       player.remove_piece(piece)
       player.add_piece(promoted_piece)
     return promoted_piece
   
   def next_turn(self):
     self.round += 1
-    self.whoPlaysNow = self.players[self.round % 2]
+    self.whoPlaysNow = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
       
     self.check_winner()
     if self.winner is None:
       self.print_turn()
     
-    if self.whoPlaysNow == self.players[1] and not hasattr(self,'ai_move_pending'):
+    if self.whoPlaysNow == self.agent and not hasattr(self,'ai_move_pending'):
       self.ai_movement()
   
   def check_winner(self):
     black_king_alive = self.board.board_str.find('K')
     white_king_alive = self.board.board_str.find('k')
     if black_king_alive == -1 or white_king_alive == -1:
-      self.winner = self.players[0 if black_king_alive == -1 else 1]
+      self.winner = self.player if self.player.color == "WHITE" and black_king_alive == -1 else self.agent
       self.game_over = True
       self.print_winner()
       return True
@@ -151,8 +144,8 @@ class Shogi:
     return moves
   
   def utility_function(self):
-    white_player_pieces = self.players[0].pieces
-    black_player_pieces = self.players[1].pieces
+    white_player_pieces = self.player.pieces
+    black_player_pieces = self.agent.pieces
     white_total_weight = sum(piece.weight for piece in white_player_pieces)
     black_total_weight = sum(piece.weight for piece in black_player_pieces)
     if self.whoPlaysNow.color == "WHITE":
@@ -170,9 +163,9 @@ class Shogi:
           continue
 
         new_board = self.board.copy()
-        new_players = [self.players[0].copy(),self.players[1].copy()]
+        new_players = [self.player.copy(),self.agent.copy()]
         new_shogi = Shogi(new_board,new_players[0],new_players[1],self.round, False)
-        new_shogi.whoPlaysNow = self.players[0] if self.players[0].color == "WHITE" and self.round % 2 == 0 else self.players[1]
+        new_shogi.whoPlaysNow = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
         new_shogi.winner = None
         new_shogi.game_over = False
         new_shogi.selected_piece = None
@@ -197,15 +190,15 @@ class Shogi:
   def capture_piece(self,board,new_position):
     if board[new_position]["piece"] is not None:
       if board[new_position]["piece"].color == "BLACK":
-        self.players[1].remove_piece(board[new_position]["piece"])
-        self.players[0].capture_piece(board[new_position]["piece"])
+        self.agent.remove_piece(board[new_position]["piece"])
+        self.player.capture_piece(board[new_position]["piece"])
       else:
-        self.players[0].remove_piece(board[new_position]["piece"])
-        self.players[1].capture_piece(board[new_position]["piece"])
+        self.player.remove_piece(board[new_position]["piece"])
+        self.agent.capture_piece(board[new_position]["piece"])
 
   def ai_movement(self):
     if self.autostart:
-      piece,move = self.minmax.best_agent_move(self,self.players[1])
+      piece, move = self.agent.best_move(self)
       print(f"Peça movimentada: {piece}")
       print(f"Peça movimento realizado: {move}")
 
@@ -230,4 +223,4 @@ class Shogi:
     pass
   
   def copy(self):
-    return Shogi(self.board.copy(), self.players[0].copy(), self.players[1].copy(), self.round)
+    return Shogi(self.board.copy(), self.player.copy(), self.agent.copy(), self.round)
