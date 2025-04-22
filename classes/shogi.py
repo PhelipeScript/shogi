@@ -4,7 +4,6 @@ from classes.board import Board
 from classes.piece import PIECES_CLASSES, Piece
 from classes.player import Player
 
-
 class Shogi:
 
   def __init__(
@@ -92,7 +91,8 @@ class Shogi:
 
     self.deselect_piece()
     self.next_turn()
-    self.board.print_board()
+    if self.autostart:
+      self.board.print_board()
     return promoted_piece
     
   def is_mandatory_promotion(self, piece: Piece):
@@ -155,42 +155,33 @@ class Shogi:
     black_player_pieces = self.players[1].pieces
     white_total_weight = sum(piece.weight for piece in white_player_pieces)
     black_total_weight = sum(piece.weight for piece in black_player_pieces)
-    if self.whoPlaysNow.color == "WHITE":
-      return white_total_weight - black_total_weight
-    else:
-      return black_total_weight - white_total_weight
+    return black_total_weight - white_total_weight
     
-  def possible_states(self,moves):
+  def possible_states(self, moves):
     all_possible_states = []
     for piece, positions in moves:
-      valid_moves = piece.possible_moves(self.board.board_str)
-      for position in positions:
+        for position in positions:
+            new_board = self.board.copy()
+            new_players = [self.players[0].copy(), self.players[1].copy()]
+            new_shogi = Shogi(new_board, new_players[0], new_players[1], self.round, False)
+            new_shogi.whoPlaysNow = self.players[0] if self.players[0].color == "WHITE" and self.round % 2 == 0 else self.players[1]
+            new_shogi.winner = None
+            new_shogi.game_over = False
+            new_shogi.selected_piece = None
+            new_shogi.promotion_cadidate = None
 
-        if position not in valid_moves:
-          continue
+            copied_piece = None
+            for p in new_shogi.whoPlaysNow.pieces:
+                if p.position == piece.position and p.symbol == piece.symbol:
+                    copied_piece = p
+                    break
 
-        new_board = self.board.copy()
-        new_players = [self.players[0].copy(),self.players[1].copy()]
-        new_shogi = Shogi(new_board,new_players[0],new_players[1],self.round, False)
-        new_shogi.whoPlaysNow = self.players[0] if self.players[0].color == "WHITE" and self.round % 2 == 0 else self.players[1]
-        new_shogi.winner = None
-        new_shogi.game_over = False
-        new_shogi.selected_piece = None
-        new_shogi.promotion_cadidate = None
-
-        copied_piece = None
-        for p in new_shogi.whoPlaysNow.pieces:
-          if p.position == piece.position and p.symbol == piece.symbol:
-            copied_piece = p
-            break
-
-        if copied_piece is None:
-          continue
-
-        new_shogi.select_piece(copied_piece)
-        new_shogi.move_piece(position)  
-        all_possible_states.append( (copied_piece, position, new_shogi) )
-
+            if copied_piece is None:
+                continue
+            
+            new_shogi.select_piece(copied_piece)
+            new_shogi.move_piece(position)
+            all_possible_states.append((copied_piece, position, new_shogi))
     return all_possible_states
 
     
@@ -205,10 +196,9 @@ class Shogi:
 
   def ai_movement(self):
     if self.autostart:
-      piece,move = self.minmax.best_agent_move(self,self.players[1])
-      print(f"Peça movimentada: {piece}")
-      print(f"Peça movimento realizado: {move}")
-
+      piece,move = self.minmax.best_agent_move(self)
+      print(f"\nPeça movimentada: {piece.symbol}")
+      print(f"movimento realizado: {move}\n")
       self.ai_selected_piece = piece
       self.ai_target_position = move
       self.ai_move_pending = True

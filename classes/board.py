@@ -1,3 +1,4 @@
+import copy
 class Board:
   def __init__(self, board_str: str = None):
     # l = Lance
@@ -34,7 +35,8 @@ class Board:
     board_array = self.string_to_array()
     for row in board_array:
       print(" ".join(row))
+    print("\n")
     pass
 
   def copy(self):
-    return Board(self.board_str)
+    return copy.deepcopy(self)
