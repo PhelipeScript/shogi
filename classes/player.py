@@ -38,7 +38,7 @@ class Agent(Player):
     self.strategy = strategy
   
   def best_move(self, game) -> tuple[Piece, int]:
-    return self.strategy.best_agent_move(game)
+    return self.strategy.best_move(game)
   
   def copy(self):
     new_agent = Agent(self.name, self.color, self.strategy)

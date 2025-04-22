@@ -151,7 +151,10 @@ class Shogi:
   def possible_states(self, moves):
     all_possible_states = []
     for piece, positions in moves:
+        print(f"{piece.symbol} at {piece.position} can move to {positions}")
+        old_pos = piece.position
         for position in positions:
+
             new_board = self.board.copy()
             new_players = [self.player.copy(), self.agent.copy()]
             new_shogi = Shogi(new_board, new_players[0], new_players[1], self.round, False)
@@ -163,7 +166,7 @@ class Shogi:
 
             copied_piece = None
             for p in new_shogi.whoPlaysNow.pieces:
-                if p.position == piece.position and p.symbol == piece.symbol:
+                if p.position == old_pos and p.symbol == piece.symbol:
                     copied_piece = p
                     break
 
@@ -172,7 +175,9 @@ class Shogi:
             
             new_shogi.select_piece(copied_piece)
             new_shogi.move_piece(position)
-            all_possible_states.append((copied_piece, position, new_shogi))
+            all_possible_states.append((copied_piece, new_shogi))
+    print("\n todos os estados possiveis")
+    print(all_possible_states)
     return all_possible_states  
 
     
