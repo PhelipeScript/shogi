@@ -26,8 +26,9 @@ class Piece:
     pass
   
   def copy(self):
-    return PIECES_CLASSES[self.symbol.lower()](self.color, self.position)
-  
+    # retorna uma cópia da peça
+    pass
+
 class Pawn(Piece):
   def __init__(self, color, position):
     super().__init__('pawn', color, position)
@@ -55,6 +56,9 @@ class Pawn(Piece):
 
   def promote(self):
     return Promoted_pawn(self.color, self.position)
+  
+  def copy(self):
+    return Pawn(self.color, self.position)
   
 class Rook(Piece): 
   def __init__(self, color, position):
@@ -113,6 +117,9 @@ class Rook(Piece):
   def promote(self):
     return Dragon(self.color, self.position)
   
+  def copy(self):
+    return Rook(self.color, self.position)
+  
 class Knight(Piece):
   def __init__(self, color, position):
     super().__init__('knight', color, position)
@@ -151,6 +158,9 @@ class Knight(Piece):
   
   def promote(self):
     return Promoted_knight(self.color, self.position)
+
+  def copy(self):
+    return Knight(self.color, self.position)
   
 class Bishop(Piece):
   def __init__(self, color, position):
@@ -213,6 +223,9 @@ class Bishop(Piece):
   def promote(self):
     return Dragon_knight(self.color, self.position)
   
+  def copy(self):
+    return Bishop(self.color, self.position)
+  
 class Gold_general(Piece): 
   def __init__(self, color, position):
     super().__init__('gold_general', color, position)
@@ -244,6 +257,9 @@ class Gold_general(Piece):
   def promote(self):
     return None
   
+  def copy(self):
+    return Gold_general(self.color, self.position)
+  
 class Silver_general(Piece):
   def __init__(self, color, position):
     super().__init__('silver_general', color, position)
@@ -274,6 +290,9 @@ class Silver_general(Piece):
   def promote(self):
     return Promoted_silver(self.color, self.position)
   
+  def copy(self):
+    return Silver_general(self.color, self.position)
+  
 class King(Piece):
   def __init__(self, color, position):
     super().__init__('king', color, position)
@@ -300,6 +319,9 @@ class King(Piece):
 
   def promote(self):
     return None
+  
+  def copy(self):
+    return King(self.color, self.position)
   
 class Lance(Piece):
   def __init__(self, color, position):
@@ -338,6 +360,9 @@ class Lance(Piece):
   
   def promote(self):
     return Promoted_lance(self.color, self.position)
+
+  def copy(self):
+    return Lance(self.color, self.position)
   
   
 class Dragon(Piece):
@@ -409,6 +434,9 @@ class Dragon(Piece):
   
   def promote(self):
     return None
+  
+  def copy(self):
+    return Dragon(self.color, self.position)
 
 class Dragon_knight(Piece):
   def __init__(self,color,position):
@@ -459,6 +487,9 @@ class Dragon_knight(Piece):
   
   def promote(self):
     return None
+  
+  def copy(self):
+    return Dragon_knight(self.color, self.position)
 
 class Promoted_lance(Piece):
   def __init__(self,color,position):
@@ -490,6 +521,9 @@ class Promoted_lance(Piece):
 
   def promote(self):
     return None
+  
+  def copy(self):
+    return Promoted_lance(self.color, self.position)
 
 class Promoted_knight(Piece):
   def __init__(self,color,position):
@@ -521,6 +555,9 @@ class Promoted_knight(Piece):
   
   def promote(self):
     return None
+  
+  def copy(self):
+    return Promoted_knight(self.color, self.position)
 
 class Promoted_silver(Piece):
   def __init__(self,color,position):
@@ -552,6 +589,9 @@ class Promoted_silver(Piece):
   
   def promote(self):
     return None
+  
+  def copy(self):
+    return Promoted_silver(self.color, self.position)
 
 class Promoted_pawn(Piece):
   def __init__(self,color,position):
@@ -583,6 +623,9 @@ class Promoted_pawn(Piece):
   
   def promote(self):
     return None
+  
+  def copy(self):
+    return Promoted_pawn(self.color, self.position)
   
 
 PIECES_CLASSES = {
