@@ -58,10 +58,24 @@ class Shogi:
       
   def deselect_piece(self):
     self.selected_piece = None 
+
+  def capture_piece(self, new_position):
+    if self.board.board_str[new_position] != '.':
+      piece_symbol = self.board.board_str[new_position]
+      if piece_symbol.islower(): # se for WHITE peça
+        piece = self.player.get_piece(new_position)
+        self.agent.capture_piece(piece)
+        self.player.remove_piece(piece)
+      else:
+        piece = self.agent.get_piece(new_position)
+        self.player.capture_piece(piece)
+        self.agent.remove_piece(piece)
     
   # se for obrigatório a promoção, retorna a peça promovida
   # se não for obrigatório a promoção, retorna None
   def move_piece(self, new_position: int) -> Piece | None:
+    # verifica se tem alguma peça para ser capturada no proximo movimento
+    self.capture_piece(new_position)
     promoted_piece = None
     old_position = self.selected_piece.position
     piece_symbol = self.board.board_str[old_position]
@@ -164,16 +178,6 @@ class Shogi:
         
     return all_possible_states  
 
-    
-  def capture_piece(self,board,new_position):
-    if board[new_position]["piece"] is not None:
-      if board[new_position]["piece"].color == "BLACK":
-        self.agent.remove_piece(board[new_position]["piece"])
-        self.player.capture_piece(board[new_position]["piece"])
-      else:
-        self.player.remove_piece(board[new_position]["piece"])
-        self.agent.capture_piece(board[new_position]["piece"])
-
   def ai_movement(self):
     if self.autostart:
       piece, move = self.agent.best_move(self)
@@ -189,7 +193,8 @@ class Shogi:
     pass
   
   def print_winner(self):
-    print(f"O vencedor é: {self.winner.name} ({self.winner.color})")
+    # print(f"O vencedor é: {self.winner.name} ({self.winner.color})")
+    pass
   
   def print_game_over(self):
     # imprime o fim do jogo

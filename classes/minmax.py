@@ -49,21 +49,28 @@ class Minmax:
                     continue
                 return beta
             
-    def best_move(self, game, max_height=8):
+    def best_move(self, game, max_height=30):
         best_value = float("-inf")
         best_move = None
         copy_game = game.copy()
         next_moves = copy_game.possible_states()
         
+        original_next_moves = game.possible_states()
+
         for piece, piece_copy, next_game in next_moves:
             utility = self.evaluate_tree_alfabeta(next_game,True,max_height)
             
-            if copy_game.agent.color == "BLACK":
-                if utility >= best_value:
-                    best_value = utility
-                    best_move = (piece, piece_copy.position)
+            if utility >= best_value:
+                best_value = utility
+                original_piece = None
+                for p, _, _ in original_next_moves:
+                    if p.symbol == piece.symbol and p.position == piece.position:
+                        original_piece = p
+                        break
+                best_move = (original_piece, piece_copy.position)
 
         if best_move is None:
             print("Não foi possivel determinar o melhor movimento")
 
+        print(f"Melhor movimento: {best_move} com valor {best_value}")
         return best_move
