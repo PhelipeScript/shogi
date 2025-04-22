@@ -59,7 +59,7 @@ class Minmax:
         all_moves = copy_game.all_possible_moves()
         next_moves = copy_game.possible_states(all_moves)
         
-        piece_map = {id(copy_piece): original_piece for copy_piece, original_piece in zip(copy_game.players[1].pieces, game.players[1].pieces)}
+        piece_map = {id(copy_piece): original_piece for copy_piece, original_piece in zip(copy_game.agent.pieces, game.agent.pieces)}
         for piece,position,next_game in next_moves:
             utility = self.evaluate_tree_alfabeta(next_game,True,copy_game.players[1], max_height)
             original_piece = piece_map.get(id(piece))

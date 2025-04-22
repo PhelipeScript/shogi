@@ -76,10 +76,10 @@ class GameInterface:
         piece = None
         piece_img_resized = None
         if board_pieces[row][col] != '.' and board_pieces[row][col].islower():
-          piece = self.game.players[0].get_piece(col + (row * self.GRID_SIZE))
+          piece = self.game.player.get_piece(col + (row * self.GRID_SIZE))
           piece_img_resized = pygame.transform.smoothscale(piece.image, (self.board_tile_width-16, self.board_tile_height-12))
         elif board_pieces[row][col] != '.':
-          piece = self.game.players[1].get_piece(col + (row * self.GRID_SIZE))
+          piece = self.game.agent.get_piece(col + (row * self.GRID_SIZE))
           piece_img_resized = pygame.transform.smoothscale(piece.image, (self.board_tile_width-16, self.board_tile_height-12))
         
         rect = pygame.Rect(x, y, self.board_tile_width, self.board_tile_height)
@@ -113,7 +113,7 @@ class GameInterface:
     self.w_captured_pieces = []
     captured_tile_resized = pygame.transform.smoothscale(self.captured_tile, (self.captured_tile_width, self.captured_tile_height))
       
-    for i in range(len(self.game.players)):
+    for i in range(2):
       for row in range(captured_grid_size):
         for col in range(captured_grid_size):
           if i == 0:
@@ -141,7 +141,7 @@ class GameInterface:
           
         
   def draw_captured_pieces(self):
-    for player in self.game.players:
+    for player in [self.game.player, self.game.agent]:
       for i, cell in enumerate(self.w_captured_pieces if player.color == 'WHITE' else self.b_captured_pieces):
         self.screen.blit(cell["tile_img"], cell["rect"].topleft)
 
@@ -191,8 +191,8 @@ class GameInterface:
       pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1)
     
     texts = [
-      {"label": "Jogador 1:", "value": self.game.players[0].name},
-      {"label": "Jogador 2:", "value": self.game.players[1].name},
+      {"label": "Jogador 1:", "value": self.game.player.name},
+      {"label": "Jogador 2:", "value": self.game.agent.name},
       {"label": "Tempo jogador 1:", "value": "5:32"},
       {"label": "Tempo jogador 2:", "value": "10:00"},
       {"label": "Tempo total:", "value": "15:32"},
@@ -244,10 +244,10 @@ class GameInterface:
       pygame.draw.rect(self.screen, cell["rect_color"], cell["rect"], 1)
     
     texts = [
-      {"round": 1, "player": self.game.players[0].name, "move": "P de 7g para 7f"},
-      {"round": 2, "player": self.game.players[1].name, "move": "N de 2b para 3d promove"},
-      {"round": 3, "player": self.game.players[0].name, "move": "B de 8h para 3c captura S"},
-      {"round": 4, "player": self.game.players[1].name, "move": "P de 5d para 5c promove e captura G"},
+      {"round": 1, "player": self.game.player.name, "move": "P de 7g para 7f"},
+      {"round": 2, "player": self.game.agent.name, "move": "N de 2b para 3d promove"},
+      {"round": 3, "player": self.game.player.name, "move": "B de 8h para 3c captura S"},
+      {"round": 4, "player": self.game.agent.name, "move": "P de 5d para 5c promove e captura G"},
     ]
     
     # TODO: fazer um loop para desenhar os textos e se possível fazer um scroll
@@ -278,7 +278,7 @@ class GameInterface:
 
     if new_cell["piece"] is not None:
       if new_cell["piece"].color != self.game.selected_piece.color:
-        self.game.players[0 if self.game.selected_piece.color == 'WHITE' else 1].capture_piece(new_cell["piece"])
+        self.game.whoPlaysNow.capture_piece(new_cell["piece"])
 
     new_cell["piece"] = self.game.selected_piece
     new_cell["piece_img"] = old_cell["piece_img"]
@@ -307,9 +307,9 @@ class GameInterface:
         if new_cell["piece"] is not None:
           if new_cell["piece"].color != self.game.ai_selected_piece.color:
             if self.game.ai_selected_piece.color == "WHITE":
-              self.game.players[0].capture_piece(new_cell["piece"])
+              self.game.player.capture_piece(new_cell["piece"])
             else:
-              self.game.players[1].capture_piece(new_cell["piece"])
+              self.game.agent.capture_piece(new_cell["piece"])
 
         new_cell["piece"] = self.game.ai_selected_piece
         new_cell["piece_img"] = old_cell["piece_img"]
