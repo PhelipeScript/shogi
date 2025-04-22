@@ -1,5 +1,4 @@
 from typing import Union
-from classes.minmax import Minmax
 from classes.board import Board
 from classes.piece import PIECES_CLASSES, Piece
 from classes.player import Agent, Player
@@ -15,7 +14,6 @@ class Shogi:
     self.agent = agent if agent else Agent("Agente", "BLACK") if self.player.color == "WHITE" else Agent("Agente", "WHITE")
     self.board = Board() if board is None else board
     self.round = round
-    self.minmax = Minmax()
     self.autostart = autostart
 
     if autostart:
