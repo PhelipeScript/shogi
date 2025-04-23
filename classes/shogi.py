@@ -93,8 +93,6 @@ class Shogi:
       player = self.player if self.selected_piece_to_drop.color == "WHITE" else self.agent
       player.remove_captured_piece(self.selected_piece_to_drop)
       player.add_piece(self.selected_piece_to_drop)
-      self.deselect_piece_to_drop()
-      self.next_turn()
     
   # se for obrigatório a promoção, retorna a peça promovida
   # se não for obrigatório a promoção, retorna None
@@ -200,13 +198,13 @@ class Shogi:
     white_total_weight = sum(piece.weight for piece in white_player_pieces)
 
     if is_player_on_check:
-      print((black_total_weight - white_total_weight) + 1000)
+      # print((black_total_weight - white_total_weight) + 1000)
       return (black_total_weight - white_total_weight) + 1000
     elif is_agent_on_check:
-      print((black_total_weight - white_total_weight) - 1000)
+      # print((black_total_weight - white_total_weight) - 1000)
       return (black_total_weight - white_total_weight) - 1000
     else:
-      print(black_total_weight - white_total_weight)
+      # print(black_total_weight - white_total_weight)
       return black_total_weight - white_total_weight
 
   def possible_states(self: "Shogi") -> list[tuple[Piece, Piece, "Shogi"]]:
@@ -238,6 +236,21 @@ class Shogi:
 
           all_possible_states.append((piece, piece_copy, shogi_copy))
         
+      for idx, cap_piece in enumerate(self.who_plays_now.captured_pieces):
+        for drop_position in self.get_possible_drops(piece):
+          shogi_copy = self.copy()
+          cap_piece_copy = None
+
+          for i, p in enumerate(shogi_copy.who_plays_now.captured_pieces):
+            if p.symbol == piece.symbol and i == idx:
+              cap_piece_copy = p
+              break
+
+          if cap_piece_copy:
+            shogi_copy.select_piece_to_drop(cap_piece_copy)
+            shogi_copy.drop_piece(drop_position)
+            all_possible_states.append((cap_piece, cap_piece_copy, shogi_copy))
+
     return all_possible_states  
 
   def ai_movement(self):
@@ -246,10 +259,14 @@ class Shogi:
       print(f"\nPeça movimentada: {piece.symbol}")
       print(f"movimento realizado: {move}\n")
 
+      if piece in self.agent.captured_pieces:
+        self.selected_piece_to_drop = piece
+
       if is_promoted:
         promoted_piece = self.promote_piece(piece)
 
-      self.ai_selected_piece = promoted_piece if is_promoted else piece
+      if not self.selected_piece_to_drop:
+        self.ai_selected_piece = promoted_piece if is_promoted else piece
       self.ai_target_position = move
       self.ai_move_pending = True
 

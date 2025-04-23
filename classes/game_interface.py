@@ -278,6 +278,8 @@ class GameInterface:
     self.board[new_position]["piece_img"] = pygame.transform.smoothscale(self.game.selected_piece_to_drop.image, (self.board_tile_width-16, self.board_tile_height-12))
     self.possible_drops = []
     self.game.drop_piece(new_position)
+    self.game.deselect_piece_to_drop()
+    self.game.next_turn()
   
   def handle_possible_moves(self, piece: Piece):
     if not self.game.game_over and piece is not None and piece.color == self.game.who_plays_now.color:
@@ -304,39 +306,41 @@ class GameInterface:
     old_cell["piece_img"] = None
     
     promoted_piece = self.game.move_piece(new_position)
-    self.game.deselect_piece()
-    self.game.next_turn()
     if promoted_piece:
       new_cell["piece"] = promoted_piece
       new_cell["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
     else:
       self.promotion_menu_active = self.game.is_promotion_candidate(self.game.promotion_cadidate)
+    self.game.deselect_piece()
+    self.game.next_turn()
     
   def handle_ai_move(self):
 
     if hasattr(self.game, 'ai_move_pending') and self.game.ai_move_pending and not self.promotion_menu_active:
         if self.game.game_over:
           return
-        
-        old_position = self.game.ai_selected_piece.position
-        new_position = self.game.ai_target_position
+        if self.game.selected_piece_to_drop:
+          self.handle_drop_piece(self.game.ai_target_position)
+        else: 
+          old_position = self.game.ai_selected_piece.position
+          new_position = self.game.ai_target_position
 
-        old_cell = self.board[old_position]
-        new_cell = self.board[new_position]
+          old_cell = self.board[old_position]
+          new_cell = self.board[new_position]
 
-        new_cell["piece"] = self.game.ai_selected_piece
-        new_cell["piece_img"] = old_cell["piece_img"]
-        old_cell["piece"] = None
-        old_cell["piece_img"] = None
+          new_cell["piece"] = self.game.ai_selected_piece
+          new_cell["piece_img"] = old_cell["piece_img"]
+          old_cell["piece"] = None
+          old_cell["piece_img"] = None
 
-        self.game.select_piece(self.game.ai_selected_piece)
-        promoted_piece = self.game.move_piece(new_position)
-        self.game.deselect_piece()
-        self.game.next_turn()
+          self.game.select_piece(self.game.ai_selected_piece)
+          promoted_piece = self.game.move_piece(new_position)
+          self.game.deselect_piece()
+          self.game.next_turn()
 
-        if promoted_piece:
-          new_cell["piece"] = promoted_piece
-          new_cell["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
+          if promoted_piece:
+            new_cell["piece"] = promoted_piece
+            new_cell["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
 
         self.game.ai_move_pending = False
         delattr(self.game, 'ai_selected_piece')
