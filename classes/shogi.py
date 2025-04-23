@@ -244,20 +244,20 @@ class Shogi:
           else:
             all_possible_states.append((piece, piece_copy, shogi_copy))
         
-      for idx, cap_piece in enumerate(self.who_plays_now.captured_pieces):
-        for drop_position in self.get_possible_drops(piece):
-          shogi_copy = self.copy()
-          cap_piece_copy = None
+    for idx, cap_piece in enumerate(self.who_plays_now.captured_pieces):
+      for drop_position in self.get_possible_drops(piece):
+        shogi_copy = self.copy()
+        cap_piece_copy = None
 
-          for i, p in enumerate(shogi_copy.who_plays_now.captured_pieces):
-            if p.symbol == piece.symbol and i == idx:
-              cap_piece_copy = p
-              break
+        for i, p in enumerate(shogi_copy.who_plays_now.captured_pieces):
+          if p.symbol == piece.symbol and i == idx:
+            cap_piece_copy = p
+            break
 
-          if cap_piece_copy:
-            shogi_copy.select_piece_to_drop(cap_piece_copy)
-            shogi_copy.drop_piece(drop_position)
-            all_possible_states.append((cap_piece, cap_piece_copy, shogi_copy))
+        if cap_piece_copy:
+          shogi_copy.select_piece_to_drop(cap_piece_copy)
+          shogi_copy.drop_piece(drop_position)
+          all_possible_states.append((cap_piece, cap_piece_copy, shogi_copy))
 
     return all_possible_states  
 
