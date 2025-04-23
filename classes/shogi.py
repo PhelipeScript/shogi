@@ -227,6 +227,19 @@ class Shogi:
         if piece_copy:
           shogi_copy.select_piece(piece_copy)
           shogi_copy.move_piece(position)
+
+          if shogi_copy.promotion_cadidate(piece_copy):
+            promote_shogi_copy = shogi_copy.copy()
+            whoPromoteNow = promote_shogi_copy.agent if promote_shogi_copy.whoPlaysNow == promote_shogi_copy.player else promote_shogi_copy.agent
+
+            for p in promote_shogi_copy.whoPromoteNow.pieces:
+              if p.position == piece_copy.position and p.symbol == piece_copy.symbol:
+                promoted_candidate = p
+                break
+
+            promote_shogi_copy.promote_piece(promoted_candidate)
+            all_possible_states.append((piece, promoted_candidate, shogi_copy))
+
           all_possible_states.append((piece, piece_copy, shogi_copy))
         
     return all_possible_states  
