@@ -11,7 +11,7 @@ class Minmax:
         if not next_moves:
             return game.utility_function()
 
-        if game.whoPlaysNow.color == "BLACK":
+        if game.who_plays_now.color == "BLACK":
             higher_value = float("-inf")
             for next_move in next_moves:
                 utility = self.evaluate_tree(next_move, player, max_height - 1)
@@ -49,13 +49,14 @@ class Minmax:
                     continue
                 return beta
             
-    def best_move(self, game, max_height=7):
+    def best_move(self, game, max_height = 8):
         best_value = float("-inf")
         best_move = None
         copy_game = game.copy()
         next_moves = copy_game.possible_states()
-        
         original_next_moves = game.possible_states()
+        promote_symbols = { "d","t","c","h","i","w" }
+        promote_piece = False
 
         for piece, piece_copy, next_game in next_moves:
             utility = self.evaluate_tree_alfabeta(next_game,True,max_height)
@@ -64,10 +65,15 @@ class Minmax:
                 best_value = utility
                 original_piece = None
                 for p, _, _ in original_next_moves:
-                    if p.symbol == piece.symbol and p.position == piece.position:
+                    if p.position == piece.position:
+                        if p.symbol in promote_symbols:
+                            original_piece = p
+                            promote_piece = True
+                            break
                         original_piece = p
+                        promote_piece = False
                         break
-                best_move = (original_piece, piece_copy.position)
+                best_move = (original_piece, piece_copy.position, promote_piece)
 
         if best_move is None:
             print("Não foi possivel determinar o melhor movimento")

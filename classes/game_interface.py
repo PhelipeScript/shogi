@@ -201,7 +201,7 @@ class GameInterface:
       {"label": "Tempo jogador 2:", "value": time_info["Tempo jogador 2"]},
       {"label": "Tempo total:", "value": time_info["Tempo total"]},
       {"label": "Rodada atual:", "value": self.game.round+1},
-      {"label": "Jogador da vez:", "value": self.game.whoPlaysNow.name},
+      {"label": "Jogador da vez:", "value": self.game.who_plays_now.name},
     ]
     
     for i in range(0, len(texts), 2):
@@ -261,7 +261,7 @@ class GameInterface:
     self.screen.blit(self.move_history_title, title_rect.topleft)
     
   def handle_possible_drops(self, piece: Piece):
-    if not self.game.game_over and piece and piece.color == self.game.whoPlaysNow.color:
+    if not self.game.game_over and piece and piece.color == self.game.who_plays_now.color:
       self.possible_drops = self.game.get_possible_drops(piece)
     else: 
       self.possible_drops = []
@@ -280,7 +280,7 @@ class GameInterface:
     self.game.drop_piece(new_position)
   
   def handle_possible_moves(self, piece: Piece):
-    if not self.game.game_over and piece is not None and piece.color == self.game.whoPlaysNow.color:
+    if not self.game.game_over and piece is not None and piece.color == self.game.who_plays_now.color:
       self.possible_moves = self.game.get_piece_moves(piece)
     else:
       self.possible_moves = []
@@ -304,6 +304,8 @@ class GameInterface:
     old_cell["piece_img"] = None
     
     promoted_piece = self.game.move_piece(new_position)
+    self.game.deselect_piece()
+    self.game.next_turn()
     if promoted_piece:
       new_cell["piece"] = promoted_piece
       new_cell["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
@@ -329,6 +331,8 @@ class GameInterface:
 
         self.game.select_piece(self.game.ai_selected_piece)
         promoted_piece = self.game.move_piece(new_position)
+        self.game.deselect_piece()
+        self.game.next_turn()
 
         if promoted_piece:
           new_cell["piece"] = promoted_piece
@@ -462,7 +466,7 @@ class GameInterface:
           if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
             if self.game.selected_piece_to_drop:
               self.game.deselect_piece_to_drop()
-            elif cell["piece"] and cell["piece"].color == self.game.whoPlaysNow.color:
+            elif cell["piece"] and cell["piece"].color == self.game.who_plays_now.color:
               self.handle_select_piece_to_drop(cell["piece"])
               
             if self.game.selected_piece:
@@ -473,7 +477,7 @@ class GameInterface:
           if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
             if self.game.selected_piece_to_drop:
               self.game.deselect_piece_to_drop()
-            elif cell["piece"] and cell["piece"].color == self.game.whoPlaysNow.color:
+            elif cell["piece"] and cell["piece"].color == self.game.who_plays_now.color:
               self.handle_select_piece_to_drop(cell["piece"])
               
             if self.game.selected_piece:
@@ -499,7 +503,7 @@ class GameInterface:
     
     while self.running:
       dt = self.clock.tick(60) / 1000.0  
-      self.game.player_times[self.game.whoPlaysNow.color] += dt
+      self.game.player_times[self.game.who_plays_now.color] += dt
       self.screen.fill(BACKGROUND)
       
       self.handle_events()

@@ -18,7 +18,7 @@ class Shogi:
     
     
   def start(self):
-    self.whoPlaysNow = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
+    self.who_plays_now = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
     self.winner = None
     self.game_over = False
     self.selected_piece = None
@@ -53,7 +53,7 @@ class Shogi:
       # TODO: caso seja passado as coordenadas da peça (i.e. '00' ou '11')
       pass
     elif isinstance(identifier, Piece):
-      if identifier.color == self.whoPlaysNow.color:
+      if identifier.color == self.who_plays_now.color:
         self.selected_piece = identifier
         self.selected_piece_to_drop = None
     else:
@@ -117,8 +117,6 @@ class Shogi:
     else: 
       self.promotion_cadidate = None
 
-    self.deselect_piece()
-    self.next_turn()
     if self.autostart:
       self.board.print_board()
     return promoted_piece
@@ -164,13 +162,13 @@ class Shogi:
 
   def next_turn(self):
     self.round += 1
-    self.whoPlaysNow = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
+    self.who_plays_now = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
       
     self.check_winner()
     if self.winner is None:
       self.print_turn()
     
-    if self.whoPlaysNow == self.agent and not hasattr(self,'ai_move_pending'):
+    if self.who_plays_now == self.agent and not hasattr(self,'ai_move_pending'):
       self.ai_movement()
   
   def check_winner(self):
@@ -182,16 +180,16 @@ class Shogi:
       self.print_winner()
       return True
 
-  def all_possible_moves(self, player = None):
+  def all_possible_moves(self: "Shogi", player = None) -> list[tuple[Piece, list[int]]]:
     moves = []
-    player_pieces = self.whoPlaysNow.pieces if player is None else player.pieces
+    player_pieces = self.who_plays_now.pieces if player is None else player.pieces
     for piece in player_pieces:
       possible_moves = piece.possible_moves(self.board.board_str)
       if possible_moves != [] and piece.position not in possible_moves:
         moves.append((piece, possible_moves))
     return moves
   
-  def utility_function(self):
+  def utility_function(self) -> int:
     white_player_pieces = self.player.pieces
     black_player_pieces = self.agent.pieces
 
@@ -211,7 +209,7 @@ class Shogi:
       print(black_total_weight - white_total_weight)
       return black_total_weight - white_total_weight
 
-  def possible_states(self):
+  def possible_states(self: "Shogi") -> list[tuple[Piece, Piece, "Shogi"]]:
     all_possible_states = []
     for piece, positions in self.all_possible_moves():
       piece_pos = piece.position
@@ -219,7 +217,7 @@ class Shogi:
         shogi_copy = self.copy()
         piece_copy = None
 
-        for p in shogi_copy.whoPlaysNow.pieces:
+        for p in shogi_copy.who_plays_now.pieces:
           if p.position == piece_pos and p.symbol == piece.symbol:
             piece_copy = p
             break
@@ -227,12 +225,10 @@ class Shogi:
         if piece_copy:
           shogi_copy.select_piece(piece_copy)
           shogi_copy.move_piece(position)
-
-          if shogi_copy.promotion_cadidate(piece_copy):
+          if shogi_copy.is_promotion_candidate(piece_copy):
             promote_shogi_copy = shogi_copy.copy()
-            whoPromoteNow = promote_shogi_copy.agent if promote_shogi_copy.whoPlaysNow == promote_shogi_copy.player else promote_shogi_copy.agent
 
-            for p in promote_shogi_copy.whoPromoteNow.pieces:
+            for p in promote_shogi_copy.who_plays_now.pieces:
               if p.position == piece_copy.position and p.symbol == piece_copy.symbol:
                 promoted_candidate = p
                 break
@@ -246,10 +242,14 @@ class Shogi:
 
   def ai_movement(self):
     if self.autostart:
-      piece, move = self.agent.best_move(self)
+      piece, move,is_promoted = self.agent.best_move(self)
       print(f"\nPeça movimentada: {piece.symbol}")
       print(f"movimento realizado: {move}\n")
-      self.ai_selected_piece = piece
+
+      if is_promoted:
+        promoted_piece = self.promote_piece(piece)
+
+      self.ai_selected_piece = promoted_piece if is_promoted else piece
       self.ai_target_position = move
       self.ai_move_pending = True
 
@@ -284,7 +284,7 @@ class Shogi:
     pass
   
   def print_turn(self):
-    #print(f"Rodada {self.round} - Vez do jogador(a): {self.whoPlaysNow.name} ({self.whoPlaysNow.color})")
+    #print(f"Rodada {self.round} - Vez do jogador(a): {self.who_plays_now.name} ({self.who_plays_now.color})")
     pass
   
   def copy(self):
