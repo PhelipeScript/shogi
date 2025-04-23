@@ -329,7 +329,7 @@ class GameInterface:
           new_cell = self.board[new_position]
 
           new_cell["piece"] = self.game.ai_selected_piece
-          new_cell["piece_img"] = old_cell["piece_img"]
+          new_cell["piece_img"] = self.game.ai_selected_piece.image
           old_cell["piece"] = None
           old_cell["piece_img"] = None
 

@@ -25,7 +25,7 @@ class Piece:
     # retorna uma lista de posições possíveis para a peça
     pass
 
-  def promote(self) -> Union['Piece', None]:
+  def promote(self) -> 'Piece':
     # retorna a nova peça promovida
     pass
 
@@ -330,7 +330,7 @@ class Gold_general(Piece):
     return drops
   
   def promote(self):
-    return None
+    return self
 
   def antecessor(self):
     return self
@@ -410,7 +410,7 @@ class King(Piece):
     return []
 
   def promote(self):
-    return None
+    return self
   
   def antecessor(self):
     return self
@@ -542,7 +542,7 @@ class Dragon(Piece):
     return []
   
   def promote(self):
-    return None
+    return self
   
   def antecessor(self):
     return Rook(self.color, self.position)
@@ -601,7 +601,7 @@ class Dragon_knight(Piece):
     return []
   
   def promote(self):
-    return None
+    return self
 
   def antecessor(self):
     return Bishop(self.color, self.position)
@@ -641,7 +641,7 @@ class Promoted_lance(Piece):
     return []
 
   def promote(self):
-    return None
+    return self
 
   def antecessor(self):
     return Lance(self.color, self.position)
@@ -681,7 +681,7 @@ class Promoted_knight(Piece):
     return []
   
   def promote(self):
-    return None
+    return self
   
   def antecessor(self):
     return Knight(self.color, self.position)
@@ -721,7 +721,7 @@ class Promoted_silver(Piece):
     return []
   
   def promote(self):
-    return None
+    return self
   
   def antecessor(self):
     return Silver_general(self.color, self.position)
@@ -761,7 +761,7 @@ class Promoted_pawn(Piece):
     return []
   
   def promote(self):
-    return None
+    return self
   
   def antecessor(self):
     return Pawn(self.color, self.position)

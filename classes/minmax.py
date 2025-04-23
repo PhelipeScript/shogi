@@ -49,7 +49,7 @@ class Minmax:
                     continue
                 return beta
             
-    def best_move(self, game, max_height = 8):
+    def best_move(self, game, max_height = 4):
         best_value = float("-inf")
         best_move = None
         copy_game = game.copy()
@@ -64,9 +64,9 @@ class Minmax:
             if utility >= best_value:
                 best_value = utility
                 original_piece = None
-                for p, _, _ in original_next_moves:
+                for p, pc, _ in original_next_moves:
                     if p.position == piece.position:
-                        if p.symbol in promote_symbols:
+                        if pc.symbol.lower() in promote_symbols:
                             original_piece = p
                             promote_piece = True
                             break

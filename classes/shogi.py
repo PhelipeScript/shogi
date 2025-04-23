@@ -137,13 +137,12 @@ class Shogi:
         return True
     return False
   
-  def promote_piece(self, piece: Piece) -> Piece | None:
+  def promote_piece(self, piece: Piece) -> Piece:
     promoted_piece = piece.promote()
-    if promoted_piece:
-      self.board.board_str = self.board.board_str[:piece.position] + promoted_piece.symbol + self.board.board_str[piece.position+1:]
-      player = self.player if piece.color == "WHITE" else self.agent
-      player.remove_piece(piece)
-      player.add_piece(promoted_piece)
+    self.board.board_str = self.board.board_str[:piece.position] + promoted_piece.symbol + self.board.board_str[piece.position+1:]
+    player = self.player if piece.color == "WHITE" else self.agent
+    player.remove_piece(piece)
+    player.add_piece(promoted_piece)
     return promoted_piece
   
   def get_time_info(self):
@@ -210,31 +209,40 @@ class Shogi:
   def possible_states(self: "Shogi") -> list[tuple[Piece, Piece, "Shogi"]]:
     all_possible_states = []
     for piece, positions in self.all_possible_moves():
-      piece_pos = piece.position
       for position in positions:
         shogi_copy = self.copy()
         piece_copy = None
 
         for p in shogi_copy.who_plays_now.pieces:
-          if p.position == piece_pos and p.symbol == piece.symbol:
+          if p.position == piece.position and p.symbol == piece.symbol:
             piece_copy = p
             break
 
         if piece_copy:
           shogi_copy.select_piece(piece_copy)
-          shogi_copy.move_piece(position)
-          if shogi_copy.is_promotion_candidate(piece_copy):
-            promote_shogi_copy = shogi_copy.copy()
+          promoted_piece = shogi_copy.move_piece(position)
 
-            for p in promote_shogi_copy.who_plays_now.pieces:
+          if not promoted_piece and shogi_copy.is_promotion_candidate(piece_copy):
+            promoted_shogi_copy = shogi_copy.copy()
+            promoted_piece_copy = None
+
+            for p in promoted_shogi_copy.who_plays_now.pieces:
               if p.position == piece_copy.position and p.symbol == piece_copy.symbol:
-                promoted_candidate = p
+                promoted_piece_copy = p
                 break
 
-            promote_shogi_copy.promote_piece(promoted_candidate)
-            all_possible_states.append((piece, promoted_candidate, shogi_copy))
+            if promoted_piece_copy:
+              promoted_piece_copy = promoted_shogi_copy.promote_piece(promoted_piece_copy)
+              promoted_shogi_copy.deselect_piece()
+              promoted_shogi_copy.next_turn()
+              all_possible_states.append((piece, promoted_piece_copy, promoted_shogi_copy))
 
-          all_possible_states.append((piece, piece_copy, shogi_copy))
+          shogi_copy.deselect_piece()
+          shogi_copy.next_turn()
+          if promoted_piece:
+            all_possible_states.append((piece, promoted_piece, shogi_copy))
+          else:
+            all_possible_states.append((piece, piece_copy, shogi_copy))
         
       for idx, cap_piece in enumerate(self.who_plays_now.captured_pieces):
         for drop_position in self.get_possible_drops(piece):
@@ -262,11 +270,14 @@ class Shogi:
       if piece in self.agent.captured_pieces:
         self.selected_piece_to_drop = piece
 
+      promoted_piece = None
       if is_promoted:
         promoted_piece = self.promote_piece(piece)
 
       if not self.selected_piece_to_drop:
         self.ai_selected_piece = promoted_piece if is_promoted else piece
+      else:
+        self.ai_selected_piece = None
       self.ai_target_position = move
       self.ai_move_pending = True
 
