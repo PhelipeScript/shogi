@@ -488,19 +488,6 @@ class Dragon(Piece):
     row = self.position // 9
     col = self.position % 9
 
-    if (board[self.position - 8].isupper() and self.color == "WHITE") or (board[self.position - 8].islower() and self.color == "BLACK") or (board[self.position - 8] == '.'):
-      if col != 8 :
-        moves.append(self.position - 8)
-    if (board[self.position - 10].isupper() and self.color == "WHITE") or (board[self.position - 10].islower() and self.color == "BLACK") or (board[self.position - 10] == '.'):
-      if col != 0 :
-        moves.append(self.position - 10)
-    if (board[self.position + 8].isupper() and self.color == "WHITE") or (board[self.position + 8].islower() and self.color == "BLACK") or (board[self.position + 8] == '.'):
-      if col != 0 :
-        moves.append(self.position + 8)
-    if (board[self.position + 10].isupper() and self.color == "WHITE") or (board[self.position + 10].islower() and self.color == "BLACK") or (board[self.position + 10] == '.'):
-      if col != 8 :
-        moves.append(self.position + 10)
-
     for i in range(row - 1, -1, -1):
       if board[i * 9 + col] == '.':
         moves.append(i * 9 + col)
@@ -536,6 +523,16 @@ class Dragon(Piece):
           break
       else:
         break
+
+    for i in range(-1, 2):
+      for j in range(-1, 2):
+        if row + i >= 0 and row + i < 9 and col + j >= 0 and col + j < 9:
+          if board[(row + i) * 9 + (col + j)] == '.':
+            if (row + i) * 9 + (col + j) not in moves:
+              moves.append((row + i) * 9 + (col + j))
+          elif (board[(row + i) * 9 + (col + j)].isupper() and self.color == "WHITE") or (board[(row + i) * 9 + (col + j)].islower() and self.color == "BLACK"):
+            if (row + i) * 9 + (col + j) not in moves:
+              moves.append((row + i) * 9 + (col + j))
     return moves
   
   def possible_drops(self, board):
