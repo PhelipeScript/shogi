@@ -67,11 +67,11 @@ class Shogi:
       piece_symbol = self.board.board_str[new_position]
       if piece_symbol.islower(): # se for WHITE peça
         piece = self.player.get_piece(new_position)
-        self.agent.capture_piece(piece)
+        self.agent.capture_piece(piece.antecessor())
         self.player.remove_piece(piece)
       else:
         piece = self.agent.get_piece(new_position)
-        self.player.capture_piece(piece)
+        self.player.capture_piece(piece.antecessor())
         self.agent.remove_piece(piece)
     
   def select_piece_to_drop(self, piece: Piece):

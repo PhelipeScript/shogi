@@ -28,6 +28,10 @@ class Piece:
   def promote(self) -> Union['Piece', None]:
     # retorna a nova peça promovida
     pass
+
+  def antecessor(self) -> 'Piece':
+    # retorna o antecessor da peça
+    pass
   
   def copy(self):
     # retorna uma cópia da peça
@@ -84,6 +88,9 @@ class Pawn(Piece):
   def promote(self):
     return Promoted_pawn(self.color, self.position)
   
+  def antecessor(self):
+    return self
+
   def copy(self):
     return Pawn(self.color, self.position)
   
@@ -151,6 +158,9 @@ class Rook(Piece):
   
   def promote(self):
     return Dragon(self.color, self.position)
+
+  def antecessor(self):
+    return self
   
   def copy(self):
     return Rook(self.color, self.position)
@@ -201,6 +211,9 @@ class Knight(Piece):
   
   def promote(self):
     return Promoted_knight(self.color, self.position)
+
+  def antecessor(self):
+    return self
 
   def copy(self):
     return Knight(self.color, self.position)
@@ -273,6 +286,9 @@ class Bishop(Piece):
   
   def promote(self):
     return Dragon_knight(self.color, self.position)
+
+  def antecessor(self):
+    return self
   
   def copy(self):
     return Bishop(self.color, self.position)
@@ -315,6 +331,9 @@ class Gold_general(Piece):
   
   def promote(self):
     return None
+
+  def antecessor(self):
+    return self
   
   def copy(self):
     return Gold_general(self.color, self.position)
@@ -357,6 +376,9 @@ class Silver_general(Piece):
   def promote(self):
     return Promoted_silver(self.color, self.position)
   
+  def antecessor(self):
+    return self
+  
   def copy(self):
     return Silver_general(self.color, self.position)
   
@@ -389,6 +411,9 @@ class King(Piece):
 
   def promote(self):
     return None
+  
+  def antecessor(self):
+    return self
   
   def copy(self):
     return King(self.color, self.position)
@@ -438,6 +463,9 @@ class Lance(Piece):
   
   def promote(self):
     return Promoted_lance(self.color, self.position)
+  
+  def antecessor(self):
+    return self
 
   def copy(self):
     return Lance(self.color, self.position)
@@ -516,6 +544,9 @@ class Dragon(Piece):
   def promote(self):
     return None
   
+  def antecessor(self):
+    return Rook(self.color, self.position)
+  
   def copy(self):
     return Dragon(self.color, self.position)
 
@@ -571,6 +602,9 @@ class Dragon_knight(Piece):
   
   def promote(self):
     return None
+
+  def antecessor(self):
+    return Bishop(self.color, self.position)
   
   def copy(self):
     return Dragon_knight(self.color, self.position)
@@ -608,6 +642,9 @@ class Promoted_lance(Piece):
 
   def promote(self):
     return None
+
+  def antecessor(self):
+    return Lance(self.color, self.position)
   
   def copy(self):
     return Promoted_lance(self.color, self.position)
@@ -646,6 +683,9 @@ class Promoted_knight(Piece):
   def promote(self):
     return None
   
+  def antecessor(self):
+    return Knight(self.color, self.position)
+  
   def copy(self):
     return Promoted_knight(self.color, self.position)
 
@@ -683,6 +723,9 @@ class Promoted_silver(Piece):
   def promote(self):
     return None
   
+  def antecessor(self):
+    return Silver_general(self.color, self.position)
+  
   def copy(self):
     return Promoted_silver(self.color, self.position)
 
@@ -719,6 +762,9 @@ class Promoted_pawn(Piece):
   
   def promote(self):
     return None
+  
+  def antecessor(self):
+    return Pawn(self.color, self.position)
   
   def copy(self):
     return Promoted_pawn(self.color, self.position)
