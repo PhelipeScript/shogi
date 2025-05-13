@@ -39,41 +39,51 @@ class Minmax:
                 utility = self.evaluate_tree_alfabeta(next_game,False,(max_height - 1),alfa,beta)
                 alfa = max(alfa,utility)
                 if beta <= alfa:
-                    continue
-                return alfa
+                    break
+            return alfa
         else:
             for _, _, next_game in next_moves:
                 utility = self.evaluate_tree_alfabeta(next_game,True,(max_height - 1),alfa,beta)
                 beta = min(beta,utility)
                 if beta <= alfa:
-                    continue
-                return beta
-            
-    def best_move(self, game, max_height = 8):
+                    break
+            return beta
+
+    def best_move(self, game, max_height = 4):
         best_value = float("-inf")
         best_move = None
-        copy_game = game.copy()
-        next_moves = copy_game.possible_states()
+        # copy_game = game.copy()
+        # next_moves = copy_game.possible_states()
         original_next_moves = game.possible_states()
         promote_symbols = { "d","t","c","h","i","w" }
         promote_piece = False
 
-        for piece, piece_copy, next_game in next_moves:
-            utility = self.evaluate_tree_alfabeta(next_game,True,max_height)
+        # for piece, piece_copy, next_game in next_moves:
+            # print(piece)
+            # utility = self.evaluate_tree_alfabeta(next_game,True,max_height)
             
-            if utility >= best_value:
+            # if utility >= best_value:
+            #     best_value = utility
+            #     original_piece = None
+            #     for p, pc, _ in original_next_moves:
+            #         if p.position == piece.position:
+            #             if pc.symbol.lower() in promote_symbols:
+            #                 original_piece = p
+            #                 promote_piece = True
+            #                 break
+            #             original_piece = p
+            #             promote_piece = False
+            #             break
+            #     best_move = (original_piece, piece_copy.position, promote_piece)
+
+        for piece, piece_copy, next_game in original_next_moves:
+            utility = self.evaluate_tree_alfabeta(next_game, True, max_height)
+
+            if utility > best_value:
                 best_value = utility
-                original_piece = None
-                for p, pc, _ in original_next_moves:
-                    if p.position == piece.position:
-                        if pc.symbol.lower() in promote_symbols:
-                            original_piece = p
-                            promote_piece = True
-                            break
-                        original_piece = p
-                        promote_piece = False
-                        break
-                best_move = (original_piece, piece_copy.position, promote_piece)
+                promote_piece = piece_copy.symbol.lower() in promote_symbols
+                best_move = (piece, piece_copy.position, promote_piece)
+                    
 
         if best_move is None:
             print("Não foi possivel determinar o melhor movimento")

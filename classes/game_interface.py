@@ -273,11 +273,11 @@ class GameInterface:
     elif self.game.selected_piece_to_drop is piece:
       self.game.deselect_piece_to_drop()
       
-  def handle_drop_piece(self, new_position: int):
-    self.board[new_position]["piece"] = self.game.selected_piece_to_drop
-    self.board[new_position]["piece_img"] = pygame.transform.smoothscale(self.game.selected_piece_to_drop.image, (self.board_tile_width-16, self.board_tile_height-12))
+  def handle_drop_piece(self, new_position: int, piece):
+    self.board[new_position]["piece"] = piece
+    self.board[new_position]["piece_img"] = pygame.transform.smoothscale(piece.image, (self.board_tile_width-16, self.board_tile_height-12))
     self.possible_drops = []
-    self.game.drop_piece(new_position)
+    self.game.drop_piece(new_position, piece)
     self.game.deselect_piece_to_drop()
     self.game.next_turn()
   
@@ -309,18 +309,25 @@ class GameInterface:
     if promoted_piece:
       new_cell["piece"] = promoted_piece
       new_cell["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
-    else:
-      self.promotion_menu_active = self.game.is_promotion_candidate(self.game.promotion_cadidate)
-    self.game.deselect_piece()
-    self.game.next_turn()
+      self.game.deselect_piece()
+      self.game.next_turn()
+    elif self.game.is_promotion_candidate(self.game.selected_piece):
+      self.promotion_menu_active = True
+    else: 
+      self.game.deselect_piece()
+      self.game.next_turn()
+    
     
   def handle_ai_move(self):
 
     if hasattr(self.game, 'ai_move_pending') and self.game.ai_move_pending and not self.promotion_menu_active:
         if self.game.game_over:
           return
-        if self.game.selected_piece_to_drop:
-          self.handle_drop_piece(self.game.ai_target_position)
+        if self.game.ai_selected_piece_to_drop:
+          self.handle_drop_piece(self.game.ai_target_position, self.game.ai_selected_piece_to_drop)
+        elif self.game.ai_selected_piece is None:
+          print("Ta quebrado")
+          return 
         else: 
           old_position = self.game.ai_selected_piece.position
           new_position = self.game.ai_target_position
@@ -343,6 +350,7 @@ class GameInterface:
             new_cell["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
 
         self.game.ai_move_pending = False
+        delattr(self.game, 'ai_selected_piece_to_drop')
         delattr(self.game, 'ai_selected_piece')
         delattr(self.game, 'ai_target_position')
         delattr(self.game, 'ai_move_pending')
@@ -386,9 +394,13 @@ class GameInterface:
                 self.board[index]["piece"] = promoted_piece
                 self.board[index]["piece_img"] = pygame.transform.smoothscale(promoted_piece.image, (self.board_tile_width-16, self.board_tile_height-12))
                 self.promotion_menu_active = False
+                self.game.deselect_piece()
+                self.game.next_turn()
                 return
             elif second_option_box.collidepoint(self.MOUSE_X, self.MOUSE_Y):
                 self.promotion_menu_active = False
+                self.game.deselect_piece()
+                self.game.next_turn()
                 return
 
   def draw_winner(self):
@@ -459,7 +471,7 @@ class GameInterface:
               break
             
             if index in self.possible_drops:
-              self.handle_drop_piece(index)
+              self.handle_drop_piece(index, self.game.selected_piece_to_drop)
             
             if self.game.selected_piece_to_drop and index not in self.possible_drops:
               self.game.deselect_piece_to_drop()

@@ -83,16 +83,16 @@ class Shogi:
   def deselect_piece_to_drop(self):
     self.selected_piece_to_drop = None
     
-  def drop_piece(self, new_position: int):
+  def drop_piece(self, new_position: int, piece: "Piece"):
     if self.game_over: return
     
-    if self.selected_piece_to_drop:
-      piece_symbol = self.selected_piece_to_drop.symbol
+    if piece:
+      piece_symbol = piece.symbol
       self.board.board_str = self.board.board_str[:new_position] + piece_symbol + self.board.board_str[new_position+1:]
-      self.selected_piece_to_drop.position = new_position
-      player = self.player if self.selected_piece_to_drop.color == "WHITE" else self.agent
-      player.remove_captured_piece(self.selected_piece_to_drop)
-      player.add_piece(self.selected_piece_to_drop)
+      piece.position = new_position
+      player = self.player if piece.color == "WHITE" else self.agent
+      player.remove_captured_piece(piece)
+      player.add_piece(piece)
     
   # se for obrigatório a promoção, retorna a peça promovida
   # se não for obrigatório a promoção, retorna None
@@ -190,6 +190,12 @@ class Shogi:
     white_player_pieces = self.player.pieces
     black_player_pieces = self.agent.pieces
 
+    if self.board.board_str.find('K') == -1:
+      return -float('inf')
+
+    if self.board.board_str.find('k') == -1:
+      return float('inf')
+
     is_agent_on_check = self.is_on_check(self.agent, self.player)
     is_player_on_check = self.is_on_check(self.player, self.agent)
 
@@ -197,13 +203,33 @@ class Shogi:
     white_total_weight = sum(piece.weight for piece in white_player_pieces)
 
     if is_player_on_check:
-      # print((black_total_weight - white_total_weight) + 1000)
       return (black_total_weight - white_total_weight) + 1000
     elif is_agent_on_check:
-      # print((black_total_weight - white_total_weight) - 1000)
+      return (black_total_weight - white_total_weight) - 2000
+    else:
+      return black_total_weight - white_total_weight
+
+  def fitness(self, game: "Shogi") -> int:
+    white_player_pieces = game.player.pieces
+    black_player_pieces = game.agent.pieces
+
+    if game.board.board_str.find('K') == -1:
+      return float('-inf')
+
+    if game.board.board_str.find('k') == -1:
+      return float('inf')
+
+    is_agent_on_check = game.is_on_check(game.agent, game.player)
+    is_player_on_check = game.is_on_check(game.player, game.agent)
+
+    black_total_weight = sum(piece.weight for piece in black_player_pieces)
+    white_total_weight = sum(piece.weight for piece in white_player_pieces)
+
+    if is_player_on_check:
+      return (black_total_weight - white_total_weight) + 1000
+    elif is_agent_on_check:
       return (black_total_weight - white_total_weight) - 1000
     else:
-      # print(black_total_weight - white_total_weight)
       return black_total_weight - white_total_weight
 
   def possible_states(self: "Shogi") -> list[tuple[Piece, Piece, "Shogi"]]:
@@ -245,39 +271,38 @@ class Shogi:
             all_possible_states.append((piece, piece_copy, shogi_copy))
         
     for idx, cap_piece in enumerate(self.who_plays_now.captured_pieces):
-      for drop_position in self.get_possible_drops(piece):
+      for drop_position in self.get_possible_drops(cap_piece):
         shogi_copy = self.copy()
         cap_piece_copy = None
 
         for i, p in enumerate(shogi_copy.who_plays_now.captured_pieces):
-          if p.symbol == piece.symbol and i == idx:
+          if p.symbol == cap_piece.symbol and i == idx:
             cap_piece_copy = p
             break
 
         if cap_piece_copy:
-          shogi_copy.select_piece_to_drop(cap_piece_copy)
-          shogi_copy.drop_piece(drop_position)
+          shogi_copy.drop_piece(drop_position, cap_piece_copy)
+          shogi_copy.next_turn()
           all_possible_states.append((cap_piece, cap_piece_copy, shogi_copy))
 
-    return all_possible_states  
+    all_possible_states.sort(key=lambda x: self.fitness(x[2]), reverse=True)
+    return all_possible_states[:min(len(all_possible_states), 5)]  
 
   def ai_movement(self):
     if self.autostart:
       piece, move,is_promoted = self.agent.best_move(self)
       print(f"\nPeça movimentada: {piece.symbol}")
+      print(f"peça capturada? {piece in self.agent.captured_pieces}")
       print(f"movimento realizado: {move}\n")
 
+      self.ai_selected_piece_to_drop = None
+      self.ai_selected_piece = None
+
       if piece in self.agent.captured_pieces:
-        self.selected_piece_to_drop = piece
-
-      promoted_piece = None
-      if is_promoted:
-        promoted_piece = self.promote_piece(piece)
-
-      if not self.selected_piece_to_drop:
-        self.ai_selected_piece = promoted_piece if is_promoted else piece
+        self.ai_selected_piece_to_drop = piece
       else:
-        self.ai_selected_piece = None
+        self.ai_selected_piece = self.promote_piece(piece) if is_promoted else piece
+
       self.ai_target_position = move
       self.ai_move_pending = True
 
