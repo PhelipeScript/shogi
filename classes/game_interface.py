@@ -39,6 +39,7 @@ class GameInterface:
     self.GRID_SIZE = 9
     self.promotion_menu_active = False
     self.clock = pygame.time.Clock()
+    self.on_initial_screen = True
     
   def configure_screen(self):
     if (self.fullscreen):
@@ -54,12 +55,19 @@ class GameInterface:
     self.FONT_16 = pygame.font.SysFont('Arial', 16)
     self.FONT_18 = pygame.font.SysFont('Arial', 18)
     self.FONT_36 = pygame.font.SysFont('Arial', 36)
+
+    self.FONT_SANS_12 = pygame.font.SysFont('Sans serif', 12)
+    self.FONT_SANS_16 = pygame.font.SysFont('Sans serif', 16)
+    self.FONT_SANS_18 = pygame.font.SysFont('Sans serif', 18)
+    self.FONT_SANS_36 = pygame.font.SysFont('Sans serif', 36)
+    self.FONT_SANS_46 = pygame.font.SysFont('Sans serif', 46)
+    self.FONT_SANS_128 = pygame.font.SysFont('Sans serif', 128)
     pygame.display.set_caption("将棋 (Shogi)")
-    self.configure_fullscreen_button()
-    self.configure_board()
-    self.configure_captured_pieces()
-    self.configure_game_info()
-    self.configure_move_history()
+    # self.configure_fullscreen_button()
+    # self.configure_board()
+    # self.configure_captured_pieces()
+    # self.configure_game_info()
+    # self.configure_move_history()
     
   def configure_board(self):
     self.board_width = 0.50 * self.screen_width
@@ -140,7 +148,100 @@ class GameInterface:
               "piece_img": None, 
               "tile_img": captured_tile_resized,
             })
-          
+
+  def draw_initial_screen(self):
+
+    container = pygame.draw.rect(self.screen,(10,30,42),(50, 0, self.screen_width - 100, self.screen_height));
+    for i in range(35):
+      pygame.draw.line(self.screen, (15,40,53), (container.topleft[0] + i * 35, 0), (container.bottomleft[0] + i * 35, self.screen_height), width=2)
+    for i in range(35):
+      pygame.draw.line(self.screen, (15,40,53), (container.topleft[0], container.topleft[1] + i * 35), (container.topright[0], container.topleft[1] + i * 35), width=2)
+
+    pygame.draw.rect(self.screen,(10,47,62),(0, 0, 60, self.screen_height));
+    pygame.draw.rect(self.screen,(10,47,62),(self.screen_width - 60, 0, 60, self.screen_height));
+
+    #Header
+    pygame.draw.rect(self.screen,(15,134,167),((self.screen_width / 2) - 210, 50, 400, 100),border_radius=20);
+    text_area = pygame.draw.rect(self.screen,(7,58,89),((self.screen_width / 2) - 205, 55, 390, 90),border_radius=20);
+
+    #Rectangles
+    pygame.draw.rect(self.screen,(90,47,62),(container.right - 100, self.screen_height - 400, 50, 50),border_radius=5);
+    pygame.draw.rect(self.screen,(17,42,54),(container.left + 100, self.screen_height - 320, 70, 70),border_radius=5,width=6);
+
+    #Circles
+    pygame.draw.circle(self.screen, (10,64,76), (20,80), 100)
+    pygame.draw.circle(self.screen, (90,47,62), (self.screen_width - 70 ,self.screen_height - 100), 150)
+  
+    #Buttons
+    BUTTONS_HEIGHT = 80
+    BUTTONS_POSITION_X = (self.screen_width / 2) - 210
+
+    PVP_BUTTON_POSITION_Y = 270
+    PVAI_BUTTON_POSITION_Y = PVP_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
+    TUTORIAL_BUTTON_POSITION_Y = PVAI_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
+    EXIT_BUTTON_POSITION_Y = TUTORIAL_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
+
+    #PVP BUTTON
+    pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, PVP_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
+    pvp_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, PVP_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    #PVAI BUTTON
+    pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, PVAI_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
+    pvai_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, PVAI_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    #TUTORIAL_BUTTON
+    pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, TUTORIAL_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
+    tutorial_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, TUTORIAL_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    #EXIT_BUTTON
+    pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, EXIT_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
+    exit_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, EXIT_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    
+    #Imagens
+    left_piece = pygame.image.load("assets/initial_screen_utils/left_piece.png")
+    left_piece = pygame.transform.scale(left_piece,(250,250))
+    right_piece = pygame.image.load("assets/initial_screen_utils/right_piece.png")
+    right_piece = pygame.transform.scale(right_piece,(250,250))
+    self.screen.blit(left_piece,(130,60))
+    self.screen.blit(right_piece,(container.right - 350,60))
+
+    #Texts
+    title = "SHOGI"
+    title_surface = self.FONT_SANS_128.render(title,True,(252,204,58))
+    title_rect = title_surface.get_rect()
+    title_rect.center = text_area.center;
+    title_rect.top = text_area.top + 5
+    self.screen.blit(title_surface, title_rect)
+
+    title = "Player vs Player"
+    title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
+    title_rect = title_surface.get_rect()
+    title_rect.center = pvp_rect.center;
+    title_rect.top = pvp_rect.top + 20
+    self.screen.blit(title_surface, title_rect)
+
+    title = "Player vs MinMax"
+    title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
+    title_rect = title_surface.get_rect()
+    title_rect.center = pvai_rect.center;
+    title_rect.top = pvai_rect.top + 20
+    self.screen.blit(title_surface, title_rect)
+
+    title = "Player vs Q-Learning"
+    title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
+    title_rect = title_surface.get_rect()
+    title_rect.center = tutorial_rect.center;
+    title_rect.top = tutorial_rect.top + 20
+    self.screen.blit(title_surface, title_rect)
+
+    title = "Exit"
+    title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
+    title_rect = title_surface.get_rect()
+    title_rect.center = exit_rect.center;
+    title_rect.top = exit_rect.top + 20
+    self.screen.blit(title_surface, title_rect)
+
+    # pygame.draw.rect(self.screen,(7,58,89),((self.screen_width / 2) - 205, 55, 390, 90),border_radius=20);
+    # pygame.draw.rect(self.screen,(15,134,167),((self.screen_width / 2) - 210, 50, 400, 100),border_radius=20);
+    # pygame.draw.rect(self.screen,(7,58,89),((self.screen_width / 2) - 205, 55, 390, 90),border_radius=20);
+  
         
   def draw_captured_pieces(self):
     for player in [self.game.player, self.game.agent]:
@@ -179,7 +280,7 @@ class GameInterface:
       for col in range(game_info_grid_size):
         x = col * self.game_info_tile_width + self.screen_width - self.game_info_width - game_info_grid_size
         y = row * self.game_info_tile_height + self.screen_height - 2.2*self.game_info_height - game_info_grid_size
-        rect = pygame.Rect(x, y, self.game_info_tile_width, self.game_info_tile_height)
+        rect = pygame.Rect( x, y, self.game_info_tile_width, self.game_info_tile_height)
      
         self.game_info.append({
                 "rect": rect, 
@@ -518,21 +619,25 @@ class GameInterface:
     self.configure_screen()
     
     while self.running:
-      dt = self.clock.tick(60) / 1000.0  
-      self.game.player_times[self.game.who_plays_now.color] += dt
-      self.screen.fill(BACKGROUND)
-      
-      self.handle_events()
-      self.draw_fullscreen_button()
-      self.draw_board()
-      self.draw_captured_pieces()
-      self.draw_game_info()
-      self.draw_move_history()
-      self.handle_promotion()
-      self.handle_ai_move()
-      
-      if self.game.game_over:
-        self.draw_winner()
+
+      if not self.on_initial_screen:
+        dt = self.clock.tick(60) / 1000.0  
+        self.game.player_times[self.game.who_plays_now.color] += dt
+        self.screen.fill(BACKGROUND)
+
+        self.handle_events()
+        self.draw_fullscreen_button()
+        self.draw_board()
+        self.draw_captured_pieces()
+        self.draw_game_info()
+        self.draw_move_history()
+        self.handle_promotion()
+        self.handle_ai_move()
+
+        if self.game.game_over:
+          self.draw_winner()       
+      else:
+        self.draw_initial_screen()
       
       pygame.display.flip()
       
