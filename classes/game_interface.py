@@ -63,11 +63,12 @@ class GameInterface:
     self.FONT_SANS_46 = pygame.font.SysFont('Sans serif', 46)
     self.FONT_SANS_128 = pygame.font.SysFont('Sans serif', 128)
     pygame.display.set_caption("将棋 (Shogi)")
-    # self.configure_fullscreen_button()
-    # self.configure_board()
-    # self.configure_captured_pieces()
-    # self.configure_game_info()
-    # self.configure_move_history()
+    
+    self.configure_fullscreen_button()
+    self.configure_board()
+    self.configure_captured_pieces()
+    self.configure_game_info()
+    self.configure_move_history()
     
   def configure_board(self):
     self.board_width = 0.50 * self.screen_width
@@ -183,10 +184,18 @@ class GameInterface:
 
     #PVP BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, PVP_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
-    pvp_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, PVP_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    pvp_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, PVP_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10)
+
     #PVAI BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, PVAI_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
     pvai_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, PVAI_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+
+    for event in pygame.event.get():
+      if event.type == pygame.MOUSEBUTTONDOWN:
+        self.MOUSE_X, self.MOUSE_Y = pygame.mouse.get_pos()
+        if pvai_rect.collidepoint(self.MOUSE_X,self.MOUSE_Y):
+          self.on_initial_screen = False;
+
     #TUTORIAL_BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, TUTORIAL_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
     tutorial_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, TUTORIAL_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
