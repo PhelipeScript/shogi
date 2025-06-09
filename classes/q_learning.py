@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from collections import defaultdict
 
 # Now we can define the MDP as a tuple (S, A, T, R, 𝛾).
 # Here, R(s, a) is the reward for taking action a in state s, P(s'|s, a) 
@@ -15,25 +16,27 @@ class Qlearning:
     alpha = 0.1
   ):
     self.problema = problema
-    self.n_estados = len(problema.estados)
-    self.n_acoes = len(problema.acoes)
+    self.n_estados = len(problema.states)
+    self.n_acoes = len(problema.actions)
     self.theta = tetha
     self.alpha = alpha
     self.desconto = desconto
     self.e = 0.4
     
-    self.Q = np.zeros((self.n_estados, self.n_acoes))
-    self.PI = np.zeros(self.n_estados, dtype=int) 
+    self.Q = defaultdict(lambda: np.zeros(self.n_acoes))
+    self.PI = defaultdict(int)
 
   def calcular_tabela_q(self, estado_inicial = 0, n_passos = 10000, limite_max = 10):
     passo = 0
-    
+    print(self.n_acoes)
+    print(self.n_estados)
+
     while passo < n_passos:
       if (passo % 10000 == 0): print("%s passos de %s" %(passo, n_passos))
       passo += 1
       estado = estado_inicial # estado inicial
       limite = 0
-      while self.problema.estado_final(estado) == False and limite < limite_max:
+      while self.problema.game_over == False and limite < limite_max:
         limite += 1
         
         # escolha da acao
@@ -78,7 +81,6 @@ class Qlearning:
   # nas suas probabilidades de T(s,a, s')
   def sorteia_proximo_estado(self, estado, acao):
     prox_estados = self.problema.T(estado, acao)
-    
     estados = []
     probs = []
     for (prox_estado, prob) in prox_estados:

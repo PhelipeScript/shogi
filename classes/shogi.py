@@ -306,6 +306,11 @@ class Shogi:
       self.ai_target_position = move
       self.ai_move_pending = True
 
+  def replace_pieces(self):
+      self.agent.pieces.clear()
+      self.player.pieces.clear()
+      self.distribute_pieces()
+
 
   def is_on_check(self,player,oponent):
     # verifica se o jogador está em xeque
