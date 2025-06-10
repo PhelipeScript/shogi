@@ -6,7 +6,7 @@ from classes.player import Agent, Player, QLearningAgent
 class Shogi:
 
   def __init__(
-      self, board: Board = None, player1: Player = None, player2: Agent|Player = None,
+      self, board: Board = None, player1: Player | QLearningAgent = None, player2: Agent| Player | QLearningAgent = None,
       round: int = 0, autostart: bool = True
     ):
     self.player = player1 if player1 else Player("Jogador", "WHITE")
@@ -26,6 +26,8 @@ class Shogi:
     self.promotion_cadidate = None
     self.player_times = {"WHITE": 0.0, "BLACK": 0.0}
     self.distribute_pieces()
+    if isinstance(self.player, QLearningAgent) and isinstance(self.agent, Agent):
+      self.ai_movement()
 
   def end(self):
     # finaliza o jogo
@@ -165,7 +167,7 @@ class Shogi:
     if self.winner is None:
       self.print_turn()
     
-    if self.who_plays_now == self.agent and not hasattr(self,'ai_move_pending'):
+    if isinstance(self.who_plays_now, (Agent, QLearningAgent)) and not hasattr(self,'ai_move_pending'):
       self.ai_movement()
   
   def check_winner(self):
@@ -289,7 +291,7 @@ class Shogi:
     return all_possible_states[:min(len(all_possible_states), 5)]  
 
   def ai_movement(self):
-    if self.autostart and isinstance(self.agent, Agent):
+    if self.autostart and isinstance(self.who_plays_now, Agent):
       piece, move,is_promoted = self.agent.best_move(self)
       print(f"\nPeça movimentada: {piece.symbol}")
       print(f"peça capturada? {piece in self.agent.captured_pieces}")
@@ -305,7 +307,7 @@ class Shogi:
 
       self.ai_target_position = move
       self.ai_move_pending = True
-    if self.autostart and isinstance(self.agent, QLearningAgent):
+    if self.autostart and isinstance(self.who_plays_now, QLearningAgent):
       piece, target, is_drop = self.agent.best_move(self)
 
       self.ai_selected_piece_to_drop = None
@@ -360,4 +362,4 @@ class Shogi:
     pass
   
   def copy(self):
-    return Shogi(self.board.copy(), self.player.copy(), self.agent.copy(), self.round, False)
+    return Shogi(self.board.copy(), self.player.copy(False) if isinstance(self.player, QLearningAgent) else self.player.copy(), self.agent.copy(False) if isinstance(self.agent, QLearningAgent) else self.agent.copy(), self.round, False)

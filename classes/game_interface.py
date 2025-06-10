@@ -45,6 +45,7 @@ class GameInterface:
     self.PVP_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.PVMM_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.PVQL_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+    self.QLVMM_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.EXIT_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.on_initial_screen = True
     
@@ -181,7 +182,8 @@ class GameInterface:
     PVP_BUTTON_POSITION_Y = 270
     PVAI_BUTTON_POSITION_Y = PVP_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
     TUTORIAL_BUTTON_POSITION_Y = PVAI_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
-    EXIT_BUTTON_POSITION_Y = TUTORIAL_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
+    QLVMM_BUTTON_POSITION_Y = TUTORIAL_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
+    EXIT_BUTTON_POSITION_Y = QLVMM_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
 
     #PVP BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, PVP_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
@@ -194,6 +196,11 @@ class GameInterface:
     #PVQL_BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, TUTORIAL_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
     pvql_rect = pygame.draw.rect(self.screen,self.PVQL_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, TUTORIAL_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    
+    #QLVMM_BUTTON
+    pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, QLVMM_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
+    qlvmm_rect = pygame.draw.rect(self.screen,self.QLVMM_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, QLVMM_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    
     #EXIT_BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, EXIT_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
     exit_rect = pygame.draw.rect(self.screen,self.EXIT_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, EXIT_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
@@ -211,6 +218,9 @@ class GameInterface:
           self.on_initial_screen = False;
         elif pvql_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):  
           self.game = Shogi(player1=Player("Jogador", "WHITE"), player2=QLearningAgent("Q-Learning", "BLACK"))
+          self.on_initial_screen = False;
+        elif qlvmm_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):  
+          self.game = Shogi(player1=QLearningAgent("Q-Learning", "WHITE"), player2=Agent("Minimax", "BLACK"))
           self.on_initial_screen = False;
         elif exit_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
           self.running = False
@@ -230,6 +240,11 @@ class GameInterface:
       self.PVQL_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
     else:
       self.PVQL_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+
+    if qlvmm_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+      self.QLVMM_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
+    else:
+      self.QLVMM_BUTTON_COLOR = INITIAL_BUTTON_COLOR
 
     if exit_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
       self.EXIT_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
@@ -259,7 +274,7 @@ class GameInterface:
     title_rect.top = pvp_rect.top + 20
     self.screen.blit(title_surface, title_rect)
 
-    title = "Player vs MinMax"
+    title = "Player vs MiniMax"
     title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
     title_rect = title_surface.get_rect()
     title_rect.center = pvmm_rect.center;
@@ -271,6 +286,13 @@ class GameInterface:
     title_rect = title_surface.get_rect()
     title_rect.center = pvql_rect.center;
     title_rect.top = pvql_rect.top + 20
+    self.screen.blit(title_surface, title_rect)
+
+    title = "Q-Learning vs MiniMax"
+    title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
+    title_rect = title_surface.get_rect()
+    title_rect.center = qlvmm_rect.center;
+    title_rect.top = qlvmm_rect.top + 20
     self.screen.blit(title_surface, title_rect)
 
     title = "Exit"
@@ -422,7 +444,7 @@ class GameInterface:
     self.possible_drops = []
     self.game.drop_piece(new_position, piece)
     self.game.deselect_piece_to_drop()
-    self.game.next_turn()
+    # self.game.next_turn()
   
   def handle_possible_moves(self, piece: Piece):
     if not self.game.game_over and piece is not None and piece.color == self.game.who_plays_now.color:
@@ -486,7 +508,6 @@ class GameInterface:
           self.game.select_piece(self.game.ai_selected_piece)
           promoted_piece = self.game.move_piece(new_position)
           self.game.deselect_piece()
-          self.game.next_turn()
 
           if promoted_piece:
             new_cell["piece"] = promoted_piece
@@ -497,6 +518,7 @@ class GameInterface:
         delattr(self.game, 'ai_selected_piece')
         delattr(self.game, 'ai_target_position')
         delattr(self.game, 'ai_move_pending')
+        self.game.next_turn()
 
   def configure_fullscreen_button(self):
     self.fullscreen_button = pygame.Rect(self.screen_width-166, 16, 150, 16)
@@ -676,8 +698,9 @@ class GameInterface:
           self.configure_game_info()
           self.configure_move_history()
           flag = True
-        dt = self.clock.tick(60) / 1000.0  
-        self.game.player_times[self.game.who_plays_now.color] += dt
+        if not self.game.game_over:
+          dt = self.clock.tick(60) / 1000.0  
+          self.game.player_times[self.game.who_plays_now.color] += dt
         self.screen.fill(BACKGROUND)
 
         self.handle_events()

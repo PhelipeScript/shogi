@@ -55,9 +55,10 @@ class Agent(Player):
     return new_agent
 
 class QLearningAgent(Player):
-  def __init__(self, name, color):
+  def __init__(self, name, color, must_load_policy = True):
     super().__init__(name, color)
-    self.load_policy()
+    if must_load_policy:
+      self.load_policy()
   
   def load_policy(self):
     if os.path.exists("data/policy.pkl"):
@@ -105,7 +106,7 @@ class QLearningAgent(Player):
     random_target = random.choice(all_moves)
     return (random_piece, random_target, False)
   
-  def copy(self):
-    new_qlearning_agent = QLearningAgent(self.name, self.color)
+  def copy(self, must_load_policy):
+    new_qlearning_agent = QLearningAgent(self.name, self.color, must_load_policy)
     new_qlearning_agent.captured_pieces = [piece.copy() for piece in self.captured_pieces]
     return new_qlearning_agent
