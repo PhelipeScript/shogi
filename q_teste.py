@@ -1,11 +1,14 @@
 from classes.shogi import Shogi
-from classes.shogi_mdp import ShogiMDP
-from classes.q_learning import Qlearning
+from classes.shogi_mdp_v2 import ShogiMDP_v2
+from classes.q_learning_v2 import QLearning
 
 shogi = Shogi()
-mdp = ShogiMDP(shogi)
-qlearn = Qlearning(problema=mdp, desconto=0.9, alpha=0.1)
-Q, PI = qlearn.calcular_tabela_q(estado_inicial=0,n_passos=5000)
+mdp = ShogiMDP_v2(shogi)
+qlearn = QLearning(problem=mdp, discount=0.9, alpha=0.1)
+initial_state = ''.join(mdp.game.board.board_str) + ("W" if mdp.game.who_plays_now.color == "WHITE" else "B")
+Q, PI = qlearn.calculate_table_q(initial_state=initial_state,max_step=5000)
+
+
 
 #Defina o estado do jogo: Represente o estado atual do jogo de 
 # forma que o agente possa utilizá-lo para tomar decisões. 

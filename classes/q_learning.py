@@ -23,7 +23,7 @@ class Qlearning:
     self.desconto = desconto
     self.e = 0.4
     
-    self.Q = defaultdict(lambda: np.zeros(self.n_acoes))
+    self.Q = defaultdict(lambda: np.zeros(self.n_acoes*50))
     self.PI = defaultdict(int)
 
   def calcular_tabela_q(self, estado_inicial = 0, n_passos = 10000, limite_max = 10):
@@ -37,6 +37,7 @@ class Qlearning:
       estado = estado_inicial # estado inicial
       limite = 0
       while self.problema.game_over == False and limite < limite_max:
+        print(self.problema.game_over)
         limite += 1
         
         # escolha da acao
@@ -61,7 +62,14 @@ class Qlearning:
         self.PI[estado] = np.argmax(self.Q[estado])
         
         # escolhe o proximo estado probabilisticamente
+        print(f"estado: {estado} | ação: {acao}")
         estado = self.sorteia_proximo_estado(estado, acao)
+
+        print(f"qlearning: {self.problema.states}")
+        print(f"qlearning: {self.problema.actions}")
+
+        self.n_estados = len(self.problema.states)
+        self.n_acoes = len(self.problema.actions)
 
     return self.Q, self.PI
 
@@ -81,6 +89,7 @@ class Qlearning:
   # nas suas probabilidades de T(s,a, s')
   def sorteia_proximo_estado(self, estado, acao):
     prox_estados = self.problema.T(estado, acao)
+    print(f"{prox_estados=}")
     estados = []
     probs = []
     for (prox_estado, prob) in prox_estados:

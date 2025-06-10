@@ -4,6 +4,9 @@ class ShogiMDP:
     def __init__(self,shogi):
         self.game_over = False
         self.game = shogi
+        self.stateValue = 0
+        self.new_process_state = []
+        self.new_process_actions = []
         self.process_states()
 
     def process_states(self):
@@ -14,7 +17,9 @@ class ShogiMDP:
 
         encoded_shogi = self.encoding_shogi(self.game)
         self.states.append(encoded_shogi)
-        self.index_state[encoded_shogi] = 0
+        self.new_process_state.append(encoded_shogi)
+        self.index_state[encoded_shogi] = self.stateValue
+        self.stateValue = self.stateValue + 1
 
         moves = self.game.all_possible_moves()
         for _, (piece,possible_move) in enumerate(moves):
@@ -30,6 +35,12 @@ class ShogiMDP:
 
     
     def T(self,state_id: int, action_id: int):
+        if (self.game.game_over):
+            self.game_over = True
+            return [(0, 0.8)] 
+        if len(self.states) < action_id:
+            return [(0, 0.8)] 
+        
         state_str = self.states[state_id]
         action = self.actions[action_id]
         shogi_copy = self.shogi_from_state(state_str)
@@ -59,7 +70,7 @@ class ShogiMDP:
         return [(self.index_state[encoded_copy], 0.8)]
     
     def R(self, s, a, s_):
-        shogi_copy = self.shogi_from_state(self.states[s_])
+        shogi_copy = self.shogi_from_state(self.new_process_state[s_])
         utility = shogi_copy.utility_function()
 
         if  utility == -float('inf') or utility == float('inf'):
@@ -89,4 +100,3 @@ class ShogiMDP:
 
 
         
-
