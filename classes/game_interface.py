@@ -3,6 +3,7 @@ import sys
 import tkinter as tk
 from classes.image_manager import ImageManager
 from classes.piece import Piece
+from classes.player import Agent, Player, QLearningAgent
 from classes.shogi import Shogi
 
 
@@ -22,6 +23,8 @@ POSSIBLE_CAPTURE = (191, 64, 64)
 BUTTON_COLOR = (50, 150, 255)
 BOARD_COLOR = (224, 165, 49)
 BUTTON_HOVER_COLOR = (30, 130, 230)
+INITIAL_BUTTON_COLOR = (6,54,83)
+INITIAL_BUTTON_HOVER_COLOR = (3, 35, 55)
 
 class GameInterface:
   def __init__(self):
@@ -39,6 +42,10 @@ class GameInterface:
     self.GRID_SIZE = 9
     self.promotion_menu_active = False
     self.clock = pygame.time.Clock()
+    self.PVP_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+    self.PVMM_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+    self.PVQL_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+    self.EXIT_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.on_initial_screen = True
     
   def configure_screen(self):
@@ -63,12 +70,6 @@ class GameInterface:
     self.FONT_SANS_46 = pygame.font.SysFont('Sans serif', 46)
     self.FONT_SANS_128 = pygame.font.SysFont('Sans serif', 128)
     pygame.display.set_caption("将棋 (Shogi)")
-    
-    self.configure_fullscreen_button()
-    self.configure_board()
-    self.configure_captured_pieces()
-    self.configure_game_info()
-    self.configure_move_history()
     
   def configure_board(self):
     self.board_width = 0.50 * self.screen_width
@@ -184,25 +185,57 @@ class GameInterface:
 
     #PVP BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, PVP_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
-    pvp_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, PVP_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10)
+    pvp_rect = pygame.draw.rect(self.screen,self.PVP_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, PVP_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10)
 
-    #PVAI BUTTON
+    #PVMM BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, PVAI_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
-    pvai_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, PVAI_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    pvmm_rect = pygame.draw.rect(self.screen,self.PVMM_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, PVAI_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
 
-    for event in pygame.event.get():
-      if event.type == pygame.MOUSEBUTTONDOWN:
-        self.MOUSE_X, self.MOUSE_Y = pygame.mouse.get_pos()
-        if pvai_rect.collidepoint(self.MOUSE_X,self.MOUSE_Y):
-          self.on_initial_screen = False;
-
-    #TUTORIAL_BUTTON
+    #PVQL_BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, TUTORIAL_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
-    tutorial_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, TUTORIAL_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    pvql_rect = pygame.draw.rect(self.screen,self.PVQL_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, TUTORIAL_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
     #EXIT_BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, EXIT_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
-    exit_rect = pygame.draw.rect(self.screen,(6,54,83),(BUTTONS_POSITION_X + 5, EXIT_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+    exit_rect = pygame.draw.rect(self.screen,self.EXIT_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, EXIT_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
     
+    self.MOUSE_X, self.MOUSE_Y = pygame.mouse.get_pos()
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        self.running = False
+      if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        if pvp_rect.collidepoint(self.MOUSE_X,self.MOUSE_Y):
+          self.game = Shogi(player1=Player("Jogador 1", "WHITE"), player2=Player("jogador 2", "BLACK"))
+          self.on_initial_screen = False;
+        elif pvmm_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+          self.game = Shogi(player1=Player("Jogador", "WHITE"), player2=Agent("Minimax", "BLACK"))
+          self.on_initial_screen = False;
+        elif pvql_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):  
+          self.game = Shogi(player1=Player("Jogador", "WHITE"), player2=QLearningAgent("Q-Learning", "BLACK"))
+          self.on_initial_screen = False;
+        elif exit_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+          self.running = False
+
+    # HOVERS
+    if pvp_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+      self.PVP_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
+    else:
+      self.PVP_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+
+    if pvmm_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+      self.PVMM_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
+    else:
+      self.PVMM_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+
+    if pvql_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+      self.PVQL_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
+    else:
+      self.PVQL_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+
+    if exit_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+      self.EXIT_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
+    else: 
+      self.EXIT_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+
     #Imagens
     left_piece = pygame.image.load("assets/initial_screen_utils/left_piece.png")
     left_piece = pygame.transform.scale(left_piece,(250,250))
@@ -229,15 +262,15 @@ class GameInterface:
     title = "Player vs MinMax"
     title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
     title_rect = title_surface.get_rect()
-    title_rect.center = pvai_rect.center;
-    title_rect.top = pvai_rect.top + 20
+    title_rect.center = pvmm_rect.center;
+    title_rect.top = pvmm_rect.top + 20
     self.screen.blit(title_surface, title_rect)
 
     title = "Player vs Q-Learning"
     title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
     title_rect = title_surface.get_rect()
-    title_rect.center = tutorial_rect.center;
-    title_rect.top = tutorial_rect.top + 20
+    title_rect.center = pvql_rect.center;
+    title_rect.top = pvql_rect.top + 20
     self.screen.blit(title_surface, title_rect)
 
     title = "Exit"
@@ -567,6 +600,11 @@ class GameInterface:
         if self.fullscreen_button.collidepoint(self.MOUSE_X, self.MOUSE_Y):
           self.fullscreen = not self.fullscreen
           self.configure_screen()
+          self.configure_fullscreen_button()
+          self.configure_board()
+          self.configure_captured_pieces()
+          self.configure_game_info()
+          self.configure_move_history()
           
         for index, cell in enumerate(self.board):
           if cell["rect"].collidepoint(self.MOUSE_X, self.MOUSE_Y):
@@ -626,10 +664,18 @@ class GameInterface:
     pygame.init()
     self.running = True
     self.configure_screen()
+    flag = False
     
     while self.running:
 
       if not self.on_initial_screen:
+        if not flag:
+          self.configure_fullscreen_button()
+          self.configure_board()
+          self.configure_captured_pieces()
+          self.configure_game_info()
+          self.configure_move_history()
+          flag = True
         dt = self.clock.tick(60) / 1000.0  
         self.game.player_times[self.game.who_plays_now.color] += dt
         self.screen.fill(BACKGROUND)

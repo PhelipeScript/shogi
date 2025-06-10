@@ -1,16 +1,16 @@
 from typing import Union
 from classes.board import Board
 from classes.piece import PIECES_CLASSES, Piece
-from classes.player import Agent, Player
+from classes.player import Agent, Player, QLearningAgent
 
 class Shogi:
 
   def __init__(
-      self, board: Board = None, player: Player = None, agent: Agent = None,
+      self, board: Board = None, player1: Player = None, player2: Agent|Player = None,
       round: int = 0, autostart: bool = True
     ):
-    self.player = player if player else Player("Jogador", "WHITE")
-    self.agent = agent if agent else Agent("Agente", "BLACK") if self.player.color == "WHITE" else Agent("Agente", "WHITE")
+    self.player = player1 if player1 else Player("Jogador", "WHITE")
+    self.agent = player2 if player2 else Agent("Agente", "BLACK") if self.player.color == "WHITE" else Agent("Agente", "WHITE")
     self.board = Board() if board is None else board
     self.round = round
     self.autostart = autostart
@@ -289,7 +289,7 @@ class Shogi:
     return all_possible_states[:min(len(all_possible_states), 5)]  
 
   def ai_movement(self):
-    if self.autostart:
+    if self.autostart and isinstance(self.agent, Agent):
       piece, move,is_promoted = self.agent.best_move(self)
       print(f"\nPeça movimentada: {piece.symbol}")
       print(f"peça capturada? {piece in self.agent.captured_pieces}")
@@ -305,6 +305,20 @@ class Shogi:
 
       self.ai_target_position = move
       self.ai_move_pending = True
+    if self.autostart and isinstance(self.agent, QLearningAgent):
+      piece, target, is_drop = self.agent.best_move(self)
+
+      self.ai_selected_piece_to_drop = None
+      self.ai_selected_piece = None
+
+      if piece in self.agent.captured_pieces:
+        self.ai_selected_piece_to_drop = piece
+      else:
+        self.ai_selected_piece = piece
+
+      self.ai_target_position = target
+      self.ai_move_pending = True
+
 
   def replace_pieces(self):
       self.agent.pieces.clear()
