@@ -35,6 +35,9 @@ class Player:
     new_player.captured_pieces = [piece.copy() for piece in self.captured_pieces]
     return new_player  
   
+  def captured_pieces_str(self):
+    return "".join(sorted(piece.symbol for piece in self.captured_pieces))
+  
 class Agent(Player):
   def __init__(self, name, color, strategy = Minmax()):
     super().__init__(name, color)

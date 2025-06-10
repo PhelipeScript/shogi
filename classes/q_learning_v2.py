@@ -18,7 +18,7 @@ class QLearning:
         self.Q_TABLE = {}
         self.PI = {}
 
-    def calculate_table_q(self, initial_state, max_step=1, max_limit=2):
+    def calculate_table_q(self, initial_state, max_step=1, max_limit=10000):
         step = 0
 
         while step < max_step:
@@ -72,6 +72,9 @@ class QLearning:
         for next_state, prob in next_states:
             states.append(next_state)
             probs.append(prob)
+            
+        if sum(probs) <= 0:
+            return random.choice(states)
         chosen_state = random.choices(states, weights=probs)[0]
         # print("------------------------------")
         # print(f"estado selecionado {chosen_state}")

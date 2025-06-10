@@ -29,26 +29,10 @@ class ShogiMDP_v2:
                 
 
     def encoding_shogi(self, shogi) -> str:
-        return ''.join(shogi.board.board_str) + ("W" if shogi.who_plays_now.color == "WHITE" else "B")
+        return ''.join(shogi.board.board_str) + f"+{shogi.who_plays_now.captured_pieces_str()}" +("W" if shogi.who_plays_now.color == "WHITE" else "B") 
+        
     
     def T(self, state, action):
-        # self.process_states()
-        # piece_pos, target = action
-        # piece = next((p for p in self.game.who_plays_now.pieces if p.position == piece_pos), None)
-        # if piece is None: 
-        #     return []
-
-        # current_utility = self.game.utility_function()
-
-        # self.game.select_piece(piece)
-        # self.game.move_piece(target)
-        # self.game.deselect_piece()
-        # self.game.next_turn()
-
-        # next_utility = self.game.utility_function()
-        
-        # encoded_shogi = self.encoding_shogi(self.game)
-        # return [(encoded_shogi, next_utility / current_utility / 100)]
         states = self.all_possible_states()
         current_utility = self.game.utility_function()
         states_and_probs = []
@@ -102,7 +86,8 @@ class ShogiMDP_v2:
         who_plays_now = state_string[-1]
 
         new_shogi = Shogi()
-        new_shogi.board.board_str = board_str
+        # new_shogi.board.board_str = board_str
+        new_shogi.board.board_str = board_str.split('+')[0]
         
         if who_plays_now == "W":
             new_shogi.who_plays_now = new_shogi.player

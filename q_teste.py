@@ -6,9 +6,18 @@ shogi = Shogi()
 mdp = ShogiMDP_v2(shogi)
 qlearn = QLearning(problem=mdp, discount=0.9, alpha=0.1)
 initial_state = ''.join(mdp.game.board.board_str) + ("W" if mdp.game.who_plays_now.color == "WHITE" else "B")
-Q, PI = qlearn.calculate_table_q(initial_state=initial_state,max_step=5000)
+Q, PI = qlearn.calculate_table_q(initial_state=initial_state,max_step=10)
 
-
+with open("q_table.txt", "w") as file:
+    for state, actions in Q.items():
+        file.write(f"State: {state}\n")
+        for action, value in actions.items():
+            file.write(f"  Action: {action}, Q-value: {value:.4f}\n")
+        file.write("\n")
+        
+with open("policy.txt", "w") as file:
+    for state, action in PI.items():
+        file.write(f"State: {state} | Action {action}\n")
 
 #Defina o estado do jogo: Represente o estado atual do jogo de 
 # forma que o agente possa utilizá-lo para tomar decisões. 
