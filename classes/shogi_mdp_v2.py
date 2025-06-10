@@ -24,7 +24,12 @@ class ShogiMDP_v2:
 
         for piece, possible_moves in self.game.all_possible_moves():
             for target in possible_moves:
-                action = (piece.position, target)
+                action = (piece.position, target, False)
+                self.actions.append(action)
+                
+        for piece in self.game.who_plays_now.captured_pieces:
+            for drop_pos in self.game.get_possible_drops(piece):
+                action = (piece.symbol, drop_pos, True)
                 self.actions.append(action)
                 
 
@@ -37,7 +42,7 @@ class ShogiMDP_v2:
         current_utility = self.game.utility_function()
         states_and_probs = []
 
-        for encoded_shogy, utility in states:
+        for encoded_shogy, utility, is_drop in states:
             if utility == 0: utility = 1
             if current_utility == 0: current_utility = 1
 
@@ -65,7 +70,17 @@ class ShogiMDP_v2:
                     shogi_copy.move_piece(target)
                     shogi_copy.deselect_piece()
                     shogi_copy.next_turn()
-                    states.append((self.encoding_shogi(shogi_copy), shogi_copy.utility_function()))
+                    states.append((self.encoding_shogi(shogi_copy), shogi_copy.utility_function(), False))
+                    
+        for piece in self.game.who_plays_now.captured_pieces:
+            for drop_pos in self.game.get_possible_drops(piece):
+                shogi_copy = self.game.copy()
+                piece_copy = next((p for p in shogi_copy.who_plays_now.captured_pieces if p.symbol == piece.symbol), None)
+                if piece_copy:
+                    shogi_copy.drop_piece(drop_pos, piece_copy)
+                    shogi_copy.next_turn()
+                    states.append((self.encoding_shogi(shogi_copy), shogi_copy.utility_function(), True))
+            
         # print("------------------------------")
         # print(f"Estados possiveis: {states}")
         # print("------------------------------")
@@ -100,12 +115,21 @@ class ShogiMDP_v2:
         return new_shogi
 
     def next_state(self, action):
-        piece_pos, target = action
-        piece = next((p for p in self.game.who_plays_now.pieces if p.position == piece_pos), None)
-        if piece: 
-            self.game.select_piece(piece)
-            self.game.move_piece(target)
-            self.game.deselect_piece()
+        piece_pos, target, is_drop = action
+        
+        if is_drop:
+            piece = next((p for p in self.game.who_plays_now.captured_pieces if p.symbol == piece_pos), None)
+            if piece:
+                print(f"\n\nDROPEI")
+                print(f"ANTES: {self.game.board.board_str}")
+                self.game.drop_piece(target, piece)
+                print(f"DEPOIS: {self.game.board.board_str}")
+        else: 
+            piece = next((p for p in self.game.who_plays_now.pieces if p.position == piece_pos), None)
+            if piece: 
+                self.game.select_piece(piece)
+                self.game.move_piece(target)
+                self.game.deselect_piece()
         # else: 
             # print(f"Error: {action=}")
         self.game.next_turn()
