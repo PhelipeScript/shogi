@@ -115,8 +115,8 @@ class Shogi:
     else: 
       self.promotion_cadidate = None
 
-    if self.autostart:
-      self.board.print_board()
+    # if self.autostart:
+    #   self.board.print_board()
     return promoted_piece
   
   def get_possible_drops(self, piece: Piece) -> list[int]:
@@ -174,7 +174,7 @@ class Shogi:
     if black_king_alive == -1 or white_king_alive == -1:
       self.winner = self.player if self.player.color == "WHITE" and black_king_alive == -1 else self.agent
       self.game_over = True
-      self.print_winner()
+      # self.print_winner()
       return True
 
   def all_possible_moves(self: "Shogi", player = None) -> list[tuple[Piece, list[int]]]:
@@ -334,7 +334,7 @@ class Shogi:
     pass
   
   def print_winner(self):
-    # print(f"O vencedor é: {self.winner.name} ({self.winner.color})")
+    print(f'\033[31mGanhador da partida: {self.winner.color} | {self.winner.name}\033[0m')
     pass
   
   def print_game_over(self):

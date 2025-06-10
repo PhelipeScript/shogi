@@ -120,10 +120,10 @@ class ShogiMDP_v2:
         if is_drop:
             piece = next((p for p in self.game.who_plays_now.captured_pieces if p.symbol == piece_pos), None)
             if piece:
-                print(f"\n\nDROPEI")
-                print(f"ANTES: {self.game.board.board_str}")
+                # print(f"\n\nDROPEI")
+                # print(f"ANTES: {self.game.board.board_str}")
                 self.game.drop_piece(target, piece)
-                print(f"DEPOIS: {self.game.board.board_str}")
+                # print(f"DEPOIS: {self.game.board.board_str}")
         else: 
             piece = next((p for p in self.game.who_plays_now.pieces if p.position == piece_pos), None)
             if piece: 
@@ -136,8 +136,9 @@ class ShogiMDP_v2:
 
         if self.game.game_over:
             self.game_over = True
+            self.game.print_winner()
 
     def restart(self):
         self.game_over = False
-        self.game = Shogi()
+        self.game = Shogi(autostart=False)
         self.reset_states()

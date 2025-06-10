@@ -1,4 +1,7 @@
 import random
+import pickle
+import os
+import time
 
 class QLearning:
     def __init__(
@@ -15,19 +18,44 @@ class QLearning:
         self.discount = discount
         self.e = e
         
-        self.Q_TABLE = {}
-        self.PI = {}
+        self.load_tables()
+    
+    def load_tables(self):
+        if os.path.exists("data/q_table.pkl") and os.path.exists("data/policy.pkl"):
+            print("\033[33mArquivos existentes encontrados. \nCarregando tabelas...")
+            with open("data/q_table.pkl", "rb") as f:
+                self.Q_TABLE = pickle.load(f)
+            with open("data/policy.pkl", "rb") as f:
+                self.PI = pickle.load(f)
+            print("Tabelas carregadas com sucesso. \nIniciando treinamento...\n\033[0m")
+        else:
+            print("\033[33mNenhum arquivo encontrado. \nIniciando tabelas do zero...")
+            self.Q_TABLE = {}   
+            self.PI = {}  
+            print("Iniciando treinamento....\n\033[0m")
+
+    def save_tables(self):
+        print("\n\033[33mSalvando tabelas...\033[0m")
+        
+        with open("data/q_table.pkl", "wb") as file:
+            pickle.dump(self.Q_TABLE, file)
+
+        with open("data/policy.pkl", "wb") as file:
+            pickle.dump(self.PI, file)
+        print("\033[33mTabelas salvas com sucesso!\n\033[0m")
 
     def calculate_table_q(self, initial_state, max_step=1, max_limit=10000):
         step = 0
+        start_time = time.time()
 
         while step < max_step:
-            if self.problem.game_over:
-                print(f'\n\n\n\n\n CAlaABREZO\n\n\n\n\n\n')
-                self.problem.restart()
             step+=1
             state = initial_state
             limit = 0
+            print(f"\n\033[37mIniciando novo jogo ({step}/{max_step})...\033[0m")   
+            if self.problem.game_over:
+                self.problem.restart()
+
             while self.problem.game_over == False and limit < max_limit:
                 limit+=1
 
@@ -52,7 +80,16 @@ class QLearning:
 
                 state = self.choose_next_state(state, action)
                 self.problem.next_state(action)
+            if step % 100 == 0:
+                self.save_tables()
 
+        self.save_tables()
+        end_time = time.time()
+        elapsed = end_time - start_time
+        hours = int(elapsed // 3600)
+        minutes = int((elapsed % 3600) // 60)
+        seconds = int(elapsed % 60)
+        print(f"\033[32mTempo de execução: {hours}h{minutes}m{seconds}s.")
         return self.Q_TABLE, self.PI
     
     def choose_next_action(self, state):
