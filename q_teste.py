@@ -6,7 +6,7 @@ shogi = Shogi(autostart=False)
 mdp = ShogiMDP_v2(shogi)
 qlearn = QLearning(problem=mdp, discount=0.9, alpha=0.1)
 initial_state = ''.join(mdp.game.board.board_str) + ("W" if mdp.game.who_plays_now.color == "WHITE" else "B")
-Q, PI = qlearn.calculate_table_q(initial_state=initial_state,max_step=10)
+Q, PI = qlearn.calculate_table_q(initial_state=initial_state,max_step=1000)
         
 with open("data/policy.txt", "w") as file:
     for state, action in PI.items():
