@@ -5,6 +5,7 @@ from classes.image_manager import ImageManager
 from classes.piece import Piece
 from classes.player import Agent, Player, QLearningAgent
 from classes.shogi import Shogi
+import time
 
 
 #COLORS
@@ -686,18 +687,21 @@ class GameInterface:
     pygame.init()
     self.running = True
     self.configure_screen()
-    flag = False
+    initial_screen_flag = False
+    game_over_flag = False
+    count_start_time = 0
+    max_countdown = 6
     
     while self.running:
 
       if not self.on_initial_screen:
-        if not flag:
+        if not initial_screen_flag:
           self.configure_fullscreen_button()
           self.configure_board()
           self.configure_captured_pieces()
           self.configure_game_info()
           self.configure_move_history()
-          flag = True
+          initial_screen_flag = True
         if not self.game.game_over:
           dt = self.clock.tick(60) / 1000.0  
           self.game.player_times[self.game.who_plays_now.color] += dt
@@ -713,6 +717,14 @@ class GameInterface:
         self.handle_ai_move()
 
         if self.game.game_over:
+          if not game_over_flag:
+            game_over_flag = True
+            count_start_time = time.time()
+          else:
+            if int((time.time() - count_start_time) % 60) >= max_countdown:
+              self.on_initial_screen = True
+              initial_screen_flag = False
+              game_over_flag = False
           self.draw_winner()       
       else:
         self.draw_initial_screen()
