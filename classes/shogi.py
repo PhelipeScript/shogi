@@ -292,15 +292,15 @@ class Shogi:
 
   def ai_movement(self):
     if self.autostart and isinstance(self.who_plays_now, Agent):
-      piece, move,is_promoted = self.agent.best_move(self)
+      piece, move,is_promoted = self.who_plays_now.best_move(self)
       print(f"\nPeça movimentada: {piece.symbol}")
-      print(f"peça capturada? {piece in self.agent.captured_pieces}")
+      print(f"peça capturada? {piece in self.who_plays_now.captured_pieces}")
       print(f"movimento realizado: {move}\n")
 
       self.ai_selected_piece_to_drop = None
       self.ai_selected_piece = None
 
-      if piece in self.agent.captured_pieces:
+      if piece in self.who_plays_now.captured_pieces:
         self.ai_selected_piece_to_drop = piece
       else:
         self.ai_selected_piece = self.promote_piece(piece) if is_promoted else piece
@@ -308,12 +308,12 @@ class Shogi:
       self.ai_target_position = move
       self.ai_move_pending = True
     if self.autostart and isinstance(self.who_plays_now, QLearningAgent):
-      piece, target, is_drop = self.agent.best_move(self)
+      piece, target, is_drop = self.who_plays_now.best_move(self)
 
       self.ai_selected_piece_to_drop = None
       self.ai_selected_piece = None
 
-      if piece in self.agent.captured_pieces:
+      if piece in self.who_plays_now.captured_pieces:
         self.ai_selected_piece_to_drop = piece
       else:
         self.ai_selected_piece = piece
