@@ -117,8 +117,9 @@ class Shogi:
     else: 
       self.promotion_cadidate = None
 
-    # if self.autostart:
-    #   self.board.print_board()
+    if self.autostart:
+      self.print_turn()
+      self.board.print_board()
     return promoted_piece
   
   def get_possible_drops(self, piece: Piece) -> list[int]:
@@ -164,8 +165,8 @@ class Shogi:
     self.who_plays_now = self.player if self.player.color == "WHITE" and self.round % 2 == 0 else self.agent
       
     self.check_winner()
-    if self.winner is None:
-      self.print_turn()
+    # if self.winner is None:
+    #   self.print_turn()
     
     if isinstance(self.who_plays_now, (Agent, QLearningAgent)) and not hasattr(self,'ai_move_pending'):
       self.ai_movement()
@@ -176,7 +177,6 @@ class Shogi:
     if black_king_alive == -1 or white_king_alive == -1:
       self.winner = self.player if self.player.color == "WHITE" and black_king_alive == -1 else self.agent
       self.game_over = True
-      # self.print_winner()
       return True
 
   def all_possible_moves(self: "Shogi", player = None) -> list[tuple[Piece, list[int]]]:
@@ -293,9 +293,6 @@ class Shogi:
   def ai_movement(self):
     if self.autostart and isinstance(self.who_plays_now, Agent):
       piece, move,is_promoted = self.who_plays_now.best_move(self)
-      print(f"\nPeça movimentada: {piece.symbol}")
-      print(f"peça capturada? {piece in self.who_plays_now.captured_pieces}")
-      print(f"movimento realizado: {move}\n")
 
       self.ai_selected_piece_to_drop = None
       self.ai_selected_piece = None
@@ -358,7 +355,7 @@ class Shogi:
     pass
   
   def print_turn(self):
-    #print(f"Rodada {self.round} - Vez do jogador(a): {self.who_plays_now.name} ({self.who_plays_now.color})")
+    print(f"\033[33mRodada {self.round} - Vez do jogador(a): {self.who_plays_now.name} ({self.who_plays_now.color})\033[0m")
     pass
   
   def copy(self):

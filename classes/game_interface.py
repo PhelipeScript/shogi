@@ -363,8 +363,8 @@ class GameInterface:
     texts = [
       {"label": "Jogador 1:", "value": self.game.player.name},
       {"label": "Jogador 2:", "value": self.game.agent.name},
-      {"label": "Tempo jogador 1:", "value": time_info["Tempo jogador 1"]},
-      {"label": "Tempo jogador 2:", "value": time_info["Tempo jogador 2"]},
+      {"label": f"Tempo {self.game.player.name}:", "value": time_info["Tempo jogador 1"]},
+      {"label": f"Tempo {self.game.agent.name}:", "value": time_info["Tempo jogador 2"]},
       {"label": "Tempo total:", "value": time_info["Tempo total"]},
       {"label": "Rodada atual:", "value": self.game.round+1},
       {"label": "Jogador da vez:", "value": self.game.who_plays_now.name},
@@ -491,9 +491,6 @@ class GameInterface:
           return
         if self.game.ai_selected_piece_to_drop:
           self.handle_drop_piece(self.game.ai_target_position, self.game.ai_selected_piece_to_drop)
-        elif self.game.ai_selected_piece is None:
-          print("Ta quebrado")
-          return 
         else: 
           old_position = self.game.ai_selected_piece.position
           new_position = self.game.ai_target_position

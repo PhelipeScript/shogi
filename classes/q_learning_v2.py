@@ -98,8 +98,6 @@ class QLearning:
             return random_action
         policy_action = self.PI[state]
         next_action = random.choices([random_action, policy_action], weights=[self.e, (1-self.e)])[0]
-        # print("------------------------------")
-        # print(f"proxima ação tomada {next_action}")
         return next_action
     
     def choose_next_state(self, state, action):
@@ -113,11 +111,8 @@ class QLearning:
         if sum(probs) <= 0:
             return random.choice(states)
         chosen_state = random.choices(states, weights=probs)[0]
-        # print("------------------------------")
-        # print(f"estado selecionado {chosen_state}")
         return chosen_state
 
     def new_q(self, state, action, next_state, prob):
         max_q = max(self.Q_TABLE[state].values())
-        # print(f"MAIOR AÇÇÃO{max_q}")
         return prob * (self.problem.R(state, action, next_state) + self.discount * max_q)

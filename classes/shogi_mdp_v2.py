@@ -55,8 +55,6 @@ class ShogiMDP_v2:
 
         if len(states_and_probs) == 0:
             self.game_over = True
-        # print("------------------------------")
-        # print(states_and_probs)
         return states_and_probs
 
     def all_possible_states(self): 
@@ -81,9 +79,6 @@ class ShogiMDP_v2:
                     shogi_copy.next_turn()
                     states.append((self.encoding_shogi(shogi_copy), shogi_copy.utility_function(), True))
             
-        # print("------------------------------")
-        # print(f"Estados possiveis: {states}")
-        # print("------------------------------")
         return states
         
     def R(self, s, a, s_):
@@ -110,7 +105,6 @@ class ShogiMDP_v2:
             new_shogi.who_plays_now = new_shogi.agent
 
         new_shogi.replace_pieces()
-        # print(f"jogador que joga agora: {who_plays_now}")
         
         return new_shogi
 
@@ -120,18 +114,13 @@ class ShogiMDP_v2:
         if is_drop:
             piece = next((p for p in self.game.who_plays_now.captured_pieces if p.symbol == piece_pos), None)
             if piece:
-                # print(f"\n\nDROPEI")
-                # print(f"ANTES: {self.game.board.board_str}")
                 self.game.drop_piece(target, piece)
-                # print(f"DEPOIS: {self.game.board.board_str}")
         else: 
             piece = next((p for p in self.game.who_plays_now.pieces if p.position == piece_pos), None)
             if piece: 
                 self.game.select_piece(piece)
                 self.game.move_piece(target)
                 self.game.deselect_piece()
-        # else: 
-            # print(f"Error: {action=}")
         self.game.next_turn()
 
         if self.game.game_over:
