@@ -47,6 +47,7 @@ class GameInterface:
     self.PVMM_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.PVQL_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.QLVMM_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+    self.QLVQL_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.EXIT_BUTTON_COLOR = INITIAL_BUTTON_COLOR
     self.on_initial_screen = True
     
@@ -180,11 +181,12 @@ class GameInterface:
     BUTTONS_HEIGHT = 80
     BUTTONS_POSITION_X = (self.screen_width / 2) - 210
 
-    PVP_BUTTON_POSITION_Y = 270
+    PVP_BUTTON_POSITION_Y = 160
     PVAI_BUTTON_POSITION_Y = PVP_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
     TUTORIAL_BUTTON_POSITION_Y = PVAI_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
     QLVMM_BUTTON_POSITION_Y = TUTORIAL_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
-    EXIT_BUTTON_POSITION_Y = QLVMM_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
+    QLVQL_BUTTON_POSITION_Y = QLVMM_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
+    EXIT_BUTTON_POSITION_Y = QLVQL_BUTTON_POSITION_Y + BUTTONS_HEIGHT + 30
 
     #PVP BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, PVP_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
@@ -201,6 +203,10 @@ class GameInterface:
     #QLVMM_BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, QLVMM_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
     qlvmm_rect = pygame.draw.rect(self.screen,self.QLVMM_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, QLVMM_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
+
+    #QLVQL_BUTTON
+    pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, QLVQL_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
+    qlvql_rect = pygame.draw.rect(self.screen,self.QLVQL_BUTTON_COLOR,(BUTTONS_POSITION_X + 5, QLVQL_BUTTON_POSITION_Y + 5, 390, BUTTONS_HEIGHT - 10),border_radius=10);
     
     #EXIT_BUTTON
     pygame.draw.rect(self.screen,(15,134,167),(BUTTONS_POSITION_X, EXIT_BUTTON_POSITION_Y, 400, BUTTONS_HEIGHT),border_radius=10);
@@ -222,6 +228,9 @@ class GameInterface:
           self.on_initial_screen = False;
         elif qlvmm_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):  
           self.game = Shogi(player1=QLearningAgent("Q-Learning", "WHITE"), player2=Agent("Minimax", "BLACK"))
+          self.on_initial_screen = False;
+        elif qlvql_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):  
+          self.game = Shogi(player1=QLearningAgent("QL1", "WHITE"), player2=QLearningAgent("QL2", "BLACK"))
           self.on_initial_screen = False;
         elif exit_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
           self.running = False
@@ -246,6 +255,11 @@ class GameInterface:
       self.QLVMM_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
     else:
       self.QLVMM_BUTTON_COLOR = INITIAL_BUTTON_COLOR
+
+    if qlvql_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
+      self.QLVQL_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
+    else:
+      self.QLVQL_BUTTON_COLOR = INITIAL_BUTTON_COLOR
 
     if exit_rect.collidepoint(self.MOUSE_X, self.MOUSE_Y):
       self.EXIT_BUTTON_COLOR = INITIAL_BUTTON_HOVER_COLOR
@@ -294,6 +308,13 @@ class GameInterface:
     title_rect = title_surface.get_rect()
     title_rect.center = qlvmm_rect.center;
     title_rect.top = qlvmm_rect.top + 20
+    self.screen.blit(title_surface, title_rect)
+
+    title = "Q-Learning vs Q-Learning"
+    title_surface = self.FONT_SANS_46.render(title,True,(255,255,255))
+    title_rect = title_surface.get_rect()
+    title_rect.center = qlvql_rect.center;
+    title_rect.top = qlvql_rect.top + 20
     self.screen.blit(title_surface, title_rect)
 
     title = "Exit"
