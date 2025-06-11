@@ -26,7 +26,7 @@ class Shogi:
     self.promotion_cadidate = None
     self.player_times = {"WHITE": 0.0, "BLACK": 0.0}
     self.distribute_pieces()
-    if isinstance(self.player, QLearningAgent) and isinstance(self.agent, Agent):
+    if isinstance(self.player, QLearningAgent) and isinstance(self.agent, (Agent, QLearningAgent)):
       self.ai_movement()
 
   def end(self):
@@ -111,6 +111,8 @@ class Shogi:
     self.selected_piece.move(new_position)
 
     if self.is_mandatory_promotion(self.selected_piece):
+      promoted_piece = self.promote_piece(self.selected_piece)
+    elif isinstance(self.who_plays_now, QLearningAgent) and self.is_promotion_candidate(self.selected_piece):
       promoted_piece = self.promote_piece(self.selected_piece)
     elif self.is_promotion_candidate(self.selected_piece):
       self.promotion_cadidate = self.selected_piece

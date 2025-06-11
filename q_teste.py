@@ -1,8 +1,9 @@
+from classes.player import QLearningAgent
 from classes.shogi import Shogi
 from classes.shogi_mdp_v2 import ShogiMDP_v2
 from classes.q_learning_v2 import QLearning
 
-shogi = Shogi(autostart=False)
+shogi = Shogi(autostart=False, player1=QLearningAgent("QL1", "WHITE"), player2=QLearningAgent("QL2", "BLACK"))
 mdp = ShogiMDP_v2(shogi)
 qlearn = QLearning(problem=mdp, discount=0.9, alpha=0.1)
 initial_state = ''.join(mdp.game.board.board_str) + ("W" if mdp.game.who_plays_now.color == "WHITE" else "B")

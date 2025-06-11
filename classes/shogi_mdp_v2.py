@@ -1,3 +1,4 @@
+from classes.player import QLearningAgent
 from classes.shogi import Shogi
 
 
@@ -129,5 +130,5 @@ class ShogiMDP_v2:
 
     def restart(self):
         self.game_over = False
-        self.game = Shogi(autostart=False)
+        self.game = Shogi(autostart=False, player1=QLearningAgent("QL1", "WHITE"), player2=QLearningAgent("QL2", "BLACK"))
         self.reset_states()
